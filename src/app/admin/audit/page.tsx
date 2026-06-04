@@ -1,0 +1,207 @@
+'use client';
+import { useEffect, useState } from 'react';
+import DashboardLayout from '@/components/layout/DashboardLayout';
+import Badge from '@/components/ui/Badge';
+import { api } from '@/lib/api';
+import { timeAgo } from '@/lib/utils';
+import { Search, ShieldCheck } from 'lucide-react';
+
+interface AuditLog {
+  id: string;
+  userEmail: string;
+  action: string;
+  targetTable?: string;
+  details?: string;
+  timestamp: string;
+}
+
+const ACTIONS = [
+  'ALL', 'LOGIN', 'CREATE_USER', 'DEACTIVATE_USER', 'ACTIVATE_USER',
+  'RESET_PASSWORD', 'REGISTER_PATIENT', 'RECORD_VISIT', 'CHANGE_PASSWORD',
+];
+
+const ACTION_LABELS: Record<string, string> = {
+  ALL:              'All',
+  LOGIN:            'Login',
+  CREATE_USER:      'Create',
+  DEACTIVATE_USER:  'Deactivate',
+  ACTIVATE_USER:    'Activate',
+  RESET_PASSWORD:   'Reset PW',
+  REGISTER_PATIENT: 'Register',
+  RECORD_VISIT:     'Visit',
+  CHANGE_PASSWORD:  'Change PW',
+};
+
+function actionBadge(action: string) {
+  if (action.includes('DEACTIVATE') || action.includes('DELETE'))
+    return <Badge variant="high">{action.replace(/_/g, ' ')}</Badge>;
+  if (action.includes('CREATE') || action.includes('REGISTER'))
+    return <Badge variant="low">{action.replace(/_/g, ' ')}</Badge>;
+  if (action === 'LOGIN')
+    return <Badge variant="info">LOGIN</Badge>;
+  return <Badge variant="default">{action.replace(/_/g, ' ')}</Badge>;
+}
+
+export default function AuditLogPage() {
+  const [logs, setLogs]     = useState<AuditLog[]>([]);
+  const [action, setAction] = useState('ALL');
+  const [search, setSearch] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    const params = action !== 'ALL' ? `?action=${action}` : '';
+    api.get(`/api/admin/audit-log${params}`)
+      .then((r) => setLogs(r.data))
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, [action]);
+
+  const filtered = logs.filter((l) =>
+    l.userEmail.toLowerCase().includes(search.toLowerCase()) ||
+    l.action.toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <DashboardLayout title="Audit Log">
+      <div className="space-y-5">
+
+        {/* ── Page header ─────────────────────────────────── */}
+        <div className="flex items-end justify-between">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-text-hint mb-1">
+              System Administration
+            </p>
+            <h1 className="text-[20px] font-bold text-text-primary tracking-tight leading-none">
+              Audit Log
+            </h1>
+          </div>
+          {!loading && (
+            <div className="text-right">
+              <p className="data-num text-[30px] font-semibold leading-none" style={{ color: '#006D77' }}>
+                {filtered.length}
+              </p>
+              <p className="text-[11px] text-text-hint mt-1 uppercase tracking-wide">
+                Entries
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* ── Main card ────────────────────────────────────── */}
+        <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #DCECF0' }}>
+
+          {/* Header: filters + search */}
+          <div
+            className="flex items-center justify-between gap-3 px-6 py-4 flex-wrap"
+            style={{ borderBottom: '1px solid #E8F4F8' }}
+          >
+            <div>
+              <h3 className="text-[13px] font-semibold text-text-primary tracking-tight">
+                System Events
+              </h3>
+              <p className="text-[11px] text-text-hint mt-0.5">
+                All user actions and data changes
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 flex-wrap">
+              {/* Action filter pills */}
+              <div className="flex gap-1 flex-wrap">
+                {ACTIONS.slice(0, 5).map((a) => (
+                  <button
+                    key={a}
+                    onClick={() => setAction(a)}
+                    className="text-[11px] px-2.5 py-1 rounded font-semibold transition-colors"
+                    style={{
+                      background: action === a ? '#006D77' : '#EDF6F9',
+                      color:      action === a ? '#fff'    : '#5A6474',
+                      border:     `1px solid ${action === a ? '#006D77' : '#DCECF0'}`,
+                    }}
+                  >
+                    {ACTION_LABELS[a] ?? a}
+                  </button>
+                ))}
+              </div>
+
+              {/* Search */}
+              <div className="relative">
+                <Search
+                  size={12}
+                  className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-text-hint"
+                />
+                <input
+                  className="pl-8 pr-3 py-1.5 text-[12px] rounded-lg bg-white outline-none w-36"
+                  style={{ border: '1px solid #DCECF0' }}
+                  placeholder="Filter…"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  onFocus={e  => { (e.currentTarget as HTMLInputElement).style.borderColor = '#006D77'; }}
+                  onBlur={e   => { (e.currentTarget as HTMLInputElement).style.borderColor = '#DCECF0'; }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Body */}
+          <div className="px-6 py-5">
+            {loading ? (
+              <div className="flex justify-center py-10">
+                <div className="w-7 h-7 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : filtered.length === 0 ? (
+              <div className="flex flex-col items-center py-14 text-text-hint">
+                <ShieldCheck size={32} className="mb-3" />
+                <p className="text-[13px] font-medium text-text-secondary">No audit entries</p>
+                <p className="text-[12px] mt-1">Try changing the filter or search term</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr style={{ borderBottom: '1px solid #DCECF0' }}>
+                      {['Action', 'User', 'Target', 'Details', 'When'].map((h) => (
+                        <th
+                          key={h}
+                          className="pb-3 pr-6 text-left text-[11px] font-semibold uppercase tracking-widest text-text-hint"
+                        >
+                          {h}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filtered.map((log) => (
+                      <tr
+                        key={log.id}
+                        className="table-row-hover transition-colors"
+                        style={{ borderBottom: '1px solid #E8F4F8' }}
+                      >
+                        <td className="py-3 pr-6">
+                          {actionBadge(log.action)}
+                        </td>
+                        <td className="py-3 pr-6 text-[12px] text-text-secondary">
+                          {log.userEmail}
+                        </td>
+                        <td className="py-3 pr-6 data-num text-[12px] text-text-hint">
+                          {log.targetTable ?? '—'}
+                        </td>
+                        <td className="py-3 pr-6 text-[12px] text-text-secondary max-w-[200px] truncate">
+                          {log.details ?? '—'}
+                        </td>
+                        <td className="py-3 data-num text-[11px] whitespace-nowrap" style={{ color: '#AAB4BC' }}>
+                          {timeAgo(log.timestamp)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+
+      </div>
+    </DashboardLayout>
+  );
+}
