@@ -30,7 +30,7 @@ export default function PatientsPage() {
   useEffect(() => {
     Promise.all([
       api.get('/api/clinical/dashboard/patients'),
-      api.get('/api/clinical/patients/provisional'),
+      api.get('/api/v1/patients/provisional'),
     ]).then(([ar, pr]) => {
       setPatients(ar.data);
       setProvisional(pr.data);
