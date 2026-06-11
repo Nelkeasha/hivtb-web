@@ -16,6 +16,8 @@ interface Alert {
   alertType: string;
   createdAt: string;
   isResolved: boolean;
+  resolvedByName?: string;
+  escalatedAt?: string;
 }
 
 type Filter = 'ALL' | 'CRITICAL' | 'HIGH';
@@ -184,6 +186,9 @@ export default function SupervisorAlertsPage() {
                           <Badge variant="default">
                             {alert.alertType.replace(/_/g, ' ')}
                           </Badge>
+                          {alert.escalatedAt && (
+                            <Badge variant="critical" size="sm">Escalated</Badge>
+                          )}
                           <span
                             className="data-num text-[11px]"
                             style={{ color: '#AAB4BC' }}

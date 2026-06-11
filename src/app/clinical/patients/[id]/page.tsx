@@ -3,11 +3,12 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Button from '@/components/ui/Button';
-import { RiskBadge } from '@/components/ui/Badge';
+import Badge, { RiskBadge } from '@/components/ui/Badge';
 import { api } from '@/lib/api';
 import {
   ArrowLeft, Plus, X, CheckCircle, Clock,
   MapPin, Stethoscope, Calendar, Pill, AlertCircle, Phone, User,
+  Home, Bell,
 } from 'lucide-react';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -21,6 +22,20 @@ interface Patient {
   riskLevel?: string; riskScore?: number;
   registrationStatus?: string; referralId?: string;
   suspectedCondition?: string; screeningNotes?: string;
+  unresolvedAlerts?: AlertItem[];
+  recentHomeVisits?: HomeVisitItem[];
+}
+
+interface AlertItem {
+  id: string; alertType: string; severity: 'INFO' | 'WARNING' | 'CRITICAL';
+  title: string; message: string; createdAt: string;
+}
+
+interface HomeVisitItem {
+  id: string; chwName?: string; visitDate: string;
+  adherenceStatus?: string; pillCountRecorded?: number; pillCountExpected?: number;
+  pillCountDiscrepancy?: boolean; symptomsReported?: string;
+  sideEffectsReported?: string; psychosocialNotes?: string; nextVisitDate?: string;
 }
 
 interface Schedule {
@@ -210,6 +225,88 @@ export default function PatientDetailPage() {
               patient={patient}
               onConfirmed={() => window.location.reload()}
             />
+          )}
+
+          {/* Active alerts */}
+          {(patient.unresolvedAlerts?.length ?? 0) > 0 && (
+            <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #DCECF0' }}>
+              <div className="flex items-center gap-2 px-6 py-4" style={{ borderBottom: '1px solid #E8F4F8' }}>
+                <Bell size={14} style={{ color: '#C0392B' }} />
+                <h3 className="text-[13px] font-semibold text-text-primary tracking-tight">
+                  Active Alerts
+                </h3>
+              </div>
+              <div className="px-6 py-4 space-y-3">
+                {patient.unresolvedAlerts!.map((a) => (
+                  <div key={a.id} className="rounded-lg p-3" style={{ background: '#FEF2F2', border: '1px solid #FECACA' }}>
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <p className="text-[13px] font-semibold text-text-primary">{a.title}</p>
+                      <Badge variant={a.severity === 'CRITICAL' ? 'critical' : a.severity === 'WARNING' ? 'warning' : 'info'}>
+                        {a.severity}
+                      </Badge>
+                    </div>
+                    <p className="text-[12px] text-text-secondary">{a.message}</p>
+                    <p className="data-num text-[11px] text-text-hint mt-1.5">
+                      {new Date(a.createdAt).toLocaleString()}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Recent home visits */}
+          {(patient.recentHomeVisits?.length ?? 0) > 0 && (
+            <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #DCECF0' }}>
+              <div className="flex items-center gap-2 px-6 py-4" style={{ borderBottom: '1px solid #E8F4F8' }}>
+                <Home size={14} style={{ color: '#006D77' }} />
+                <h3 className="text-[13px] font-semibold text-text-primary tracking-tight">
+                  Recent Home Visits
+                </h3>
+              </div>
+              <div className="px-6 py-4 space-y-3">
+                {patient.recentHomeVisits!.map((v) => (
+                  <div key={v.id} className="rounded-lg p-3" style={{ background: '#EDF6F9', border: '1px solid #DCECF0' }}>
+                    <div className="flex items-center justify-between gap-2 mb-1.5">
+                      <p className="data-num text-[12px] font-semibold text-text-primary">
+                        {new Date(v.visitDate).toLocaleString()}
+                      </p>
+                      {v.adherenceStatus && (
+                        <Badge variant={v.adherenceStatus === 'GOOD' ? 'low' : v.adherenceStatus === 'POOR' ? 'critical' : 'moderate'}>
+                          {v.adherenceStatus.replace(/_/g, ' ').toLowerCase()}
+                        </Badge>
+                      )}
+                    </div>
+                    {v.chwName && (
+                      <p className="text-[11px] text-text-hint mb-1">CHW: {v.chwName}</p>
+                    )}
+                    {(v.pillCountRecorded != null || v.pillCountExpected != null) && (
+                      <p className="text-[12px] text-text-secondary">
+                        Pill count: <span className="data-num">{v.pillCountRecorded ?? '—'}</span> recorded
+                        {' / '}<span className="data-num">{v.pillCountExpected ?? '—'}</span> expected
+                        {v.pillCountDiscrepancy && (
+                          <span className="ml-1.5 font-semibold" style={{ color: '#C0392B' }}>(discrepancy)</span>
+                        )}
+                      </p>
+                    )}
+                    {v.symptomsReported && (
+                      <p className="text-[12px] text-text-secondary mt-1">Symptoms: {v.symptomsReported}</p>
+                    )}
+                    {v.sideEffectsReported && (
+                      <p className="text-[12px] text-text-secondary mt-1">Side effects: {v.sideEffectsReported}</p>
+                    )}
+                    {v.psychosocialNotes && (
+                      <p className="text-[12px] text-text-secondary mt-1">Notes: {v.psychosocialNotes}</p>
+                    )}
+                    {v.nextVisitDate && (
+                      <p className="data-num text-[11px] text-text-hint mt-1.5">
+                        Next visit: {new Date(v.nextVisitDate).toLocaleDateString()}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
 
           {/* Treatment plans card */}
