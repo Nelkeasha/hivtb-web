@@ -5,7 +5,7 @@ import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import { api } from '@/lib/api';
-import { Search, UserX, UserCheck, Key, UserPlus } from 'lucide-react';
+import { Search, UserX, UserCheck, Key, UserPlus, LockOpen } from 'lucide-react';
 
 interface User {
   id: string;
@@ -14,6 +14,7 @@ interface User {
   phoneNumber?: string;
   role: string;
   isActive: boolean;
+  accountLocked?: boolean;
   createdAt: string;
 }
 
@@ -69,6 +70,16 @@ export default function UsersPage() {
     try {
       await api.put(`/api/admin/users/${userId}/toggle-status`, {});
       setUsers((prev) => prev.map((u) => u.id === userId ? { ...u, isActive: !u.isActive } : u));
+    } finally {
+      setActing(null);
+    }
+  }
+
+  async function unlock(userId: string) {
+    setActing(userId);
+    try {
+      await api.put(`/api/admin/users/${userId}/unlock`, {});
+      setUsers((prev) => prev.map((u) => u.id === userId ? { ...u, accountLocked: false } : u));
     } finally {
       setActing(null);
     }
@@ -220,12 +231,28 @@ export default function UsersPage() {
                       <td className="py-3 pr-6 text-[12px] text-text-secondary">{u.email}</td>
                       <td className="py-3 pr-6">{roleBadge(u.role)}</td>
                       <td className="py-3 pr-6">
-                        <Badge variant={u.isActive ? 'low' : 'default'}>
-                          {u.isActive ? 'Active' : 'Inactive'}
-                        </Badge>
+                        <div className="flex items-center gap-1.5">
+                          <Badge variant={u.isActive ? 'low' : 'default'}>
+                            {u.isActive ? 'Active' : 'Inactive'}
+                          </Badge>
+                          {u.accountLocked && <Badge variant="critical">Locked</Badge>}
+                        </div>
                       </td>
                       <td className="py-3">
                         <div className="flex items-center gap-1">
+                          {u.accountLocked && (
+                            <button
+                              onClick={() => unlock(u.id)}
+                              disabled={acting === u.id}
+                              title="Unlock account"
+                              className="p-1.5 rounded transition-colors"
+                              style={{ color: '#27AE60' }}
+                              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#F0FDF4'; }}
+                              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+                            >
+                              <LockOpen size={14} />
+                            </button>
+                          )}
                           <button
                             onClick={() => toggle(u.id)}
                             disabled={acting === u.id}
