@@ -1,8 +1,17 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Button from '@/components/ui/Button';
+import { api } from '@/lib/api';
 import { Save, Bell, Shield, Activity, Database, CheckCircle2 } from 'lucide-react';
+
+interface SystemSettingsDto {
+  missedDoseThreshold: number;
+  lowStockDays: number;
+  confirmWindowMinutes: number;
+  highRiskThreshold: number;
+  criticalRiskThreshold: number;
+}
 
 // ── Slider ────────────────────────────────────────────────────────────────────
 function Slider({ label, value, min, max, step = 1, onChange, unit = '', hint }: {
@@ -102,11 +111,47 @@ export default function SettingsPage() {
     highRiskScore: 70,
     criticalRiskScore: 85,
   });
+  const [lowStockDays, setLowStockDays] = useState(14); // not shown in this UI, preserved on save
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState('');
 
-  function save() {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
+  useEffect(() => {
+    api.get<SystemSettingsDto>('/api/admin/settings')
+      .then((r) => {
+        const d = r.data;
+        setThresholds({
+          missedDoseAlert: d.missedDoseThreshold,
+          confirmationWindowMinutes: d.confirmWindowMinutes,
+          highRiskScore: d.highRiskThreshold,
+          criticalRiskScore: d.criticalRiskThreshold,
+        });
+        setLowStockDays(d.lowStockDays);
+      })
+      .catch(() => setError('Failed to load current settings. Showing defaults.'))
+      .finally(() => setLoading(false));
+  }, []);
+
+  async function save() {
+    setSaving(true);
+    setError('');
+    try {
+      await api.put('/api/admin/settings', {
+        missedDoseThreshold: thresholds.missedDoseAlert,
+        lowStockDays,
+        confirmWindowMinutes: thresholds.confirmationWindowMinutes,
+        highRiskThreshold: thresholds.highRiskScore,
+        criticalRiskThreshold: thresholds.criticalRiskScore,
+      });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
+      setError(msg ?? 'Failed to save settings. Try again.');
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -123,8 +168,8 @@ export default function SettingsPage() {
           </h1>
         </div>
         <div className="flex items-center gap-3">
-          <Button icon={Save} onClick={save}>
-            {saved ? 'Saved!' : 'Save Settings'}
+          <Button icon={Save} onClick={save} disabled={loading || saving}>
+            {saving ? 'Saving…' : saved ? 'Saved!' : 'Save Settings'}
           </Button>
           {saved && (
             <div className="flex items-center gap-1.5 text-[13px] font-medium" style={{ color: '#27AE60' }}>
@@ -135,8 +180,17 @@ export default function SettingsPage() {
         </div>
       </div>
 
+      {error && (
+        <div
+          className="flex items-start gap-2.5 rounded-lg p-3 mb-5"
+          style={{ background: 'rgba(194,40,40,0.04)', border: '1px solid #FECACA' }}
+        >
+          <p className="text-[12px] font-medium" style={{ color: '#C0392B' }}>{error}</p>
+        </div>
+      )}
+
       {/* ── Two-column layout ────────────────────────────── */}
-      <div className="flex gap-8 items-start">
+      <div className="flex gap-8 items-start" style={{ opacity: loading ? 0.5 : 1, pointerEvents: loading ? 'none' : 'auto' }}>
 
         {/* Left: sticky settings nav */}
         <nav className="w-48 shrink-0 sticky top-8">

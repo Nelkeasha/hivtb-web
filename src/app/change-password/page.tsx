@@ -21,6 +21,8 @@ export default function ChangePasswordPage() {
     e.preventDefault();
     if (next !== confirm) { setError('New passwords do not match.'); return; }
     if (next.length < 8)  { setError('Password must be at least 8 characters.'); return; }
+    if (!/[A-Z]/.test(next)) { setError('Password must contain at least one uppercase letter.'); return; }
+    if (!/[0-9]/.test(next)) { setError('Password must contain at least one digit.'); return; }
     setLoading(true); setError('');
     try {
       await api.post('/api/auth/change-password', {

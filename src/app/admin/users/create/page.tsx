@@ -111,6 +111,11 @@ export default function CreateUserPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    const phoneDigits = phone.replace(/\s/g, '');
+    if (!/^\+?[0-9]{10,13}$/.test(phoneDigits)) {
+      setError('Phone number must be 10–13 digits (e.g. +250 7XX XXX XXX).');
+      return;
+    }
     setLoading(true); setError('');
     const base = { fullName, email, phoneNumber: phone, facilityId };
     const body =

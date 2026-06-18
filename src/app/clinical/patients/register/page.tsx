@@ -17,11 +17,11 @@ type DiagnosisType = 'HIV' | 'TB' | 'HIV_TB_COINFECTION';
 
 function FormField({
   label, value, onChange, type = 'text', required = true,
-  placeholder = '', hint, span,
+  placeholder = '', hint, span, max, min,
 }: {
   label: string; value: string; onChange: (v: string) => void;
   type?: string; required?: boolean; placeholder?: string;
-  hint?: string; span?: boolean;
+  hint?: string; span?: boolean; max?: string; min?: string;
 }) {
   const [focused, setFocused] = useState(false);
   return (
@@ -31,6 +31,7 @@ function FormField({
       </label>
       <input
         type={type} value={value} required={required} placeholder={placeholder}
+        max={max} min={min}
         onChange={(e) => onChange(e.target.value)}
         className="w-full px-3 py-2.5 text-[13px] rounded-lg bg-white outline-none placeholder:text-text-hint"
         style={{
@@ -136,6 +137,7 @@ export default function RegisterPatientPage() {
 
   const needsArt = diagnosis === 'HIV' || diagnosis === 'HIV_TB_COINFECTION';
   const needsTb  = diagnosis === 'TB'  || diagnosis === 'HIV_TB_COINFECTION';
+  const today = new Date().toISOString().split('T')[0];
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -275,7 +277,7 @@ export default function RegisterPatientPage() {
               />
               <FormField
                 label="Date of Birth" value={dob} onChange={setDob}
-                type="date"
+                type="date" max={today} min="1900-01-01"
               />
               <FormSelect label="Sex" value={sex} onChange={setSex}>
                 <option value="">Select…</option>
@@ -348,7 +350,7 @@ export default function RegisterPatientPage() {
                 <FormField
                   label="ART Start Date"
                   value={artStart} onChange={setArtStart}
-                  type="date" required={false}
+                  type="date" required={false} max={today}
                   hint="Date antiretroviral therapy was initiated."
                 />
               )}
@@ -358,7 +360,7 @@ export default function RegisterPatientPage() {
                 <FormField
                   label="TB Treatment Start Date"
                   value={tbStart} onChange={setTbStart}
-                  type="date" required={false}
+                  type="date" required={false} max={today}
                   hint="Date TB treatment regimen was initiated."
                 />
               )}

@@ -72,7 +72,7 @@ export default function PatientsPage() {
         className="inline-flex gap-1 p-1 rounded-lg mb-4"
         style={{ background: '#F5FAFB', border: '1px solid #DCECF0' }}
       >
-        <TabBtn active={tab === 'active'} onClick={() => setTab('active')}>
+        <TabBtn active={tab === 'active'} onClick={() => { setTab('active'); setSearch(''); }}>
           Active Patients
           {patients.length > 0 && (
             <span className="data-num ml-1.5 text-[10px]" style={{ opacity: 0.6 }}>
@@ -80,7 +80,7 @@ export default function PatientsPage() {
             </span>
           )}
         </TabBtn>
-        <TabBtn active={tab === 'provisional'} onClick={() => setTab('provisional')}>
+        <TabBtn active={tab === 'provisional'} onClick={() => { setTab('provisional'); setSearch(''); }}>
           Awaiting Confirmation
           {provisional.length > 0 && (
             <span

@@ -33,7 +33,8 @@ interface AlertItem {
 
 interface HomeVisitItem {
   id: string; chwName?: string; visitDate: string;
-  adherenceStatus?: string; pillCountRecorded?: number; pillCountExpected?: number;
+  visitStatus?: string; adherenceStatus?: string;
+  pillCountRecorded?: number; pillCountExpected?: number;
   pillCountDiscrepancy?: boolean; symptomsReported?: string;
   sideEffectsReported?: string; psychosocialNotes?: string; nextVisitDate?: string;
 }
@@ -271,11 +272,21 @@ export default function PatientDetailPage() {
                       <p className="data-num text-[12px] font-semibold text-text-primary">
                         {new Date(v.visitDate).toLocaleString()}
                       </p>
-                      {v.adherenceStatus && (
-                        <Badge variant={v.adherenceStatus === 'GOOD' ? 'low' : v.adherenceStatus === 'POOR' ? 'critical' : 'moderate'}>
-                          {v.adherenceStatus.replace(/_/g, ' ').toLowerCase()}
-                        </Badge>
-                      )}
+                      <div className="flex items-center gap-1.5">
+                        {v.visitStatus && (
+                          <span
+                            className="text-[10px] font-bold px-2 py-0.5 rounded"
+                            style={{ background: '#F0FDF4', color: '#27AE60', border: '1px solid #BBF7D0' }}
+                          >
+                            {v.visitStatus}
+                          </span>
+                        )}
+                        {v.adherenceStatus && (
+                          <Badge variant={v.adherenceStatus === 'GOOD' ? 'low' : v.adherenceStatus === 'POOR' ? 'critical' : 'moderate'}>
+                            {v.adherenceStatus.replace(/_/g, ' ').toLowerCase()}
+                          </Badge>
+                        )}
+                      </div>
                     </div>
                     {v.chwName && (
                       <p className="text-[11px] text-text-hint mb-1">CHW: {v.chwName}</p>
