@@ -3,7 +3,10 @@ import { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import StatCard from '@/components/ui/StatCard';
 import Card from '@/components/ui/Card';
+import Pagination from '@/components/ui/Pagination';
+import SortableTh from '@/components/ui/SortableTh';
 import { api } from '@/lib/api';
+import { useTableControls } from '@/lib/useTableControls';
 import { Users, TrendingDown, Activity, AlertCircle } from 'lucide-react';
 import {
   RadarChart, Radar, PolarGrid, PolarAngleAxis,
@@ -45,6 +48,7 @@ export default function AnalyticsPage() {
   const [stats, setStats]   = useState<SupervisorStats | null>(null);
   const [chws, setChws]     = useState<Chw[]>([]);
   const [loading, setLoading] = useState(true);
+  const table = useTableControls(chws);
 
   useEffect(() => {
     Promise.all([
@@ -193,14 +197,11 @@ export default function AnalyticsPage() {
             <table className="w-full">
               <thead>
                 <tr style={{ borderBottom: '1px solid #DCECF0' }}>
-                  {['CHW', 'Patients', 'Visits / 30d', 'Missed / 7d', 'High Risk'].map((h) => (
-                    <th
-                      key={h}
-                      className="pb-3 pr-6 text-left text-[11px] font-semibold uppercase tracking-widest text-text-hint"
-                    >
-                      {h}
-                    </th>
-                  ))}
+                  <SortableTh label="CHW" sortKey="fullName" activeSortKey={table.sortKey} sortDir={table.sortDir} onSort={table.toggleSort} />
+                  <SortableTh label="Patients" sortKey="activePatients" activeSortKey={table.sortKey} sortDir={table.sortDir} onSort={table.toggleSort} />
+                  <SortableTh label="Visits / 30d" sortKey="homeVisits30d" activeSortKey={table.sortKey} sortDir={table.sortDir} onSort={table.toggleSort} />
+                  <SortableTh label="Missed / 7d" sortKey="missedDoses7d" activeSortKey={table.sortKey} sortDir={table.sortDir} onSort={table.toggleSort} />
+                  <SortableTh label="High Risk" sortKey="highRiskPatients" activeSortKey={table.sortKey} sortDir={table.sortDir} onSort={table.toggleSort} className="pr-0" />
                 </tr>
               </thead>
               <tbody>
@@ -211,7 +212,7 @@ export default function AnalyticsPage() {
                     </td>
                   </tr>
                 )}
-                {chws.map((c) => (
+                {table.paged.map((c) => (
                   <tr
                     key={c.id}
                     className="table-row-hover transition-colors"
@@ -258,6 +259,14 @@ export default function AnalyticsPage() {
               </tbody>
             </table>
           </div>
+          <Pagination
+            className="-mx-6 -mb-6 mt-4"
+            page={table.page}
+            totalPages={table.totalPages}
+            totalItems={table.totalItems}
+            pageSize={table.pageSize}
+            onPageChange={table.setPage}
+          />
         </Card>
 
       </div>

@@ -3,9 +3,14 @@ import { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
-import { api } from '@/lib/api';
+import Pagination from '@/components/ui/Pagination';
+import SortSelect from '@/components/ui/SortSelect';
+import { api, extractErrorMessage } from '@/lib/api';
 import { timeAgo } from '@/lib/utils';
+import { useTableControls } from '@/lib/useTableControls';
 import { CheckCircle2, Bell, AlertTriangle, Info } from 'lucide-react';
+
+const SEVERITY_RANK: Record<string, number> = { CRITICAL: 2, WARNING: 1, INFO: 0 };
 
 interface Alert {
   id: string;
@@ -55,6 +60,7 @@ export default function AlertsPage() {
   const [filter, setFilter]   = useState<Filter>('ALL');
   const [loading, setLoading] = useState(true);
   const [resolving, setResolving] = useState<string | null>(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     api.get('/api/alerts/clinical')
@@ -65,12 +71,26 @@ export default function AlertsPage() {
 
   const active   = alerts.filter((a) => !a.isResolved);
   const filtered = active.filter((a) => filter === 'ALL' || a.severity === filter);
+  const table = useTableControls(filtered, {
+    pageSize: 8,
+    getSortValue: (a, key) => (key === 'severity' ? SEVERITY_RANK[a.severity] ?? -1 : (a as unknown as Record<string, string>)[key]),
+  });
 
   async function resolve(id: string) {
+    const confirmed = window.confirm(
+      'Resolve this alert?\n\nThis dismisses the notification only — it does not change the ' +
+      'patient\'s risk score or adherence record. Only resolve after you\'ve actually taken the ' +
+      'recommended action (e.g. home visit, phone call).'
+    );
+    if (!confirmed) return;
+
     setResolving(id);
+    setError('');
     try {
       await api.put(`/api/alerts/${id}/resolve`, {});
       setAlerts((prev) => prev.map((a) => a.id === id ? { ...a, isResolved: true } : a));
+    } catch (err: unknown) {
+            setError(extractErrorMessage(err, 'Failed to resolve alert. Try again.'));
     } finally {
       setResolving(null);
     }
@@ -105,6 +125,15 @@ export default function AlertsPage() {
           )}
         </div>
 
+        {error && (
+          <div
+            className="flex items-start gap-2.5 rounded-lg p-3"
+            style={{ background: 'rgba(194,40,40,0.04)', border: '1px solid #FECACA' }}
+          >
+            <p className="text-[12px] font-medium" style={{ color: '#C0392B' }}>{error}</p>
+          </div>
+        )}
+
         {/* ── Summary chips ────────────────────────────────── */}
         {!loading && (
           <div className="flex gap-2 flex-wrap">
@@ -133,7 +162,7 @@ export default function AlertsPage() {
 
           {/* Card header + filter pills */}
           <div
-            className="flex items-center justify-between px-6 py-4"
+            className="flex items-center justify-between px-6 py-4 flex-wrap gap-3"
             style={{ borderBottom: '1px solid #E8F4F8' }}
           >
             <div>
@@ -144,21 +173,33 @@ export default function AlertsPage() {
                 {filtered.length} shown
               </p>
             </div>
-            <div className="flex gap-1">
-              {(['ALL', 'CRITICAL', 'WARNING', 'INFO'] as Filter[]).map((f) => (
-                <button
-                  key={f}
-                  onClick={() => setFilter(f)}
-                  className="text-[11px] px-2.5 py-1 rounded font-semibold transition-colors"
-                  style={{
-                    background: filter === f ? '#006D77' : '#EDF6F9',
-                    color:      filter === f ? '#fff'    : '#5A6474',
-                    border:     `1px solid ${filter === f ? '#006D77' : '#DCECF0'}`,
-                  }}
-                >
-                  {f === 'ALL' ? 'All' : f.charAt(0) + f.slice(1).toLowerCase()}
-                </button>
-              ))}
+            <div className="flex items-center gap-3 flex-wrap">
+              <div className="flex gap-1">
+                {(['ALL', 'CRITICAL', 'WARNING', 'INFO'] as Filter[]).map((f) => (
+                  <button
+                    key={f}
+                    onClick={() => setFilter(f)}
+                    className="text-[11px] px-2.5 py-1 rounded font-semibold transition-colors"
+                    style={{
+                      background: filter === f ? '#006D77' : '#EDF6F9',
+                      color:      filter === f ? '#fff'    : '#5A6474',
+                      border:     `1px solid ${filter === f ? '#006D77' : '#DCECF0'}`,
+                    }}
+                  >
+                    {f === 'ALL' ? 'All' : f.charAt(0) + f.slice(1).toLowerCase()}
+                  </button>
+                ))}
+              </div>
+              <SortSelect
+                options={[
+                  { key: 'severity', label: 'Severity' },
+                  { key: 'patientName', label: 'Patient' },
+                  { key: 'createdAt', label: 'Date' },
+                ]}
+                sortKey={table.sortKey}
+                sortDir={table.sortDir}
+                onChange={table.toggleSort}
+              />
             </div>
           </div>
 
@@ -176,7 +217,7 @@ export default function AlertsPage() {
               </div>
             ) : (
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
-                {filtered.map((alert) => {
+                {table.paged.map((alert) => {
                   const s = sevStyle(alert.severity);
                   return (
                     <div
@@ -243,6 +284,15 @@ export default function AlertsPage() {
               </div>
             )}
           </div>
+          {!loading && (
+            <Pagination
+              page={table.page}
+              totalPages={table.totalPages}
+              totalItems={table.totalItems}
+              pageSize={table.pageSize}
+              onPageChange={table.setPage}
+            />
+          )}
         </div>
       </div>
     </DashboardLayout>

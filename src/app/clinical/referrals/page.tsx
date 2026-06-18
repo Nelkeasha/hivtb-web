@@ -3,8 +3,11 @@ import { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
-import { api } from '@/lib/api';
+import Pagination from '@/components/ui/Pagination';
+import SortSelect from '@/components/ui/SortSelect';
+import { api, extractErrorMessage } from '@/lib/api';
 import { formatDate, timeAgo } from '@/lib/utils';
+import { useTableControls } from '@/lib/useTableControls';
 import { CheckCircle2, XCircle, Edit3, Send } from 'lucide-react';
 
 interface Referral {
@@ -60,6 +63,7 @@ export default function ReferralsPage() {
   const [tab, setTab]             = useState<Tab>('ALL');
   const [loading, setLoading]     = useState(true);
   const [acting, setActing]       = useState<string | null>(null);
+  const [error, setError]         = useState('');
 
   useEffect(() => {
     api.get('/api/clinical/referrals')
@@ -69,6 +73,7 @@ export default function ReferralsPage() {
   }, []);
 
   const filtered = referrals.filter((r) => tab === 'ALL' || r.status === tab);
+  const table = useTableControls(filtered, { pageSize: 8 });
 
   const counts: Partial<Record<Tab, number>> = {
     ALL:          referrals.length,
@@ -82,6 +87,7 @@ export default function ReferralsPage() {
     const date = new Date();
     date.setDate(date.getDate() + 3);
     setActing(id);
+    setError('');
     try {
       await api.put(`/api/clinical/referrals/${id}/confirm`, {
         facilityAppointmentDate: date.toISOString().split('T')[0],
@@ -89,6 +95,8 @@ export default function ReferralsPage() {
       setReferrals((prev) =>
         prev.map((r) => r.id === id ? { ...r, status: 'CONFIRMED' } : r)
       );
+    } catch (err: unknown) {
+            setError(extractErrorMessage(err, 'Failed to confirm referral. Try again.'));
     } finally {
       setActing(null);
     }
@@ -96,9 +104,10 @@ export default function ReferralsPage() {
 
   async function recordAttendance(id: string, attended: boolean) {
     setActing(id);
+    setError('');
     try {
       await api.put(`/api/clinical/referrals/${id}/attendance`, {
-        attended,
+        status: attended ? 'ATTENDED' : 'NOT_ATTENDED',
         attendanceNotes: attended ? 'Patient attended as scheduled' : 'Patient did not attend',
       });
       setReferrals((prev) =>
@@ -106,6 +115,8 @@ export default function ReferralsPage() {
           r.id === id ? { ...r, status: attended ? 'ATTENDED' : 'NOT_ATTENDED' } : r
         )
       );
+    } catch (err: unknown) {
+            setError(extractErrorMessage(err, 'Failed to record attendance. Try again.'));
     } finally {
       setActing(null);
     }
@@ -134,6 +145,15 @@ export default function ReferralsPage() {
             </div>
           )}
         </div>
+
+        {error && (
+          <div
+            className="flex items-start gap-2.5 rounded-lg p-3"
+            style={{ background: 'rgba(194,40,40,0.04)', border: '1px solid #FECACA' }}
+          >
+            <p className="text-[12px] font-medium" style={{ color: '#C0392B' }}>{error}</p>
+          </div>
+        )}
 
         {/* ── Main card ────────────────────────────────────── */}
         <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #DCECF0' }}>
@@ -170,6 +190,17 @@ export default function ReferralsPage() {
                 );
               })}
             </div>
+            <SortSelect
+              options={[
+                { key: 'patientName', label: 'Patient' },
+                { key: 'urgency', label: 'Urgency' },
+                { key: 'status', label: 'Status' },
+                { key: 'referralDate', label: 'Referral Date' },
+              ]}
+              sortKey={table.sortKey}
+              sortDir={table.sortDir}
+              onChange={table.toggleSort}
+            />
           </div>
 
           {/* Body */}
@@ -186,7 +217,7 @@ export default function ReferralsPage() {
               </div>
             ) : (
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
-                {filtered.map((ref) => {
+                {table.paged.map((ref) => {
                   const s = urgencyStyle(ref.urgency);
                   return (
                     <div
@@ -288,6 +319,15 @@ export default function ReferralsPage() {
               </div>
             )}
           </div>
+          {!loading && (
+            <Pagination
+              page={table.page}
+              totalPages={table.totalPages}
+              totalItems={table.totalItems}
+              pageSize={table.pageSize}
+              onPageChange={table.setPage}
+            />
+          )}
         </div>
       </div>
     </DashboardLayout>

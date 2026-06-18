@@ -41,3 +41,25 @@ api.interceptors.response.use(
     return Promise.reject(err);
   }
 );
+
+/**
+ * The backend's 400 responses carry a `details` map of field → message
+ * (from @Valid bean validation) alongside a generic top-level `message`
+ * (usually just "Validation failed"). Reading `message` alone shows that
+ * generic placeholder instead of the actual reason a request was rejected.
+ */
+export function extractErrorMessage(err: unknown, fallback: string): string {
+  const data = (err as { response?: { data?: unknown } })?.response?.data;
+  if (data && typeof data === 'object') {
+    const details = (data as Record<string, unknown>).details;
+    if (details && typeof details === 'object') {
+      const first = Object.values(details as Record<string, unknown>)[0];
+      if (typeof first === 'string' && first.length > 0) return first;
+    }
+    const message = (data as Record<string, unknown>).message;
+    if (typeof message === 'string' && message.length > 0 && message !== 'Validation failed') {
+      return message;
+    }
+  }
+  return fallback;
+}

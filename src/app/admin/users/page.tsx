@@ -4,7 +4,10 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
+import Pagination from '@/components/ui/Pagination';
+import SortableTh from '@/components/ui/SortableTh';
 import { api } from '@/lib/api';
+import { useTableControls } from '@/lib/useTableControls';
 import { Search, UserX, UserCheck, Key, UserPlus, LockOpen } from 'lucide-react';
 
 interface User {
@@ -64,6 +67,7 @@ export default function UsersPage() {
       u.fullName.toLowerCase().includes(search.toLowerCase()) ||
       u.email.toLowerCase().includes(search.toLowerCase())
     );
+  const table = useTableControls(filtered);
 
   async function toggle(userId: string) {
     setActing(userId);
@@ -194,11 +198,11 @@ export default function UsersPage() {
               <table className="w-full">
                 <thead>
                   <tr style={{ borderBottom: '1px solid #DCECF0' }}>
-                    {['User', 'Email', 'Role', 'Status', 'Actions'].map(h => (
-                      <th key={h} className="pb-3 pr-6 text-left text-[11px] font-semibold uppercase tracking-widest text-text-hint">
-                        {h}
-                      </th>
-                    ))}
+                    <SortableTh label="User" sortKey="fullName" activeSortKey={table.sortKey} sortDir={table.sortDir} onSort={table.toggleSort} />
+                    <SortableTh label="Email" sortKey="email" activeSortKey={table.sortKey} sortDir={table.sortDir} onSort={table.toggleSort} />
+                    <SortableTh label="Role" sortKey="role" activeSortKey={table.sortKey} sortDir={table.sortDir} onSort={table.toggleSort} />
+                    <th className="pb-3 pr-6 text-left text-[11px] font-semibold uppercase tracking-widest text-text-hint">Status</th>
+                    <th className="pb-3 text-left text-[11px] font-semibold uppercase tracking-widest text-text-hint">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -209,7 +213,7 @@ export default function UsersPage() {
                       </td>
                     </tr>
                   )}
-                  {filtered.map((u) => (
+                  {table.paged.map((u) => (
                     <tr
                       key={u.id}
                       className="table-row-hover transition-colors"
@@ -281,6 +285,16 @@ export default function UsersPage() {
                 </tbody>
               </table>
             </div>
+          )}
+          {!loading && (
+            <Pagination
+              className="-mx-6 -mb-6 mt-4"
+              page={table.page}
+              totalPages={table.totalPages}
+              totalItems={table.totalItems}
+              pageSize={table.pageSize}
+              onPageChange={table.setPage}
+            />
           )}
         </Card>
       </div>

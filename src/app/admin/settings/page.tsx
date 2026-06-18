@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Button from '@/components/ui/Button';
-import { api } from '@/lib/api';
+import { api, extractErrorMessage } from '@/lib/api';
 import { Save, Bell, Shield, Activity, Database, CheckCircle2 } from 'lucide-react';
 
 interface SystemSettingsDto {
@@ -147,8 +147,7 @@ export default function SettingsPage() {
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      setError(msg ?? 'Failed to save settings. Try again.');
+            setError(extractErrorMessage(err, 'Failed to save settings. Try again.'));
     } finally {
       setSaving(false);
     }

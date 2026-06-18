@@ -3,9 +3,14 @@ import { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
+import Pagination from '@/components/ui/Pagination';
+import SortSelect from '@/components/ui/SortSelect';
 import { api } from '@/lib/api';
 import { timeAgo } from '@/lib/utils';
+import { useTableControls } from '@/lib/useTableControls';
 import { CheckCircle2, AlertTriangle, Bell } from 'lucide-react';
+
+const SEVERITY_RANK: Record<string, number> = { CRITICAL: 1, HIGH: 0 };
 
 interface Alert {
   id: string;
@@ -60,6 +65,10 @@ export default function SupervisorAlertsPage() {
   const visible = filter === 'ALL'      ? alerts
     : filter === 'CRITICAL' ? alerts.filter((a) => a.severity === 'CRITICAL')
     : alerts.filter((a) => a.severity !== 'CRITICAL');
+  const table = useTableControls(visible, {
+    pageSize: 8,
+    getSortValue: (a, key) => (key === 'severity' ? SEVERITY_RANK[a.severity] ?? -1 : (a as unknown as Record<string, string>)[key]),
+  });
 
   return (
     <DashboardLayout title="Facility Alerts">
@@ -95,7 +104,7 @@ export default function SupervisorAlertsPage() {
 
           {/* Card header with filter pills */}
           <div
-            className="flex items-center justify-between px-6 py-4"
+            className="flex items-center justify-between px-6 py-4 flex-wrap gap-3"
             style={{ borderBottom: '1px solid #E8F4F8' }}
           >
             <div>
@@ -108,24 +117,36 @@ export default function SupervisorAlertsPage() {
             </div>
 
             {alerts.length > 0 && (
-              <div className="flex gap-1">
-                {(['ALL', 'CRITICAL', 'HIGH'] as Filter[]).map((f) => {
-                  const count = f === 'ALL' ? alerts.length : f === 'CRITICAL' ? criticalCount : highCount;
-                  return (
-                    <button
-                      key={f}
-                      onClick={() => setFilter(f)}
-                      className="text-[11px] px-2.5 py-1 rounded font-semibold transition-colors"
-                      style={{
-                        background: filter === f ? '#006D77' : '#EDF6F9',
-                        color: filter === f ? '#fff' : '#5A6474',
-                        border: `1px solid ${filter === f ? '#006D77' : '#DCECF0'}`,
-                      }}
-                    >
-                      {f === 'ALL' ? 'All' : f.charAt(0) + f.slice(1).toLowerCase()} {count > 0 && `(${count})`}
-                    </button>
-                  );
-                })}
+              <div className="flex items-center gap-3 flex-wrap">
+                <div className="flex gap-1">
+                  {(['ALL', 'CRITICAL', 'HIGH'] as Filter[]).map((f) => {
+                    const count = f === 'ALL' ? alerts.length : f === 'CRITICAL' ? criticalCount : highCount;
+                    return (
+                      <button
+                        key={f}
+                        onClick={() => setFilter(f)}
+                        className="text-[11px] px-2.5 py-1 rounded font-semibold transition-colors"
+                        style={{
+                          background: filter === f ? '#006D77' : '#EDF6F9',
+                          color: filter === f ? '#fff' : '#5A6474',
+                          border: `1px solid ${filter === f ? '#006D77' : '#DCECF0'}`,
+                        }}
+                      >
+                        {f === 'ALL' ? 'All' : f.charAt(0) + f.slice(1).toLowerCase()} {count > 0 && `(${count})`}
+                      </button>
+                    );
+                  })}
+                </div>
+                <SortSelect
+                  options={[
+                    { key: 'severity', label: 'Severity' },
+                    { key: 'patientName', label: 'Patient' },
+                    { key: 'createdAt', label: 'Date' },
+                  ]}
+                  sortKey={table.sortKey}
+                  sortDir={table.sortDir}
+                  onChange={table.toggleSort}
+                />
               </div>
             )}
           </div>
@@ -144,7 +165,7 @@ export default function SupervisorAlertsPage() {
               </div>
             ) : (
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
-                {visible.map((alert) => {
+                {table.paged.map((alert) => {
                   const s = sevStyle(alert.severity);
                   return (
                     <div
@@ -216,6 +237,15 @@ export default function SupervisorAlertsPage() {
               </div>
             )}
           </div>
+          {!loading && alerts.length > 0 && (
+            <Pagination
+              page={table.page}
+              totalPages={table.totalPages}
+              totalItems={table.totalItems}
+              pageSize={table.pageSize}
+              onPageChange={table.setPage}
+            />
+          )}
         </div>
       </div>
     </DashboardLayout>

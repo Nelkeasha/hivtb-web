@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Button from '@/components/ui/Button';
-import { api } from '@/lib/api';
+import { api, extractErrorMessage } from '@/lib/api';
 import {
   ArrowLeft, UserPlus, CheckCircle2, AlertCircle,
   User, MapPin, Stethoscope, Phone,
@@ -165,8 +165,7 @@ export default function RegisterPatientPage() {
       const r = await api.post('/api/v1/patients/register', body);
       setDone({ name: fullName, code: r.data.patientCode ?? r.data.id });
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      setError(msg ?? 'Registration failed. Check all fields and try again.');
+            setError(extractErrorMessage(err, 'Registration failed. Check all fields and try again.'));
     } finally {
       setLoading(false);
     }

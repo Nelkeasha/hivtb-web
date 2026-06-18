@@ -2,8 +2,11 @@
 import { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Badge from '@/components/ui/Badge';
+import Pagination from '@/components/ui/Pagination';
+import SortableTh from '@/components/ui/SortableTh';
 import { api } from '@/lib/api';
 import { timeAgo } from '@/lib/utils';
+import { useTableControls } from '@/lib/useTableControls';
 import { Search, ShieldCheck } from 'lucide-react';
 
 interface AuditLog {
@@ -61,6 +64,7 @@ export default function AuditLogPage() {
     l.userEmail.toLowerCase().includes(search.toLowerCase()) ||
     l.action.toLowerCase().includes(search.toLowerCase())
   );
+  const table = useTableControls(filtered, { pageSize: 15 });
 
   return (
     <DashboardLayout title="Audit Log">
@@ -160,18 +164,15 @@ export default function AuditLogPage() {
                 <table className="w-full">
                   <thead>
                     <tr style={{ borderBottom: '1px solid #DCECF0' }}>
-                      {['Action', 'User', 'Target', 'Details', 'When'].map((h) => (
-                        <th
-                          key={h}
-                          className="pb-3 pr-6 text-left text-[11px] font-semibold uppercase tracking-widest text-text-hint"
-                        >
-                          {h}
-                        </th>
-                      ))}
+                      <SortableTh label="Action" sortKey="action" activeSortKey={table.sortKey} sortDir={table.sortDir} onSort={table.toggleSort} />
+                      <SortableTh label="User" sortKey="userEmail" activeSortKey={table.sortKey} sortDir={table.sortDir} onSort={table.toggleSort} />
+                      <SortableTh label="Target" sortKey="targetTable" activeSortKey={table.sortKey} sortDir={table.sortDir} onSort={table.toggleSort} />
+                      <th className="pb-3 pr-6 text-left text-[11px] font-semibold uppercase tracking-widest text-text-hint">Details</th>
+                      <SortableTh label="When" sortKey="timestamp" activeSortKey={table.sortKey} sortDir={table.sortDir} onSort={table.toggleSort} />
                     </tr>
                   </thead>
                   <tbody>
-                    {filtered.map((log) => (
+                    {table.paged.map((log) => (
                       <tr
                         key={log.id}
                         className="table-row-hover transition-colors"
@@ -199,6 +200,15 @@ export default function AuditLogPage() {
               </div>
             )}
           </div>
+          {!loading && filtered.length > 0 && (
+            <Pagination
+              page={table.page}
+              totalPages={table.totalPages}
+              totalItems={table.totalItems}
+              pageSize={table.pageSize}
+              onPageChange={table.setPage}
+            />
+          )}
         </div>
 
       </div>

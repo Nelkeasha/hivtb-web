@@ -2,8 +2,11 @@
 import { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Badge from '@/components/ui/Badge';
+import Pagination from '@/components/ui/Pagination';
+import SortSelect from '@/components/ui/SortSelect';
 import { api } from '@/lib/api';
 import { formatDate, timeAgo } from '@/lib/utils';
+import { useTableControls } from '@/lib/useTableControls';
 import { AlertTriangle, Clock, UserX, TrendingDown } from 'lucide-react';
 
 interface TracingTask {
@@ -78,6 +81,7 @@ export default function LtfuPage() {
   };
 
   const filtered = tab === 'ALL' ? tasks : tasks.filter((t) => t.status === tab);
+  const table = useTableControls(filtered, { pageSize: 8 });
 
   return (
     <DashboardLayout title="LTFU Tracing Cases">
@@ -135,7 +139,7 @@ export default function LtfuPage() {
 
           {/* Header + tab filter */}
           <div
-            className="flex items-center justify-between px-6 py-4"
+            className="flex items-center justify-between px-6 py-4 flex-wrap gap-3"
             style={{ borderBottom: '1px solid #E8F4F8' }}
           >
             <div>
@@ -146,24 +150,37 @@ export default function LtfuPage() {
                 {filtered.length} shown
               </p>
             </div>
-            <div className="flex gap-1">
-              {TABS.map(({ key, label }) => {
-                const count = key === 'ALL' ? tasks.length : counts[key as keyof typeof counts] ?? 0;
-                return (
-                  <button
-                    key={key}
-                    onClick={() => setTab(key)}
-                    className="text-[11px] px-2.5 py-1 rounded font-semibold transition-colors"
-                    style={{
-                      background: tab === key ? '#006D77' : '#EDF6F9',
-                      color:      tab === key ? '#fff'    : '#5A6474',
-                      border:     `1px solid ${tab === key ? '#006D77' : '#DCECF0'}`,
-                    }}
-                  >
-                    {label}{count > 0 && ` (${count})`}
-                  </button>
-                );
-              })}
+            <div className="flex items-center gap-3 flex-wrap">
+              <div className="flex gap-1">
+                {TABS.map(({ key, label }) => {
+                  const count = key === 'ALL' ? tasks.length : counts[key as keyof typeof counts] ?? 0;
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => setTab(key)}
+                      className="text-[11px] px-2.5 py-1 rounded font-semibold transition-colors"
+                      style={{
+                        background: tab === key ? '#006D77' : '#EDF6F9',
+                        color:      tab === key ? '#fff'    : '#5A6474',
+                        border:     `1px solid ${tab === key ? '#006D77' : '#DCECF0'}`,
+                      }}
+                    >
+                      {label}{count > 0 && ` (${count})`}
+                    </button>
+                  );
+                })}
+              </div>
+              <SortSelect
+                options={[
+                  { key: 'patientName', label: 'Patient' },
+                  { key: 'daysSinceMissed', label: 'Days Missed' },
+                  { key: 'chwName', label: 'CHW' },
+                  { key: 'createdAt', label: 'Date' },
+                ]}
+                sortKey={table.sortKey}
+                sortDir={table.sortDir}
+                onChange={table.toggleSort}
+              />
             </div>
           </div>
 
@@ -179,7 +196,7 @@ export default function LtfuPage() {
               </div>
             ) : (
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
-                {filtered.map((task) => {
+                {table.paged.map((task) => {
                   const s = caseStyle(task.status);
                   return (
                     <div
@@ -262,6 +279,15 @@ export default function LtfuPage() {
               </div>
             )}
           </div>
+          {!loading && (
+            <Pagination
+              page={table.page}
+              totalPages={table.totalPages}
+              totalItems={table.totalItems}
+              pageSize={table.pageSize}
+              onPageChange={table.setPage}
+            />
+          )}
         </div>
       </div>
     </DashboardLayout>

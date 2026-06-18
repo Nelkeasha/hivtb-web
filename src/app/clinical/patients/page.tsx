@@ -5,9 +5,15 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import Card from '@/components/ui/Card';
 import Badge, { RiskBadge } from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
+import Pagination from '@/components/ui/Pagination';
+import SortableTh from '@/components/ui/SortableTh';
+import SortSelect from '@/components/ui/SortSelect';
 import { api } from '@/lib/api';
 import { riskDot } from '@/lib/utils';
+import { useTableControls } from '@/lib/useTableControls';
 import { Search, Plus, AlertCircle } from 'lucide-react';
+
+const RISK_RANK: Record<string, number> = { CRITICAL: 3, HIGH: 2, MODERATE: 1, LOW: 0 };
 
 interface Patient {
   id: string; fullName: string; patientCode: string;
@@ -49,6 +55,11 @@ export default function PatientsPage() {
     p.fullName.toLowerCase().includes(search.toLowerCase()) ||
     (p.referralId ?? '').toLowerCase().includes(search.toLowerCase())
   );
+
+  const activeTable = useTableControls(filtered, {
+    getSortValue: (p, key) => (key === 'riskLevel' ? RISK_RANK[p.riskLevel] ?? -1 : (p as unknown as Record<string, string | number>)[key]),
+  });
+  const provTable = useTableControls(filteredProv);
 
   return (
     <DashboardLayout title="Patients">
@@ -138,11 +149,16 @@ export default function PatientsPage() {
               <table className="w-full">
                 <thead>
                   <tr style={{ borderBottom: '1px solid #DCECF0' }}>
-                    {['Patient', 'Code', 'Diagnosis', 'Risk', 'Score', 'CHW', 'Village', 'Recommended Action'].map((h) => (
-                      <th key={h} className="pb-3 pr-4 text-left text-[11px] font-semibold uppercase tracking-widest text-text-hint whitespace-nowrap">
-                        {h}
-                      </th>
-                    ))}
+                    <SortableTh label="Patient" sortKey="fullName" activeSortKey={activeTable.sortKey} sortDir={activeTable.sortDir} onSort={activeTable.toggleSort} className="whitespace-nowrap" />
+                    <SortableTh label="Code" sortKey="patientCode" activeSortKey={activeTable.sortKey} sortDir={activeTable.sortDir} onSort={activeTable.toggleSort} className="whitespace-nowrap" />
+                    <SortableTh label="Diagnosis" sortKey="diagnosisType" activeSortKey={activeTable.sortKey} sortDir={activeTable.sortDir} onSort={activeTable.toggleSort} className="whitespace-nowrap" />
+                    <SortableTh label="Risk" sortKey="riskLevel" activeSortKey={activeTable.sortKey} sortDir={activeTable.sortDir} onSort={activeTable.toggleSort} className="whitespace-nowrap" />
+                    <SortableTh label="Score" sortKey="riskScore" activeSortKey={activeTable.sortKey} sortDir={activeTable.sortDir} onSort={activeTable.toggleSort} className="whitespace-nowrap" />
+                    <SortableTh label="CHW" sortKey="chwName" activeSortKey={activeTable.sortKey} sortDir={activeTable.sortDir} onSort={activeTable.toggleSort} className="whitespace-nowrap" />
+                    <SortableTh label="Village" sortKey="village" activeSortKey={activeTable.sortKey} sortDir={activeTable.sortDir} onSort={activeTable.toggleSort} className="whitespace-nowrap" />
+                    <th className="pb-3 text-left text-[11px] font-semibold uppercase tracking-widest text-text-hint whitespace-nowrap">
+                      Recommended Action
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -153,7 +169,7 @@ export default function PatientsPage() {
                       </td>
                     </tr>
                   )}
-                  {filtered.map((p) => (
+                  {activeTable.paged.map((p) => (
                     <tr
                       key={p.id}
                       onClick={() => router.push(`/clinical/patients/${p.id}`)}
@@ -193,6 +209,16 @@ export default function PatientsPage() {
               </table>
             </div>
           )}
+          {!loading && (
+            <Pagination
+              className="-mx-6 -mb-6 mt-4"
+              page={activeTable.page}
+              totalPages={activeTable.totalPages}
+              totalItems={activeTable.totalItems}
+              pageSize={activeTable.pageSize}
+              onPageChange={activeTable.setPage}
+            />
+          )}
         </Card>
       )}
 
@@ -210,20 +236,32 @@ export default function PatientsPage() {
           )}
           {loading ? <Spinner /> : (
             <>
-              <div className="relative mb-5">
-                <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-text-hint pointer-events-none" />
-                <input
-                  className="pl-8 pr-3 py-1.5 text-[12px] rounded-lg bg-white outline-none w-52"
-                  style={{ border: '1px solid #DCECF0' }}
-                  placeholder="Search name or referral ID…"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  onFocus={e => { (e.currentTarget as HTMLInputElement).style.borderColor = '#006D77'; }}
-                  onBlur={e  => { (e.currentTarget as HTMLInputElement).style.borderColor = '#DCECF0'; }}
+              <div className="flex items-center justify-between gap-3 mb-5 flex-wrap">
+                <div className="relative">
+                  <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-text-hint pointer-events-none" />
+                  <input
+                    className="pl-8 pr-3 py-1.5 text-[12px] rounded-lg bg-white outline-none w-52"
+                    style={{ border: '1px solid #DCECF0' }}
+                    placeholder="Search name or referral ID…"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    onFocus={e => { (e.currentTarget as HTMLInputElement).style.borderColor = '#006D77'; }}
+                    onBlur={e  => { (e.currentTarget as HTMLInputElement).style.borderColor = '#DCECF0'; }}
+                  />
+                </div>
+                <SortSelect
+                  options={[
+                    { key: 'fullName', label: 'Name' },
+                    { key: 'referralId', label: 'Referral ID' },
+                    { key: 'village', label: 'Village' },
+                  ]}
+                  sortKey={provTable.sortKey}
+                  sortDir={provTable.sortDir}
+                  onChange={provTable.toggleSort}
                 />
               </div>
               <div className="space-y-2">
-                {filteredProv.map((p) => (
+                {provTable.paged.map((p) => (
                   <div
                     key={p.id}
                     onClick={() => router.push(`/clinical/patients/${p.id}`)}
@@ -259,6 +297,14 @@ export default function PatientsPage() {
                   </div>
                 ))}
               </div>
+              <Pagination
+                className="-mx-6 -mb-6 mt-4"
+                page={provTable.page}
+                totalPages={provTable.totalPages}
+                totalItems={provTable.totalItems}
+                pageSize={provTable.pageSize}
+                onPageChange={provTable.setPage}
+              />
             </>
           )}
         </Card>

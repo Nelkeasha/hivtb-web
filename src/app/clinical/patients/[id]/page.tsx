@@ -4,7 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Button from '@/components/ui/Button';
 import Badge, { RiskBadge } from '@/components/ui/Badge';
-import { api } from '@/lib/api';
+import { api, extractErrorMessage } from '@/lib/api';
 import {
   ArrowLeft, Plus, X, CheckCircle, Clock,
   MapPin, Stethoscope, Calendar, Pill, AlertCircle, Phone, User,
@@ -444,8 +444,7 @@ function ConfirmProvisionalCard({ patient, onConfirmed }: {
       setDone(true);
       setTimeout(onConfirmed, 1500);
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      setError(msg ?? 'Confirmation failed');
+            setError(extractErrorMessage(err, 'Confirmation failed'));
     } finally { setLoading(false); }
   }
 
@@ -738,8 +737,7 @@ function AddPlanForm({ patientId, onDone, onCancel }: {
       await api.post('/api/treatment-plans', { ...f, patientId });
       onDone();
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      setError(msg ?? 'Failed to create plan');
+            setError(extractErrorMessage(err, 'Failed to create plan'));
     } finally { setLoading(false); }
   }
 
@@ -807,8 +805,7 @@ function AddScheduleForm({ planId, onDone, onCancel }: {
       });
       onDone();
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      setError(msg ?? 'Failed to add schedule');
+            setError(extractErrorMessage(err, 'Failed to add schedule'));
     } finally { setLoading(false); }
   }
 

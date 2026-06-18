@@ -4,7 +4,10 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import StatCard from '@/components/ui/StatCard';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
+import Pagination from '@/components/ui/Pagination';
+import SortableTh from '@/components/ui/SortableTh';
 import { api } from '@/lib/api';
+import { useTableControls } from '@/lib/useTableControls';
 import { Users, UserCheck, Shield, Activity } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -57,6 +60,7 @@ const AXIS_TICK = { fontSize: 11, fill: '#AAB4BC', fontFamily: 'Poppins, system-
 export default function AdminDashboard() {
   const [report, setReport] = useState<AdminReport | null>(null);
   const [loading, setLoading] = useState(true);
+  const facilityTable = useTableControls(report?.facilityBreakdown ?? []);
 
   useEffect(() => {
     api.get('/api/admin/reports/summary')
@@ -174,15 +178,17 @@ export default function AdminDashboard() {
               <table className="w-full">
                 <thead>
                   <tr style={{ borderBottom: '1px solid #DCECF0' }}>
-                    {['Facility', 'District', 'Patients', 'CHWs', 'Adherence', 'High Risk', 'Alerts'].map(h => (
-                      <th key={h} className="pb-3 pr-6 text-left text-[11px] font-semibold uppercase tracking-widest text-text-hint">
-                        {h}
-                      </th>
-                    ))}
+                    <SortableTh label="Facility" sortKey="facilityName" activeSortKey={facilityTable.sortKey} sortDir={facilityTable.sortDir} onSort={facilityTable.toggleSort} />
+                    <SortableTh label="District" sortKey="district" activeSortKey={facilityTable.sortKey} sortDir={facilityTable.sortDir} onSort={facilityTable.toggleSort} />
+                    <SortableTh label="Patients" sortKey="activePatients" activeSortKey={facilityTable.sortKey} sortDir={facilityTable.sortDir} onSort={facilityTable.toggleSort} />
+                    <SortableTh label="CHWs" sortKey="totalChws" activeSortKey={facilityTable.sortKey} sortDir={facilityTable.sortDir} onSort={facilityTable.toggleSort} />
+                    <SortableTh label="Adherence" sortKey="adherenceAvg" activeSortKey={facilityTable.sortKey} sortDir={facilityTable.sortDir} onSort={facilityTable.toggleSort} />
+                    <SortableTh label="High Risk" sortKey="highRiskPatients" activeSortKey={facilityTable.sortKey} sortDir={facilityTable.sortDir} onSort={facilityTable.toggleSort} />
+                    <SortableTh label="Alerts" sortKey="unresolvedAlerts" activeSortKey={facilityTable.sortKey} sortDir={facilityTable.sortDir} onSort={facilityTable.toggleSort} className="pr-0" />
                   </tr>
                 </thead>
                 <tbody>
-                  {report!.facilityBreakdown.map((f, i) => (
+                  {facilityTable.paged.map((f, i) => (
                     <tr key={i} className="table-row-hover" style={{ borderBottom: '1px solid #E8F4F8' }}>
                       <td className="py-3 pr-6 text-[13px] font-semibold text-text-primary">{f.facilityName}</td>
                       <td className="py-3 pr-6 text-[13px] text-text-secondary">{f.district ?? '—'}</td>
@@ -212,6 +218,14 @@ export default function AdminDashboard() {
                 </tbody>
               </table>
             </div>
+            <Pagination
+              className="-mx-6 -mb-6 mt-4"
+              page={facilityTable.page}
+              totalPages={facilityTable.totalPages}
+              totalItems={facilityTable.totalItems}
+              pageSize={facilityTable.pageSize}
+              onPageChange={facilityTable.setPage}
+            />
           </Card>
         )}
       </div>

@@ -2,7 +2,10 @@
 import { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Badge from '@/components/ui/Badge';
+import Pagination from '@/components/ui/Pagination';
+import SortSelect from '@/components/ui/SortSelect';
 import { api } from '@/lib/api';
+import { useTableControls } from '@/lib/useTableControls';
 import { MapPin, Users, Activity, TrendingDown } from 'lucide-react';
 
 interface Chw {
@@ -39,6 +42,7 @@ export default function ChwPage() {
   const active        = chws.filter((c) => c.isActive);
   const totalPatients = chws.reduce((s, c) => s + c.totalPatients, 0);
   const totalVisits   = chws.reduce((s, c) => s + c.homeVisits30d, 0);
+  const table = useTableControls(chws, { pageSize: 9 });
 
   return (
     <DashboardLayout title="CHW Team Performance">
@@ -94,10 +98,35 @@ export default function ChwPage() {
             {chws.length === 0 && (
               <p className="text-center text-[13px] text-text-hint py-10">No CHWs assigned.</p>
             )}
+            {chws.length > 0 && (
+              <div className="flex justify-end">
+                <SortSelect
+                  options={[
+                    { key: 'fullName', label: 'Name' },
+                    { key: 'activePatients', label: 'Active Patients' },
+                    { key: 'missedDoses7d', label: 'Missed Doses (7d)' },
+                    { key: 'highRiskPatients', label: 'High Risk' },
+                    { key: 'homeVisits30d', label: 'Visits (30d)' },
+                  ]}
+                  sortKey={table.sortKey}
+                  sortDir={table.sortDir}
+                  onChange={table.toggleSort}
+                />
+              </div>
+            )}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
-              {chws.map((chw) => (
+              {table.paged.map((chw) => (
                 <ChwCard key={chw.id} chw={chw} />
               ))}
+            </div>
+            <div className="rounded-xl bg-white" style={{ border: '1px solid #DCECF0' }}>
+              <Pagination
+                page={table.page}
+                totalPages={table.totalPages}
+                totalItems={table.totalItems}
+                pageSize={table.pageSize}
+                onPageChange={table.setPage}
+              />
             </div>
           </>
         )}

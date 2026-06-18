@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Button from '@/components/ui/Button';
-import { api } from '@/lib/api';
+import { api, extractErrorMessage } from '@/lib/api';
 import { UserPlus, CheckCircle2, ArrowLeft } from 'lucide-react';
 
 type Role = 'CHW' | 'FACILITY_PROVIDER' | 'SUPERVISOR';
@@ -126,8 +126,7 @@ export default function CreateUserPage() {
       const r = await api.post(ROLE_ENDPOINTS[role], body);
       setDone({ name: fullName, tempPass: r.data.temporaryPassword ?? r.data.tempPassword ?? '(see email)' });
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      setError(msg ?? 'Failed to create user. Check the fields and try again.');
+            setError(extractErrorMessage(err, 'Failed to create user. Check the fields and try again.'));
     } finally {
       setLoading(false);
     }
