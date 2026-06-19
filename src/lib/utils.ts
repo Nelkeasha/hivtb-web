@@ -1,7 +1,25 @@
 import { type ClassValue, clsx } from 'clsx';
+import { api } from '@/lib/api';
 
 export function cn(...inputs: ClassValue[]) {
   return clsx(inputs);
+}
+
+/** Downloads a server-generated report file (PDF/Excel/CSV) by streaming it through the API client as a blob. */
+export async function downloadReport(url: string, filenameFallback: string) {
+  const res = await api.get(url, { responseType: 'blob' });
+  const disposition = res.headers['content-disposition'] as string | undefined;
+  const match = disposition?.match(/filename="?([^"]+)"?/);
+  const filename = match?.[1] ?? filenameFallback;
+
+  const blobUrl = window.URL.createObjectURL(res.data as Blob);
+  const link = document.createElement('a');
+  link.href = blobUrl;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(blobUrl);
 }
 
 export function timeAgo(dateStr: string): string {

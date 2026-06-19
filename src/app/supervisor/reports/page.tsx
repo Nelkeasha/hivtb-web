@@ -3,8 +3,10 @@ import { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import StatCard from '@/components/ui/StatCard';
 import Card from '@/components/ui/Card';
+import Button from '@/components/ui/Button';
 import { api } from '@/lib/api';
-import { Users, Activity, TrendingDown, UserCheck } from 'lucide-react';
+import { downloadReport } from '@/lib/utils';
+import { Users, Activity, TrendingDown, UserCheck, Database } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, Cell,
@@ -42,6 +44,18 @@ const AXIS_TICK = { fontSize: 11, fill: '#AAB4BC' };
 export default function SupervisorReportPage() {
   const [report, setReport] = useState<SupervisorReport | null>(null);
   const [loading, setLoading] = useState(true);
+  const [downloading, setDownloading] = useState(false);
+
+  async function handleDownloadCsv() {
+    setDownloading(true);
+    try {
+      await downloadReport('/api/supervisor/dashboard/reports/summary/csv', 'supervisor-chw-report.csv');
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setDownloading(false);
+    }
+  }
 
   useEffect(() => {
     api.get('/api/supervisor/dashboard/reports/summary')
@@ -102,19 +116,30 @@ export default function SupervisorReportPage() {
               Programme Report
             </h1>
           </div>
-          <div className="text-right">
-            <p
-              className="data-num text-[30px] font-semibold leading-none"
-              style={{
-                color: adherencePct >= 80 ? '#27AE60' :
-                       adherencePct >= 60 ? '#F39C12' : '#C0392B',
-              }}
+          <div className="flex items-center gap-5">
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={Database}
+              loading={downloading}
+              onClick={handleDownloadCsv}
             >
-              {adherencePct}<span className="text-[18px]">%</span>
-            </p>
-            <p className="text-[11px] text-text-hint mt-1 uppercase tracking-wide">
-              Facility adherence
-            </p>
+              Export CSV
+            </Button>
+            <div className="text-right">
+              <p
+                className="data-num text-[30px] font-semibold leading-none"
+                style={{
+                  color: adherencePct >= 80 ? '#27AE60' :
+                         adherencePct >= 60 ? '#F39C12' : '#C0392B',
+                }}
+              >
+                {adherencePct}<span className="text-[18px]">%</span>
+              </p>
+              <p className="text-[11px] text-text-hint mt-1 uppercase tracking-wide">
+                Facility adherence
+              </p>
+            </div>
           </div>
         </div>
 
