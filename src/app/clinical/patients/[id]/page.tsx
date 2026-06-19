@@ -434,7 +434,7 @@ function ConfirmProvisionalCard({ patient, onConfirmed }: {
     e.preventDefault();
     setLoading(true); setError('');
     try {
-      await api.put(`/api/clinical/patients/${patient.id}/confirm`, {
+      await api.put(`/api/v1/patients/${patient.id}/confirm`, {
         diagnosisType: f.diagnosisType,
         nationalPatientId: f.nationalPatientId || undefined,
         artStartDate: f.artStartDate || undefined,
