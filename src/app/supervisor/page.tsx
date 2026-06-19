@@ -82,7 +82,7 @@ export default function SupervisorDashboard() {
       .finally(() => setLoading(false));
   }, []);
 
-  const adherencePct = stats ? Math.round(stats.facilityAdherenceAvg * 100) : 0;
+  const adherencePct = stats ? Math.round(stats.facilityAdherenceAvg) : 0;
 
   return (
     <DashboardLayout>

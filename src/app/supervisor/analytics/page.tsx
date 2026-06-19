@@ -69,7 +69,7 @@ export default function AnalyticsPage() {
     </DashboardLayout>
   );
 
-  const adherencePct = stats ? Math.round(stats.facilityAdherenceAvg * 100) : 0;
+  const adherencePct = stats ? Math.round(stats.facilityAdherenceAvg) : 0;
 
   const chwBarData = chws.slice(0, 8).map((c) => ({
     name: c.fullName.split(' ')[0],

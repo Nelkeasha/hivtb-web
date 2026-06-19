@@ -64,7 +64,7 @@ export default function SupervisorReportPage() {
     </DashboardLayout>
   );
 
-  const adherencePct = Math.round(report.facilityAdherenceAvg * 100);
+  const adherencePct = Math.round(report.facilityAdherenceAvg);
 
   const riskData = [
     { name: 'Low',      value: report.riskLow,      color: '#27AE60' },

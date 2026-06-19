@@ -83,7 +83,7 @@ export default function ClinicalDashboard() {
       .finally(() => setLoading(false));
   }, []);
 
-  const adherencePct = stats ? Math.round(stats.facilityAdherenceAvg * 100) : 0;
+  const adherencePct = stats ? Math.round(stats.facilityAdherenceAvg) : 0;
 
   async function resolveAlert(id: string) {
     await api.put(`/api/alerts/${id}/resolve`, {});

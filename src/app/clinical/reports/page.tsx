@@ -65,7 +65,7 @@ export default function ReportsPage() {
     </DashboardLayout>
   );
 
-  const adherencePct = Math.round(report.facilityAdherenceAvg * 100);
+  const adherencePct = Math.round(report.facilityAdherenceAvg);
 
   const diagnosisData = [
     { name: 'HIV',    value: report.hivOnly,         fill: '#006D77' },

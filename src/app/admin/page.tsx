@@ -77,7 +77,7 @@ export default function AdminDashboard() {
     </DashboardLayout>
   );
 
-  const adherencePct = report ? Math.round(report.systemAdherenceAvg * 100) : 0;
+  const adherencePct = report ? Math.round(report.systemAdherenceAvg) : 0;
 
   const riskData = [
     { name: 'Low',      value: report?.riskLow ?? 0,      color: '#27AE60' },
