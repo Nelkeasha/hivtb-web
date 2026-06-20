@@ -124,6 +124,9 @@ export default function RegisterPatientPage() {
   const [diagnosis, setDiagnosis] = useState<DiagnosisType | ''>('');
   const [artStart, setArtStart]   = useState('');
   const [tbStart, setTbStart]     = useState('');
+
+  // CHW assignment — manual pick, or auto-match by village/sector
+  const [assignmentMode, setAssignmentMode] = useState<'MANUAL' | 'AUTO'>('MANUAL');
   const [assignedChwId, setAssignedChwId] = useState('');
 
   useEffect(() => {
@@ -142,6 +145,10 @@ export default function RegisterPatientPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!diagnosis) { setError('Please select a diagnosis type.'); return; }
+    if (assignmentMode === 'AUTO' && !village.trim() && !sector.trim()) {
+      setError('Auto-assign needs at least a Village or Sector to match against a CHW\'s coverage area.');
+      return;
+    }
     setLoading(true); setError('');
     try {
       const body = {
@@ -160,7 +167,10 @@ export default function RegisterPatientPage() {
         diagnosisType: diagnosis,
         artStartDate:  needsArt && artStart ? artStart : undefined,
         tbTreatmentStartDate: needsTb && tbStart ? tbStart : undefined,
-        assignedChwId,
+        // Omitted entirely in AUTO mode — backend matches a CHW by village/sector
+        // (PatientService#matchChwByLocation) and the assignment starts PENDING
+        // until that CHW accepts it.
+        assignedChwId: assignmentMode === 'MANUAL' ? assignedChwId : undefined,
       };
       const r = await api.post('/api/v1/patients/register', body);
       setDone({ name: fullName, code: r.data.patientCode ?? r.data.id });
@@ -176,7 +186,7 @@ export default function RegisterPatientPage() {
     setFullName(''); setDob(''); setSex(''); setNationalId(''); setPhone('');
     setHasSmartphone(false); setProvince(''); setDistrict(''); setSector('');
     setCell(''); setVillage(''); setHouseholdLocation('');
-    setDiagnosis(''); setArtStart(''); setTbStart('');
+    setDiagnosis(''); setArtStart(''); setTbStart(''); setAssignmentMode('MANUAL');
   }
 
   // ── Success state ──────────────────────────────────────────────────────────
@@ -214,6 +224,11 @@ export default function RegisterPatientPage() {
               <p className="text-[11px] text-text-hint mt-3">
                 A treatment plan and dose schedule can now be assigned.
               </p>
+              {assignmentMode === 'AUTO' && (
+                <p className="text-[12px] mt-2 font-medium" style={{ color: '#E67E22' }}>
+                  CHW matched by location — awaiting their acceptance before the full record is visible to them.
+                </p>
+              )}
               <div className="flex gap-3 mt-7 justify-center">
                 <Button onClick={resetForm} icon={UserPlus}>Register Another</Button>
                 <Button variant="secondary" onClick={() => router.push('/clinical/patients')}>
@@ -383,58 +398,91 @@ export default function RegisterPatientPage() {
 
           {/* ── CHW assignment ────────────────────────────── */}
           <SectionCard title="CHW Assignment" icon={Phone} iconColor="#006D77">
-            <div className="grid grid-cols-2 xl:grid-cols-3 gap-4">
-              <div className="col-span-2 xl:col-span-1">
-                <label className="block text-[11px] font-semibold uppercase tracking-widest text-text-hint mb-1.5">
-                  Assigned CHW <span style={{ color: '#C0392B' }}>*</span>
-                </label>
-                {chws.length === 0 ? (
-                  <div
-                    className="px-3 py-2.5 text-[13px] rounded-lg"
-                    style={{ border: '1px solid #DCECF0', color: '#AAB4BC' }}
-                  >
-                    Loading CHWs…
-                  </div>
-                ) : (
-                  <ChwSelect
-                    chws={chws}
-                    value={assignedChwId}
-                    onChange={setAssignedChwId}
-                  />
-                )}
-                <p className="text-[11px] text-text-hint mt-1.5">
-                  This CHW will conduct home visits and confirm daily doses.
-                </p>
-              </div>
 
-              {/* Selected CHW card */}
-              {assignedChwId && chws.length > 0 && (() => {
-                const chw = chws.find(c => c.id === assignedChwId);
-                if (!chw) return null;
-                return (
-                  <div
-                    className="rounded-lg p-4"
-                    style={{ background: 'rgba(0,95,107,0.04)', border: '1px solid rgba(0,95,107,0.15)' }}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="w-9 h-9 rounded-lg flex items-center justify-center text-[11px] font-bold text-white shrink-0"
-                        style={{ background: '#006D77' }}
-                      >
-                        {chw.fullName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
-                      </div>
-                      <div>
-                        <p className="text-[13px] font-semibold text-text-primary">{chw.fullName}</p>
-                        <p className="data-num text-[11px] text-text-hint mt-0.5">
-                          {chw.employeeCode ?? '—'}
-                          {chw.assignedVillage ? ` · ${chw.assignedVillage}` : ''}
-                        </p>
+            {/* Mode toggle */}
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <AssignmentModeOption
+                active={assignmentMode === 'MANUAL'}
+                onClick={() => setAssignmentMode('MANUAL')}
+                title="Select CHW manually"
+                description="Pick a specific CHW from the list."
+              />
+              <AssignmentModeOption
+                active={assignmentMode === 'AUTO'}
+                onClick={() => setAssignmentMode('AUTO')}
+                title="Auto-assign by location"
+                description="Match a CHW whose coverage area includes this patient's village/sector."
+              />
+            </div>
+
+            {assignmentMode === 'MANUAL' ? (
+              <div className="grid grid-cols-2 xl:grid-cols-3 gap-4">
+                <div className="col-span-2 xl:col-span-1">
+                  <label className="block text-[11px] font-semibold uppercase tracking-widest text-text-hint mb-1.5">
+                    Assigned CHW <span style={{ color: '#C0392B' }}>*</span>
+                  </label>
+                  {chws.length === 0 ? (
+                    <div
+                      className="px-3 py-2.5 text-[13px] rounded-lg"
+                      style={{ border: '1px solid #DCECF0', color: '#AAB4BC' }}
+                    >
+                      Loading CHWs…
+                    </div>
+                  ) : (
+                    <ChwSelect
+                      chws={chws}
+                      value={assignedChwId}
+                      onChange={setAssignedChwId}
+                    />
+                  )}
+                  <p className="text-[11px] text-text-hint mt-1.5">
+                    This CHW will conduct home visits and confirm daily doses.
+                  </p>
+                </div>
+
+                {/* Selected CHW card */}
+                {assignedChwId && chws.length > 0 && (() => {
+                  const chw = chws.find(c => c.id === assignedChwId);
+                  if (!chw) return null;
+                  return (
+                    <div
+                      className="rounded-lg p-4"
+                      style={{ background: 'rgba(0,95,107,0.04)', border: '1px solid rgba(0,95,107,0.15)' }}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="w-9 h-9 rounded-lg flex items-center justify-center text-[11px] font-bold text-white shrink-0"
+                          style={{ background: '#006D77' }}
+                        >
+                          {chw.fullName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
+                        </div>
+                        <div>
+                          <p className="text-[13px] font-semibold text-text-primary">{chw.fullName}</p>
+                          <p className="data-num text-[11px] text-text-hint mt-0.5">
+                            {chw.employeeCode ?? '—'}
+                            {chw.assignedVillage ? ` · ${chw.assignedVillage}` : ''}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })()}
-            </div>
+                  );
+                })()}
+              </div>
+            ) : (
+              <div
+                className="rounded-lg px-4 py-3 flex items-start gap-2.5"
+                style={{ background: 'rgba(230,126,34,0.06)', border: '1px solid rgba(230,126,34,0.25)' }}
+              >
+                <MapPin size={13} className="shrink-0 mt-0.5" style={{ color: '#E67E22' }} />
+                <p className="text-[12px] text-text-secondary">
+                  The system will match a CHW whose coverage area includes the{' '}
+                  <strong>Village</strong> (falling back to <strong>Sector</strong>) entered above.
+                  The CHW will see a masked notification — name and diagnosis stay hidden until they
+                  accept the assignment. If no CHW covers this location, registration will fail and
+                  you&apos;ll need to switch to manual selection.
+                </p>
+              </div>
+            )}
           </SectionCard>
 
           {/* ── Submit ────────────────────────────────────── */}
@@ -450,6 +498,34 @@ export default function RegisterPatientPage() {
         </form>
       </div>
     </DashboardLayout>
+  );
+}
+
+// ── CHW assignment mode toggle ────────────────────────────────────────────────
+function AssignmentModeOption({
+  active, onClick, title, description,
+}: {
+  active: boolean; onClick: () => void; title: string; description: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="text-left rounded-lg p-3.5 transition-colors"
+      style={{
+        border:     active ? '1.5px solid #006D77' : '1px solid #DCECF0',
+        background: active ? 'rgba(0,95,107,0.04)' : '#FFFFFF',
+      }}
+    >
+      <div className="flex items-center gap-2">
+        <div
+          className="w-3.5 h-3.5 rounded-full flex items-center justify-center shrink-0"
+          style={{ border: active ? '4px solid #006D77' : '1.5px solid #AAB4BC' }}
+        />
+        <p className="text-[13px] font-semibold text-text-primary">{title}</p>
+      </div>
+      <p className="text-[11px] text-text-hint mt-1 ml-[22px]">{description}</p>
+    </button>
   );
 }
 
