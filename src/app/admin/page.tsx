@@ -6,11 +6,10 @@ import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import Pagination from '@/components/ui/Pagination';
 import SortableTh from '@/components/ui/SortableTh';
-import Button from '@/components/ui/Button';
+import ExportMenu from '@/components/ui/ExportMenu';
 import { api } from '@/lib/api';
 import { useTableControls } from '@/lib/useTableControls';
-import { downloadReport } from '@/lib/utils';
-import { Users, UserCheck, Shield, Activity, FileSpreadsheet } from 'lucide-react';
+import { Users, UserCheck, Shield, Activity } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Cell,
@@ -62,19 +61,7 @@ const AXIS_TICK = { fontSize: 11, fill: '#AAB4BC', fontFamily: 'Poppins, system-
 export default function AdminDashboard() {
   const [report, setReport] = useState<AdminReport | null>(null);
   const [loading, setLoading] = useState(true);
-  const [downloading, setDownloading] = useState(false);
   const facilityTable = useTableControls(report?.facilityBreakdown ?? []);
-
-  async function handleDownloadExcel() {
-    setDownloading(true);
-    try {
-      await downloadReport('/api/admin/reports/summary/excel', 'admin-report.xlsx');
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setDownloading(false);
-    }
-  }
 
   useEffect(() => {
     api.get('/api/admin/reports/summary')
@@ -127,15 +114,10 @@ export default function AdminDashboard() {
             <p className="text-[13px] text-text-secondary mt-1">Rwanda · System Overview</p>
           </div>
           <div className="flex items-center gap-5">
-            <Button
-              variant="secondary"
-              size="sm"
-              icon={FileSpreadsheet}
-              loading={downloading}
-              onClick={handleDownloadExcel}
-            >
-              Export to Excel
-            </Button>
+            <ExportMenu
+              baseUrl="/api/admin/reports/summary/export"
+              filenamePrefix="admin-report"
+            />
             <div className="text-right">
               <p className="data-num text-[30px] font-semibold leading-none" style={{ color: '#006D77' }}>
                 {adherencePct}<span className="text-[18px]">%</span>

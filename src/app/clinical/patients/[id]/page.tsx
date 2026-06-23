@@ -4,7 +4,14 @@ import { useParams, useRouter } from 'next/navigation';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Button from '@/components/ui/Button';
 import Badge, { RiskBadge } from '@/components/ui/Badge';
-import { api, extractErrorMessage } from '@/lib/api';
+import FormField from '@/components/ui/FormField';
+import FormSelect from '@/components/ui/FormSelect';
+import { api, extractErrorMessage, extractFieldErrors } from '@/lib/api';
+import {
+  required as validateRequired, nationalId as validateNationalId,
+  dateNotFuture as validateDateNotFuture, maxLength as validateMaxLength,
+  numberRange as validateNumberRange,
+} from '@/lib/validation/rules';
 import {
   ArrowLeft, Plus, X, CheckCircle, Clock,
   MapPin, Stethoscope, Calendar, Pill, AlertCircle, Phone, User,
@@ -421,6 +428,7 @@ function ConfirmProvisionalCard({ patient, onConfirmed }: {
 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState('');
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [done, setDone]       = useState(false);
   const [f, setF] = useState({
     diagnosisType: patient.suspectedCondition ?? 'TB',
@@ -430,9 +438,28 @@ function ConfirmProvisionalCard({ patient, onConfirmed }: {
     labResultNotes: '',
   });
 
+  function validate(): Record<string, string> {
+    const errors: Record<string, string> = {};
+    const diagnosisError = validateRequired(f.diagnosisType, 'Confirmed diagnosis');
+    if (diagnosisError) errors.diagnosisType = diagnosisError;
+    const nationalIdError = validateNationalId(f.nationalPatientId);
+    if (nationalIdError) errors.nationalPatientId = nationalIdError;
+    const artError = validateDateNotFuture(f.artStartDate, 'ART start date');
+    if (artError) errors.artStartDate = artError;
+    const tbError = validateDateNotFuture(f.tbTreatmentStartDate, 'TB treatment start date');
+    if (tbError) errors.tbTreatmentStartDate = tbError;
+    return errors;
+  }
+
   async function confirm(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true); setError('');
+    const errors = validate();
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setError('Please fix the highlighted fields below.');
+      return;
+    }
+    setLoading(true); setError(''); setFieldErrors({});
     try {
       await api.put(`/api/v1/patients/${patient.id}/confirm`, {
         diagnosisType: f.diagnosisType,
@@ -444,7 +471,8 @@ function ConfirmProvisionalCard({ patient, onConfirmed }: {
       setDone(true);
       setTimeout(onConfirmed, 1500);
     } catch (err: unknown) {
-            setError(extractErrorMessage(err, 'Confirmation failed'));
+      setFieldErrors(extractFieldErrors(err));
+      setError(extractErrorMessage(err, 'Confirmation failed'));
     } finally { setLoading(false); }
   }
 
@@ -484,27 +512,25 @@ function ConfirmProvisionalCard({ patient, onConfirmed }: {
               <p className="text-[12px] font-medium" style={{ color: '#C0392B' }}>{error}</p>
             )}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="block text-[11px] font-semibold uppercase tracking-widest mb-1.5"
-                       style={{ color: '#92400E' }}>
-                  Confirmed Diagnosis *
-                </label>
-                <FormSelect
-                  value={f.diagnosisType}
-                  onChange={(v) => setF({ ...f, diagnosisType: v })}
-                  required
-                >
-                  <option value="HIV">HIV</option>
-                  <option value="TB">TB</option>
-                  <option value="HIV_TB_COINFECTION">HIV + TB Co-infection</option>
-                </FormSelect>
-              </div>
+              <FormSelect
+                label="Confirmed Diagnosis"
+                value={f.diagnosisType}
+                onChange={(v) => setF({ ...f, diagnosisType: v })}
+                required
+                error={fieldErrors.diagnosisType}
+              >
+                <option value="HIV">HIV</option>
+                <option value="TB">TB</option>
+                <option value="HIV_TB_COINFECTION">HIV + TB Co-infection</option>
+              </FormSelect>
               <FormField
                 label="National Patient ID"
                 value={f.nationalPatientId}
                 onChange={(v) => setF({ ...f, nationalPatientId: v })}
                 placeholder="1198580000000012"
                 required={false}
+                hint="16 digits"
+                error={fieldErrors.nationalPatientId}
               />
               {(f.diagnosisType === 'HIV' || f.diagnosisType === 'HIV_TB_COINFECTION') && (
                 <FormField
@@ -513,6 +539,7 @@ function ConfirmProvisionalCard({ patient, onConfirmed }: {
                   onChange={(v) => setF({ ...f, artStartDate: v })}
                   type="date"
                   required={false}
+                  error={fieldErrors.artStartDate}
                 />
               )}
               {(f.diagnosisType === 'TB' || f.diagnosisType === 'HIV_TB_COINFECTION') && (
@@ -522,6 +549,7 @@ function ConfirmProvisionalCard({ patient, onConfirmed }: {
                   onChange={(v) => setF({ ...f, tbTreatmentStartDate: v })}
                   type="date"
                   required={false}
+                  error={fieldErrors.tbTreatmentStartDate}
                 />
               )}
             </div>
@@ -726,18 +754,37 @@ function AddPlanForm({ patientId, onDone, onCancel }: {
 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState('');
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [f, setF] = useState({
     medicationName: '', dosage: '', frequency: 'ONCE_DAILY', startDate: '',
   });
 
+  function validate(): Record<string, string> {
+    const errors: Record<string, string> = {};
+    const nameError = validateRequired(f.medicationName, 'Medication name') ?? validateMaxLength(f.medicationName, 100, 'Medication name');
+    if (nameError) errors.medicationName = nameError;
+    const dosageError = validateRequired(f.dosage, 'Dosage') ?? validateMaxLength(f.dosage, 50, 'Dosage');
+    if (dosageError) errors.dosage = dosageError;
+    const startDateError = validateRequired(f.startDate, 'Start date');
+    if (startDateError) errors.startDate = startDateError;
+    return errors;
+  }
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true); setError('');
+    const errors = validate();
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setError('Please fix the highlighted fields below.');
+      return;
+    }
+    setLoading(true); setError(''); setFieldErrors({});
     try {
       await api.post('/api/treatment-plans', { ...f, patientId });
       onDone();
     } catch (err: unknown) {
-            setError(extractErrorMessage(err, 'Failed to create plan'));
+      setFieldErrors(extractFieldErrors(err));
+      setError(extractErrorMessage(err, 'Failed to create plan'));
     } finally { setLoading(false); }
   }
 
@@ -752,29 +799,27 @@ function AddPlanForm({ patientId, onDone, onCancel }: {
       </p>
       {error && <p className="text-[12px] font-medium" style={{ color: '#C0392B' }}>{error}</p>}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <FormField label="Medication name *" value={f.medicationName}
-          onChange={(v) => setF({ ...f, medicationName: v })} placeholder="TDF/3TC/EFV" />
-        <FormField label="Dosage *" value={f.dosage}
+        <FormField label="Medication Name" value={f.medicationName}
+          onChange={(v) => setF({ ...f, medicationName: v })} placeholder="TDF/3TC/EFV"
+          error={fieldErrors.medicationName} />
+        <FormField label="Dosage" value={f.dosage}
           onChange={(v) => setF({ ...f, dosage: v })}
-          placeholder="1 tablet (300mg/300mg/600mg)" />
-        <div>
-          <label className="block text-[11px] font-semibold uppercase tracking-widest text-text-hint mb-1.5">
-            Frequency *
-          </label>
-          <FormSelect
-            value={f.frequency}
-            onChange={(v) => setF({ ...f, frequency: v })}
-            required
-          >
-            {['ONCE_DAILY', 'TWICE_DAILY', 'THREE_TIMES_DAILY', 'WEEKLY'].map((fr) => (
-              <option key={fr} value={fr}>
-                {fr.replace(/_/g, ' ').toLowerCase()}
-              </option>
-            ))}
-          </FormSelect>
-        </div>
-        <FormField label="Start date *" value={f.startDate}
-          onChange={(v) => setF({ ...f, startDate: v })} type="date" />
+          placeholder="1 tablet (300mg/300mg/600mg)" error={fieldErrors.dosage} />
+        <FormSelect
+          label="Frequency"
+          value={f.frequency}
+          onChange={(v) => setF({ ...f, frequency: v })}
+          required
+        >
+          {['ONCE_DAILY', 'TWICE_DAILY', 'THREE_TIMES_DAILY', 'WEEKLY'].map((fr) => (
+            <option key={fr} value={fr}>
+              {fr.replace(/_/g, ' ').toLowerCase()}
+            </option>
+          ))}
+        </FormSelect>
+        <FormField label="Start Date" value={f.startDate}
+          onChange={(v) => setF({ ...f, startDate: v })} type="date"
+          error={fieldErrors.startDate} />
       </div>
       <div className="flex gap-2 pt-1">
         <Button type="submit" size="sm" icon={CheckCircle} loading={loading}>Create Plan</Button>
@@ -789,14 +834,34 @@ function AddScheduleForm({ planId, onDone, onCancel }: {
 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState('');
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [f, setF] = useState({
     doseTime: '08:00:00', doseLabel: '', notificationMethod: 'APP',
     windowDurationMinutes: 45, prescriptionSource: '',
   });
 
+  function validate(): Record<string, string> {
+    const errors: Record<string, string> = {};
+    const doseTimeError = validateRequired(f.doseTime, 'Dose time');
+    if (doseTimeError) errors.doseTime = doseTimeError;
+    const labelError = validateMaxLength(f.doseLabel, 50, 'Dose label');
+    if (labelError) errors.doseLabel = labelError;
+    const windowError = validateNumberRange(f.windowDurationMinutes, 1, 1440, 'Window duration');
+    if (windowError) errors.windowDurationMinutes = windowError;
+    const sourceError = validateMaxLength(f.prescriptionSource, 100, 'Prescription note');
+    if (sourceError) errors.prescriptionSource = sourceError;
+    return errors;
+  }
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true); setError('');
+    const errors = validate();
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setError('Please fix the highlighted fields below.');
+      return;
+    }
+    setLoading(true); setError(''); setFieldErrors({});
     try {
       await api.post(`/api/treatment-plans/${planId}/schedules`, {
         ...f,
@@ -805,7 +870,8 @@ function AddScheduleForm({ planId, onDone, onCancel }: {
       });
       onDone();
     } catch (err: unknown) {
-            setError(extractErrorMessage(err, 'Failed to add schedule'));
+      setFieldErrors(extractFieldErrors(err));
+      setError(extractErrorMessage(err, 'Failed to add schedule'));
     } finally { setLoading(false); }
   }
 
@@ -820,43 +886,34 @@ function AddScheduleForm({ planId, onDone, onCancel }: {
       </p>
       {error && <p className="text-[12px] font-medium" style={{ color: '#C0392B' }}>{error}</p>}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div>
-          <label className="block text-[11px] font-semibold uppercase tracking-widest text-text-hint mb-1.5">
-            Dose time *
-          </label>
-          <FormInput
-            type="time"
-            value={f.doseTime.substring(0, 5)}
-            onChange={(e) => setF({ ...f, doseTime: e.target.value + ':00' })}
-            required
-          />
-        </div>
-        <FormField label="Dose label" value={f.doseLabel}
+        <FormField
+          label="Dose Time"
+          type="time"
+          value={f.doseTime.substring(0, 5)}
+          onChange={(v) => setF({ ...f, doseTime: v + ':00' })}
+          error={fieldErrors.doseTime}
+        />
+        <FormField label="Dose Label" value={f.doseLabel}
           onChange={(v) => setF({ ...f, doseLabel: v })}
-          placeholder="Morning Dose" required={false} />
-        <div>
-          <label className="block text-[11px] font-semibold uppercase tracking-widest text-text-hint mb-1.5">
-            Notification method
-          </label>
-          <FormSelect
-            value={f.notificationMethod}
-            onChange={(v) => setF({ ...f, notificationMethod: v })}
-          >
-            <option value="APP">App</option>
-            <option value="SMS">SMS</option>
-          </FormSelect>
-        </div>
-        <div>
-          <label className="block text-[11px] font-semibold uppercase tracking-widest text-text-hint mb-1.5">
-            Window (minutes)
-          </label>
-          <FormInput
-            type="number"
-            min={15} max={120}
-            value={String(f.windowDurationMinutes)}
-            onChange={(e) => setF({ ...f, windowDurationMinutes: parseInt(e.target.value) || 45 })}
-          />
-        </div>
+          placeholder="Morning Dose" required={false} error={fieldErrors.doseLabel} />
+        <FormSelect
+          label="Notification Method"
+          value={f.notificationMethod}
+          onChange={(v) => setF({ ...f, notificationMethod: v })}
+        >
+          <option value="APP">App</option>
+          <option value="SMS">SMS</option>
+        </FormSelect>
+        <FormField
+          label="Window (minutes)"
+          type="number"
+          min="1" max="1440"
+          value={String(f.windowDurationMinutes)}
+          onChange={(v) => setF({ ...f, windowDurationMinutes: parseInt(v) || 45 })}
+          required={false}
+          hint="1–1440 minutes after the scheduled dose time"
+          error={fieldErrors.windowDurationMinutes}
+        />
       </div>
       <FormField
         label="Prescription note (clinic card reference)"
@@ -864,74 +921,13 @@ function AddScheduleForm({ planId, onDone, onCancel }: {
         onChange={(v) => setF({ ...f, prescriptionSource: v })}
         placeholder="Based on clinic card dated 2026-06-03. Schedule adjusted following CHW side effect report."
         required={false}
+        error={fieldErrors.prescriptionSource}
       />
       <div className="flex gap-2 pt-1">
         <Button type="submit" size="sm" icon={CheckCircle} loading={loading}>Add Schedule</Button>
         <Button type="button" size="sm" variant="ghost" onClick={onCancel}>Cancel</Button>
       </div>
     </form>
-  );
-}
-
-// ── Shared input primitives ───────────────────────────────────────────────────
-
-function FormField({
-  label, value, onChange, type = 'text', placeholder = '', required = true,
-}: {
-  label: string; value: string; onChange: (v: string) => void;
-  type?: string; placeholder?: string; required?: boolean;
-}) {
-  return (
-    <div>
-      <label className="block text-[11px] font-semibold uppercase tracking-widest text-text-hint mb-1.5">
-        {label}
-      </label>
-      <FormInput
-        type={type} value={value} required={required} placeholder={placeholder}
-        onChange={(e) => onChange(e.target.value)}
-      />
-    </div>
-  );
-}
-
-function FormInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
-  const [focused, setFocused] = useState(false);
-  return (
-    <input
-      {...props}
-      className="w-full px-3 py-2.5 text-[13px] rounded-lg bg-white outline-none placeholder:text-text-hint"
-      style={{
-        border: focused ? '1px solid #006D77' : '1px solid #DCECF0',
-        boxShadow: focused ? '0 0 0 3px rgba(0,95,107,0.08)' : 'none',
-      }}
-      onFocus={(e) => { setFocused(true); props.onFocus?.(e); }}
-      onBlur={(e)  => { setFocused(false); props.onBlur?.(e); }}
-    />
-  );
-}
-
-function FormSelect({
-  value, onChange, required, children,
-}: {
-  value: string; onChange: (v: string) => void;
-  required?: boolean; children: React.ReactNode;
-}) {
-  const [focused, setFocused] = useState(false);
-  return (
-    <select
-      value={value}
-      required={required}
-      onChange={(e) => onChange(e.target.value)}
-      className="w-full px-3 py-2.5 text-[13px] rounded-lg bg-white outline-none"
-      style={{
-        border: focused ? '1px solid #006D77' : '1px solid #DCECF0',
-        boxShadow: focused ? '0 0 0 3px rgba(0,95,107,0.08)' : 'none',
-      }}
-      onFocus={() => setFocused(true)}
-      onBlur={() => setFocused(false)}
-    >
-      {children}
-    </select>
   );
 }
 

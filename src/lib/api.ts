@@ -63,3 +63,19 @@ export function extractErrorMessage(err: unknown, fallback: string): string {
   }
   return fallback;
 }
+
+/**
+ * Same `details` map `extractErrorMessage` reads, but returned whole so a
+ * form can attach each message to its matching field instead of only
+ * showing the first one in a generic banner.
+ */
+export function extractFieldErrors(err: unknown): Record<string, string> {
+  const data = (err as { response?: { data?: unknown } })?.response?.data;
+  if (data && typeof data === 'object') {
+    const details = (data as Record<string, unknown>).details;
+    if (details && typeof details === 'object') {
+      return details as Record<string, string>;
+    }
+  }
+  return {};
+}

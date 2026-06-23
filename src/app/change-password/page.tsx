@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { Lock, Eye, EyeOff, CheckCircle2, AlertCircle } from 'lucide-react';
 import { api } from '@/lib/api';
 import { getRole, roleHome, logout } from '@/lib/auth';
+import { required as validateRequired, password as validatePassword, passwordsMatch } from '@/lib/validation/rules';
 export default function ChangePasswordPage() {
   const router = useRouter();
   const [current, setCurrent] = useState('');
@@ -19,10 +20,11 @@ export default function ChangePasswordPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (next !== confirm) { setError('New passwords do not match.'); return; }
-    if (next.length < 8)  { setError('Password must be at least 8 characters.'); return; }
-    if (!/[A-Z]/.test(next)) { setError('Password must contain at least one uppercase letter.'); return; }
-    if (!/[0-9]/.test(next)) { setError('Password must contain at least one digit.'); return; }
+    const currentError = validateRequired(current, 'Current password');
+    const nextError = validatePassword(next);
+    const confirmError = passwordsMatch(confirm, next, 'New passwords') ?? validateRequired(confirm, 'Password confirmation');
+    const firstError = currentError ?? nextError ?? confirmError;
+    if (firstError) { setError(firstError); return; }
     setLoading(true); setError('');
     try {
       await api.post('/api/auth/change-password', {

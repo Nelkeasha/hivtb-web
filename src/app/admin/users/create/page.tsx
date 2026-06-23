@@ -3,7 +3,13 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Button from '@/components/ui/Button';
-import { api, extractErrorMessage } from '@/lib/api';
+import FormField from '@/components/ui/FormField';
+import FormSelect from '@/components/ui/FormSelect';
+import { api, extractErrorMessage, extractFieldErrors } from '@/lib/api';
+import {
+  required as validateRequired, phone as validatePhone, email as validateEmail,
+  employeeCode as validateEmployeeCode, maxLength as validateMaxLength,
+} from '@/lib/validation/rules';
 import { UserPlus, CheckCircle2, ArrowLeft } from 'lucide-react';
 
 type Role = 'CHW' | 'FACILITY_PROVIDER' | 'SUPERVISOR';
@@ -22,65 +28,6 @@ const ROLE_ENDPOINTS: Record<Role, string> = {
   SUPERVISOR:        '/api/admin/users/supervisor',
 };
 
-// ── Shared input primitives ───────────────────────────────────────────────────
-
-function FormField({
-  label, name, value, onChange, type = 'text', required = true, placeholder = '',
-}: {
-  label: string; name: string; value: string;
-  onChange: (v: string) => void; type?: string;
-  required?: boolean; placeholder?: string;
-}) {
-  const [focused, setFocused] = useState(false);
-  return (
-    <div>
-      <label className="block text-[11px] font-semibold uppercase tracking-widest text-text-hint mb-1.5">
-        {label}{required && <span className="ml-0.5" style={{ color: '#C0392B' }}>*</span>}
-      </label>
-      <input
-        type={type} name={name} value={value} required={required} placeholder={placeholder}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full px-3 py-2.5 text-[13px] rounded-lg bg-white outline-none placeholder:text-text-hint"
-        style={{
-          border:     focused ? '1px solid #006D77' : '1px solid #DCECF0',
-          boxShadow:  focused ? '0 0 0 3px rgba(0,95,107,0.08)' : 'none',
-        }}
-        onFocus={() => setFocused(true)}
-        onBlur={()  => setFocused(false)}
-      />
-    </div>
-  );
-}
-
-function FormSelect({
-  label, value, onChange, required = true, children,
-}: {
-  label: string; value: string; onChange: (v: string) => void;
-  required?: boolean; children: React.ReactNode;
-}) {
-  const [focused, setFocused] = useState(false);
-  return (
-    <div>
-      <label className="block text-[11px] font-semibold uppercase tracking-widest text-text-hint mb-1.5">
-        {label}{required && <span className="ml-0.5" style={{ color: '#C0392B' }}>*</span>}
-      </label>
-      <select
-        value={value} required={required}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full px-3 py-2.5 text-[13px] rounded-lg bg-white outline-none"
-        style={{
-          border:    focused ? '1px solid #006D77' : '1px solid #DCECF0',
-          boxShadow: focused ? '0 0 0 3px rgba(0,95,107,0.08)' : 'none',
-        }}
-        onFocus={() => setFocused(true)}
-        onBlur={()  => setFocused(false)}
-      >
-        {children}
-      </select>
-    </div>
-  );
-}
-
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function CreateUserPage() {
@@ -90,6 +37,7 @@ export default function CreateUserPage() {
   const [loading, setLoading]       = useState(false);
   const [done, setDone]             = useState<{ name: string; tempPass: string } | null>(null);
   const [error, setError]           = useState('');
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const [fullName, setFullName]   = useState('');
   const [email, setEmail]         = useState('');
@@ -109,14 +57,39 @@ export default function CreateUserPage() {
       .catch(console.error);
   }, []);
 
+  function validate(): Record<string, string> {
+    const errors: Record<string, string> = {};
+    const nameError = validateRequired(fullName, 'Full name') ?? validateMaxLength(fullName, 100, 'Full name');
+    if (nameError) errors.fullName = nameError;
+    const emailError = validateEmail(email, { required: true }) ?? validateMaxLength(email, 100, 'Email');
+    if (emailError) errors.email = emailError;
+    const phoneError = validatePhone(phone, { required: true });
+    if (phoneError) errors.phoneNumber = phoneError;
+    if (!facilityId) errors.facilityId = 'Please select a facility';
+    if (role === 'CHW') {
+      const villageError = validateRequired(village, 'Assigned village') ?? validateMaxLength(village, 100, 'Assigned village');
+      if (villageError) errors.village = villageError;
+      const sectorError = validateRequired(sector, 'Assigned sector') ?? validateMaxLength(sector, 100, 'Assigned sector');
+      if (sectorError) errors.sector = sectorError;
+      const empCodeError = validateEmployeeCode(empCode);
+      if (empCodeError) errors.empCode = empCodeError;
+    }
+    if (role === 'SUPERVISOR') {
+      const districtError = validateRequired(district, 'District') ?? validateMaxLength(district, 100, 'District');
+      if (districtError) errors.district = districtError;
+    }
+    return errors;
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const phoneDigits = phone.replace(/\s/g, '');
-    if (!/^\+?[0-9]{10,13}$/.test(phoneDigits)) {
-      setError('Phone number must be 10–13 digits (e.g. +250 7XX XXX XXX).');
+    const errors = validate();
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setError('Please fix the highlighted fields below.');
       return;
     }
-    setLoading(true); setError('');
+    setLoading(true); setError(''); setFieldErrors({});
     const base = { fullName, email, phoneNumber: phone, facilityId };
     const body =
       role === 'CHW'               ? { ...base, assignedVillage: village, assignedSector: sector, employeeCode: empCode } :
@@ -126,7 +99,8 @@ export default function CreateUserPage() {
       const r = await api.post(ROLE_ENDPOINTS[role], body);
       setDone({ name: fullName, tempPass: r.data.temporaryPassword ?? r.data.tempPassword ?? '(see email)' });
     } catch (err: unknown) {
-            setError(extractErrorMessage(err, 'Failed to create user. Check the fields and try again.'));
+      setFieldErrors(extractFieldErrors(err));
+      setError(extractErrorMessage(err, 'Failed to create user. Check the fields and try again.'));
     } finally {
       setLoading(false);
     }
@@ -137,6 +111,7 @@ export default function CreateUserPage() {
     setFullName(''); setEmail(''); setPhone('');
     setVillage(''); setSector(''); setEmpCode('');
     setSpec(''); setLicense(''); setDistrict('');
+    setFieldErrors({}); setError('');
   }
 
   // ── Success state ──────────────────────────────────────────────────────────
@@ -294,13 +269,14 @@ export default function CreateUserPage() {
                   Account Details
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
-                  <FormField label="Full Name"    name="fullName" value={fullName} onChange={setFullName} placeholder="Jean Pierre Nkurunziza" />
-                  <FormField label="Email"        name="email"    value={email}    onChange={setEmail}    type="email" placeholder="j.pierre@facility.rw" />
-                  <FormField label="Phone Number" name="phone"    value={phone}    onChange={setPhone}    placeholder="+250 7XX XXX XXX" />
+                  <FormField label="Full Name"    name="fullName" value={fullName} onChange={setFullName} placeholder="Jean Pierre Nkurunziza" error={fieldErrors.fullName} />
+                  <FormField label="Email"        name="email"    value={email}    onChange={setEmail}    type="email" placeholder="j.pierre@facility.rw" error={fieldErrors.email} />
+                  <FormField label="Phone Number" name="phone"    value={phone}    onChange={setPhone}    placeholder="0788123456" hint="10 digits starting with 07, or +250…" error={fieldErrors.phoneNumber} />
                   <FormSelect
                     label="Facility"
                     value={facilityId}
                     onChange={setFacilityId}
+                    error={fieldErrors.facilityId}
                   >
                     {facilities.length === 0 && <option value="">Loading…</option>}
                     {facilities.map((f) => (
@@ -322,9 +298,9 @@ export default function CreateUserPage() {
                     CHW Details
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <FormField label="Employee Code"    name="empCode" value={empCode} onChange={setEmpCode} placeholder="CHW-001" />
-                    <FormField label="Assigned Village" name="village" value={village} onChange={setVillage} placeholder="Kimironko" />
-                    <FormField label="Assigned Sector"  name="sector"  value={sector}  onChange={setSector}  placeholder="Gasabo" />
+                    <FormField label="Employee Code"    name="empCode" value={empCode} onChange={setEmpCode} placeholder="CHW-001" error={fieldErrors.empCode} />
+                    <FormField label="Assigned Village" name="village" value={village} onChange={setVillage} placeholder="Kimironko" error={fieldErrors.village} />
+                    <FormField label="Assigned Sector"  name="sector"  value={sector}  onChange={setSector}  placeholder="Gasabo" error={fieldErrors.sector} />
                   </div>
                 </div>
               )}
@@ -353,7 +329,7 @@ export default function CreateUserPage() {
                     Supervisor Details
                   </p>
                   <div className="max-w-xs">
-                    <FormField label="District" name="district" value={district} onChange={setDistrict} placeholder="Gasabo" />
+                    <FormField label="District" name="district" value={district} onChange={setDistrict} placeholder="Gasabo" error={fieldErrors.district} />
                   </div>
                 </div>
               )}

@@ -3,7 +3,13 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Button from '@/components/ui/Button';
-import { api, extractErrorMessage } from '@/lib/api';
+import FormField from '@/components/ui/FormField';
+import FormSelect from '@/components/ui/FormSelect';
+import { api, extractErrorMessage, extractFieldErrors } from '@/lib/api';
+import {
+  required as validateRequired, phone as validatePhone, nationalId as validateNationalId,
+  maxLength as validateMaxLength, dateNotFuture as validateDateNotFuture,
+} from '@/lib/validation/rules';
 import {
   ArrowLeft, UserPlus, CheckCircle2, AlertCircle,
   User, MapPin, Stethoscope, Phone,
@@ -12,69 +18,6 @@ import {
 interface Chw { id: string; fullName: string; employeeCode?: string; assignedVillage?: string; }
 
 type DiagnosisType = 'HIV' | 'TB' | 'HIV_TB_COINFECTION';
-
-// ── Shared input primitives ───────────────────────────────────────────────────
-
-function FormField({
-  label, value, onChange, type = 'text', required = true,
-  placeholder = '', hint, span, max, min,
-}: {
-  label: string; value: string; onChange: (v: string) => void;
-  type?: string; required?: boolean; placeholder?: string;
-  hint?: string; span?: boolean; max?: string; min?: string;
-}) {
-  const [focused, setFocused] = useState(false);
-  return (
-    <div className={span ? 'col-span-2' : ''}>
-      <label className="block text-[11px] font-semibold uppercase tracking-widest text-text-hint mb-1.5">
-        {label}{required && <span className="ml-0.5" style={{ color: '#C0392B' }}>*</span>}
-      </label>
-      <input
-        type={type} value={value} required={required} placeholder={placeholder}
-        max={max} min={min}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full px-3 py-2.5 text-[13px] rounded-lg bg-white outline-none placeholder:text-text-hint"
-        style={{
-          border:    focused ? '1px solid #006D77' : '1px solid #DCECF0',
-          boxShadow: focused ? '0 0 0 3px rgba(0,95,107,0.08)' : 'none',
-        }}
-        onFocus={() => setFocused(true)}
-        onBlur={()  => setFocused(false)}
-      />
-      {hint && <p className="text-[11px] text-text-hint mt-1.5">{hint}</p>}
-    </div>
-  );
-}
-
-function FormSelect({
-  label, value, onChange, required = true, children, hint,
-}: {
-  label: string; value: string; onChange: (v: string) => void;
-  required?: boolean; children: React.ReactNode; hint?: string;
-}) {
-  const [focused, setFocused] = useState(false);
-  return (
-    <div>
-      <label className="block text-[11px] font-semibold uppercase tracking-widest text-text-hint mb-1.5">
-        {label}{required && <span className="ml-0.5" style={{ color: '#C0392B' }}>*</span>}
-      </label>
-      <select
-        value={value} required={required}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full px-3 py-2.5 text-[13px] rounded-lg bg-white outline-none"
-        style={{
-          border:    focused ? '1px solid #006D77' : '1px solid #DCECF0',
-          boxShadow: focused ? '0 0 0 3px rgba(0,95,107,0.08)' : 'none',
-        }}
-        onFocus={() => setFocused(true)}
-        onBlur={()  => setFocused(false)}
-      >
-        {children}
-      </select>
-      {hint && <p className="text-[11px] text-text-hint mt-1.5">{hint}</p>}
-    </div>
-  );
-}
 
 function SectionCard({
   title, icon: Icon, iconColor = '#006D77', children,
@@ -102,6 +45,7 @@ export default function RegisterPatientPage() {
   const [chws, setChws]       = useState<Chw[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState('');
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [done, setDone]       = useState<{ name: string; code: string } | null>(null);
 
   // Patient identity
@@ -142,14 +86,38 @@ export default function RegisterPatientPage() {
   const needsTb  = diagnosis === 'TB'  || diagnosis === 'HIV_TB_COINFECTION';
   const today = new Date().toISOString().split('T')[0];
 
+  function validate(): Record<string, string> {
+    const errors: Record<string, string> = {};
+    const fullNameError = validateRequired(fullName, 'Full name') ?? validateMaxLength(fullName, 100, 'Full name');
+    if (fullNameError) errors.fullName = fullNameError;
+    const dobError = validateRequired(dob, 'Date of birth') ?? validateDateNotFuture(dob, 'Date of birth');
+    if (dobError) errors.dateOfBirth = dobError;
+    const sexError = validateRequired(sex, 'Sex');
+    if (sexError) errors.sex = sexError;
+    const nationalIdError = validateNationalId(nationalId);
+    if (nationalIdError) errors.nationalId = nationalIdError;
+    const phoneError = validatePhone(phone);
+    if (phoneError) errors.phoneNumber = phoneError;
+    const diagnosisError = validateRequired(diagnosis, 'Diagnosis type');
+    if (diagnosisError) errors.diagnosisType = diagnosisError;
+    if (assignmentMode === 'MANUAL' && !assignedChwId) {
+      errors.assignedChwId = 'Please select a CHW';
+    }
+    if (assignmentMode === 'AUTO' && !village.trim() && !sector.trim()) {
+      errors.village = "Auto-assign needs at least a Village or Sector to match against a CHW's coverage area.";
+    }
+    return errors;
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!diagnosis) { setError('Please select a diagnosis type.'); return; }
-    if (assignmentMode === 'AUTO' && !village.trim() && !sector.trim()) {
-      setError('Auto-assign needs at least a Village or Sector to match against a CHW\'s coverage area.');
+    const errors = validate();
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setError('Please fix the highlighted fields below.');
       return;
     }
-    setLoading(true); setError('');
+    setLoading(true); setError(''); setFieldErrors({});
     try {
       const body = {
         fullName,
@@ -175,7 +143,8 @@ export default function RegisterPatientPage() {
       const r = await api.post('/api/v1/patients/register', body);
       setDone({ name: fullName, code: r.data.patientCode ?? r.data.id });
     } catch (err: unknown) {
-            setError(extractErrorMessage(err, 'Registration failed. Check all fields and try again.'));
+      setFieldErrors(extractFieldErrors(err));
+      setError(extractErrorMessage(err, 'Registration failed. Check all fields and try again.'));
     } finally {
       setLoading(false);
     }
@@ -187,6 +156,7 @@ export default function RegisterPatientPage() {
     setHasSmartphone(false); setProvince(''); setDistrict(''); setSector('');
     setCell(''); setVillage(''); setHouseholdLocation('');
     setDiagnosis(''); setArtStart(''); setTbStart(''); setAssignmentMode('MANUAL');
+    setFieldErrors({}); setError('');
   }
 
   // ── Success state ──────────────────────────────────────────────────────────
@@ -287,13 +257,13 @@ export default function RegisterPatientPage() {
             <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
               <FormField
                 label="Full Name" value={fullName} onChange={setFullName}
-                placeholder="Uwimana Marie" span
+                placeholder="Uwimana Marie" span error={fieldErrors.fullName}
               />
               <FormField
                 label="Date of Birth" value={dob} onChange={setDob}
-                type="date" max={today} min="1900-01-01"
+                type="date" max={today} min="1900-01-01" error={fieldErrors.dateOfBirth}
               />
-              <FormSelect label="Sex" value={sex} onChange={setSex}>
+              <FormSelect label="Sex" value={sex} onChange={setSex} error={fieldErrors.sex}>
                 <option value="">Select…</option>
                 <option value="MALE">Male</option>
                 <option value="FEMALE">Female</option>
@@ -302,10 +272,12 @@ export default function RegisterPatientPage() {
               <FormField
                 label="National ID" value={nationalId} onChange={setNationalId}
                 required={false} placeholder="1198580000000012"
+                hint="16 digits" error={fieldErrors.nationalId}
               />
               <FormField
                 label="Phone Number" value={phone} onChange={setPhone}
-                required={false} placeholder="+250 7XX XXX XXX"
+                required={false} placeholder="0788123456"
+                hint="10 digits starting with 07, or +250…" error={fieldErrors.phoneNumber}
               />
               <div className="flex items-center gap-3 pt-5">
                 <input
@@ -330,7 +302,7 @@ export default function RegisterPatientPage() {
               <FormField label="District" value={district} onChange={setDistrict} required={false} placeholder="Gasabo" />
               <FormField label="Sector"   value={sector}   onChange={setSector}   required={false} placeholder="Kimironko" />
               <FormField label="Cell"     value={cell}     onChange={setCell}     required={false} placeholder="Kibagabaga" />
-              <FormField label="Village"  value={village}  onChange={setVillage}  required={false} placeholder="Kagugu" />
+              <FormField label="Village"  value={village}  onChange={setVillage}  required={false} placeholder="Kagugu" error={fieldErrors.village} />
               <FormField
                 label="Household Location / Landmark"
                 value={householdLocation} onChange={setHouseholdLocation}
@@ -351,6 +323,7 @@ export default function RegisterPatientPage() {
                   value={diagnosis}
                   onChange={v => setDiagnosis(v as DiagnosisType)}
                   hint="Determines which treatment dates are required."
+                  error={fieldErrors.diagnosisType}
                 >
                   <option value="">Select diagnosis…</option>
                   <option value="HIV">HIV</option>
@@ -435,9 +408,9 @@ export default function RegisterPatientPage() {
                       onChange={setAssignedChwId}
                     />
                   )}
-                  <p className="text-[11px] text-text-hint mt-1.5">
-                    This CHW will conduct home visits and confirm daily doses.
-                  </p>
+                  {fieldErrors.assignedChwId
+                    ? <p className="text-[11px] font-medium mt-1.5" style={{ color: '#C0392B' }}>{fieldErrors.assignedChwId}</p>
+                    : <p className="text-[11px] text-text-hint mt-1.5">This CHW will conduct home visits and confirm daily doses.</p>}
                 </div>
 
                 {/* Selected CHW card */}

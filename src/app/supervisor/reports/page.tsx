@@ -3,10 +3,9 @@ import { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import StatCard from '@/components/ui/StatCard';
 import Card from '@/components/ui/Card';
-import Button from '@/components/ui/Button';
+import ExportMenu from '@/components/ui/ExportMenu';
 import { api } from '@/lib/api';
-import { downloadReport } from '@/lib/utils';
-import { Users, Activity, TrendingDown, UserCheck, Database } from 'lucide-react';
+import { Users, Activity, TrendingDown, UserCheck } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, Cell,
@@ -44,18 +43,6 @@ const AXIS_TICK = { fontSize: 11, fill: '#AAB4BC' };
 export default function SupervisorReportPage() {
   const [report, setReport] = useState<SupervisorReport | null>(null);
   const [loading, setLoading] = useState(true);
-  const [downloading, setDownloading] = useState(false);
-
-  async function handleDownloadCsv() {
-    setDownloading(true);
-    try {
-      await downloadReport('/api/supervisor/dashboard/reports/summary/csv', 'supervisor-chw-report.csv');
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setDownloading(false);
-    }
-  }
 
   useEffect(() => {
     api.get('/api/supervisor/dashboard/reports/summary')
@@ -117,15 +104,10 @@ export default function SupervisorReportPage() {
             </h1>
           </div>
           <div className="flex items-center gap-5">
-            <Button
-              variant="secondary"
-              size="sm"
-              icon={Database}
-              loading={downloading}
-              onClick={handleDownloadCsv}
-            >
-              Export CSV
-            </Button>
+            <ExportMenu
+              baseUrl="/api/supervisor/dashboard/reports/summary/export"
+              filenamePrefix="supervisor-report"
+            />
             <div className="text-right">
               <p
                 className="data-num text-[30px] font-semibold leading-none"
