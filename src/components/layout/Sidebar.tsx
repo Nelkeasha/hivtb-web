@@ -30,7 +30,7 @@ const clinicalNav: NavItem[] = [
 const supervisorNav: NavItem[] = [
   { href: '/supervisor',           label: 'Overview',   icon: LayoutDashboard },
   { href: '/supervisor/chw',       label: 'CHW Team',   icon: UserCheck       },
-  { href: '/supervisor/ltfu',      label: 'LTFU Cases', icon: PersonStanding  },
+  { href: '/supervisor/ltfu',      label: 'Treatment Interruptions', icon: PersonStanding  },
   { href: '/supervisor/analytics', label: 'Analytics',  icon: BarChart3       },
   { href: '/supervisor/alerts',    label: 'Alerts',     icon: AlertCircle     },
   { href: '/supervisor/reports',   label: 'Reports',    icon: FileText        },

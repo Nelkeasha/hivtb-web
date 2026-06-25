@@ -216,7 +216,7 @@ export default function LoginPage() {
                 'Real-time adherence tracking',
                 'AI-powered risk scoring',
                 'CHW performance oversight',
-                'LTFU tracing & escalation',
+                'Treatment interruption tracing & escalation',
                 'FHIR-compliant data exchange',
               ].map(f => (
                 <li

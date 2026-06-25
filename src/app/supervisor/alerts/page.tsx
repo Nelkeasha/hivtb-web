@@ -8,7 +8,7 @@ import SortSelect from '@/components/ui/SortSelect';
 import { api } from '@/lib/api';
 import { timeAgo } from '@/lib/utils';
 import { useTableControls } from '@/lib/useTableControls';
-import { CheckCircle2, AlertTriangle, Bell } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, Bell, TrendingDown } from 'lucide-react';
 
 const SEVERITY_RANK: Record<string, number> = { CRITICAL: 1, HIGH: 0 };
 
@@ -34,6 +34,15 @@ const SEV_STYLE: Record<string, { accent: string; bg: string; border: string }> 
 
 function sevStyle(severity: string) {
   return SEV_STYLE[severity] ?? SEV_STYLE.HIGH;
+}
+
+// TREATMENT_FAILURE_RISK is a clinically distinct signal — give it its own
+// critical-tinted chip instead of the generic gray "default" alertType badge.
+function alertTypeBadge(alertType: string) {
+  if (alertType === 'TREATMENT_FAILURE_RISK') {
+    return <Badge variant="critical">Treatment Failure Risk</Badge>;
+  }
+  return <Badge variant="default">{alertType.replace(/_/g, ' ')}</Badge>;
 }
 
 export default function SupervisorAlertsPage() {
@@ -179,7 +188,9 @@ export default function SupervisorAlertsPage() {
                     >
                       {/* Severity icon */}
                       <div className="mt-0.5 shrink-0">
-                        {alert.severity === 'CRITICAL'
+                        {alert.alertType === 'TREATMENT_FAILURE_RISK'
+                          ? <TrendingDown size={15} style={{ color: '#C0392B' }} />
+                          : alert.severity === 'CRITICAL'
                           ? <AlertTriangle size={15} style={{ color: '#C0392B' }} />
                           : <Bell         size={15} style={{ color: '#F39C12' }} />
                         }
@@ -204,9 +215,7 @@ export default function SupervisorAlertsPage() {
                           <Badge variant={alert.severity === 'CRITICAL' ? 'critical' : 'high'}>
                             {alert.severity}
                           </Badge>
-                          <Badge variant="default">
-                            {alert.alertType.replace(/_/g, ' ')}
-                          </Badge>
+                          {alertTypeBadge(alert.alertType)}
                           {alert.escalatedAt && (
                             <Badge variant="critical" size="sm">Escalated</Badge>
                           )}

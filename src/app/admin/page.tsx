@@ -132,7 +132,7 @@ export default function AdminDashboard() {
           <StatCard title="Total Users"      value={report?.totalUsers ?? 0}         icon={Users}     color="teal"  subtitle={`${report?.activeUsers ?? 0} active`} />
           <StatCard title="CHW Staff"        value={report?.totalChw ?? 0}           icon={UserCheck} color="green" />
           <StatCard title="Active Patients"  value={report?.totalActivePatients ?? 0} icon={Activity}  color="blue"  />
-          <StatCard title="LTFU Cases"       value={report?.activeLtfuTasks ?? 0}    icon={Shield}    color="red"   subtitle={`${report?.ltfuConfirmedCount ?? 0} confirmed`} />
+          <StatCard title="Treatment Interruptions" value={report?.activeLtfuTasks ?? 0} icon={Shield} color="red"   subtitle={`${report?.ltfuConfirmedCount ?? 0} confirmed`} />
         </div>
 
         {/* ── Charts ──────────────────────────────────────── */}

@@ -44,7 +44,7 @@ function roleBadge(role: string) {
   return <Badge variant={map[role] ?? 'default'}>{ROLE_LABELS[role] ?? role}</Badge>;
 }
 
-const ROLES = ['ALL', 'CHW', 'FACILITY_PROVIDER', 'SUPERVISOR', 'SYSTEM_ADMIN', 'PATIENT'];
+const ROLES = ['ALL', 'CHW', 'FACILITY_PROVIDER', 'SUPERVISOR', 'SYSTEM_ADMIN', 'ADMIN', 'PATIENT'];
 
 export default function UsersPage() {
   const [users, setUsers]         = useState<User[]>([]);

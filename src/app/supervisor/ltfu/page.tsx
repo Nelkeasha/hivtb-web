@@ -26,19 +26,19 @@ interface TracingTask {
   createdAt: string;
 }
 
-type TabKey = 'ESCALATED' | 'LTFU_CONFIRMED' | 'CHW_ASSIGNED' | 'ALL';
+type TabKey = 'ESCALATED' | 'TREATMENT_INTERRUPTED' | 'IIT_ESCALATED' | 'ALL';
 
 const TABS: { key: TabKey; label: string }[] = [
-  { key: 'ESCALATED',      label: 'Escalated'  },
-  { key: 'LTFU_CONFIRMED', label: 'LTFU'       },
-  { key: 'CHW_ASSIGNED',   label: 'Tracing'    },
-  { key: 'ALL',            label: 'All'        },
+  { key: 'ESCALATED',             label: 'Escalated'  },
+  { key: 'TREATMENT_INTERRUPTED', label: 'Interrupted'},
+  { key: 'IIT_ESCALATED',         label: 'Tracing'    },
+  { key: 'ALL',                   label: 'All'        },
 ];
 
 const STATUS_STYLE: Record<string, { accent: string; bg: string; border: string }> = {
-  LTFU_CONFIRMED: { accent: '#C0392B', bg: 'rgba(194,40,40,0.03)',  border: '#FECACA' },
-  ESCALATED:      { accent: '#E67E22', bg: 'rgba(184,68,0,0.03)',   border: '#FED7AA' },
-  CHW_ASSIGNED:   { accent: '#F39C12', bg: 'rgba(174,114,0,0.03)',  border: '#FDE68A' },
+  TREATMENT_INTERRUPTED: { accent: '#C0392B', bg: 'rgba(194,40,40,0.03)',  border: '#FECACA' },
+  ESCALATED:              { accent: '#E67E22', bg: 'rgba(184,68,0,0.03)',   border: '#FED7AA' },
+  IIT_ESCALATED:          { accent: '#F39C12', bg: 'rgba(174,114,0,0.03)',  border: '#FDE68A' },
 };
 
 function caseStyle(status: string) {
@@ -46,10 +46,10 @@ function caseStyle(status: string) {
 }
 
 function statusBadge(s: string) {
-  if (s === 'LTFU_CONFIRMED') return <Badge variant="critical">LTFU Confirmed</Badge>;
-  if (s === 'ESCALATED')      return <Badge variant="high">Escalated</Badge>;
-  if (s === 'CHW_ASSIGNED')   return <Badge variant="moderate">Tracing</Badge>;
-  if (s === 'RESOLVED')       return <Badge variant="low">Resolved</Badge>;
+  if (s === 'TREATMENT_INTERRUPTED') return <Badge variant="critical">Treatment Interrupted</Badge>;
+  if (s === 'ESCALATED')             return <Badge variant="high">Escalated</Badge>;
+  if (s === 'IIT_ESCALATED')         return <Badge variant="moderate">Tracing</Badge>;
+  if (s === 'RESOLVED')              return <Badge variant="low">Resolved</Badge>;
   return <Badge variant="info">Late</Badge>;
 }
 
@@ -75,16 +75,16 @@ export default function LtfuPage() {
   }, []);
 
   const counts = {
-    ESCALATED:      tasks.filter((t) => t.status === 'ESCALATED').length,
-    LTFU_CONFIRMED: tasks.filter((t) => t.status === 'LTFU_CONFIRMED').length,
-    CHW_ASSIGNED:   tasks.filter((t) => t.status === 'CHW_ASSIGNED').length,
+    ESCALATED:             tasks.filter((t) => t.status === 'ESCALATED').length,
+    TREATMENT_INTERRUPTED: tasks.filter((t) => t.status === 'TREATMENT_INTERRUPTED').length,
+    IIT_ESCALATED:         tasks.filter((t) => t.status === 'IIT_ESCALATED').length,
   };
 
   const filtered = tab === 'ALL' ? tasks : tasks.filter((t) => t.status === tab);
   const table = useTableControls(filtered, { pageSize: 8 });
 
   return (
-    <DashboardLayout title="LTFU Tracing Cases">
+    <DashboardLayout title="Treatment Interruption Cases">
       <div className="space-y-6">
 
         {/* ── Page header ─────────────────────────────────── */}
@@ -94,14 +94,14 @@ export default function LtfuPage() {
               Supervisor Dashboard
             </p>
             <h1 className="text-[20px] font-bold text-text-primary tracking-tight leading-none">
-              LTFU Tracing Cases
+              Treatment Interruption Cases
             </h1>
           </div>
           {!loading && tasks.length > 0 && (
             <div className="text-right">
               <p
                 className="data-num text-[30px] font-semibold leading-none"
-                style={{ color: counts.LTFU_CONFIRMED > 0 ? '#C0392B' : '#F39C12' }}
+                style={{ color: counts.TREATMENT_INTERRUPTED > 0 ? '#C0392B' : '#F39C12' }}
               >
                 {tasks.length}
               </p>
@@ -117,8 +117,8 @@ export default function LtfuPage() {
           {[
             { label: 'Total Cases',    value: tasks.length,          color: '#1A1A2E', icon: UserX         },
             { label: 'Escalated',      value: counts.ESCALATED,      color: '#E67E22', icon: AlertTriangle },
-            { label: 'LTFU Confirmed', value: counts.LTFU_CONFIRMED, color: '#C0392B', icon: AlertTriangle },
-            { label: 'In Tracing',     value: counts.CHW_ASSIGNED,   color: '#F39C12', icon: TrendingDown  },
+            { label: 'Treatment Interrupted', value: counts.TREATMENT_INTERRUPTED, color: '#C0392B', icon: AlertTriangle },
+            { label: 'In Tracing',     value: counts.IIT_ESCALATED,         color: '#F39C12', icon: TrendingDown  },
           ].map((s) => (
             <div
               key={s.label}

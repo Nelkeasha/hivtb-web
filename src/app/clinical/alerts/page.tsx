@@ -8,7 +8,7 @@ import SortSelect from '@/components/ui/SortSelect';
 import { api, extractErrorMessage } from '@/lib/api';
 import { timeAgo } from '@/lib/utils';
 import { useTableControls } from '@/lib/useTableControls';
-import { CheckCircle2, Bell, AlertTriangle, Info } from 'lucide-react';
+import { CheckCircle2, Bell, AlertTriangle, Info, TrendingDown } from 'lucide-react';
 
 const SEVERITY_RANK: Record<string, number> = { CRITICAL: 2, WARNING: 1, INFO: 0 };
 
@@ -37,7 +37,8 @@ function sevStyle(severity: string) {
   return SEV_STYLE[severity] ?? SEV_STYLE.INFO;
 }
 
-function alertIcon(severity: string, color: string) {
+function alertIcon(severity: string, color: string, alertType?: string) {
+  if (alertType === 'TREATMENT_FAILURE_RISK') return <TrendingDown size={15} style={{ color }} />;
   if (severity === 'CRITICAL') return <AlertTriangle size={15} style={{ color }} />;
   if (severity === 'WARNING')  return <Bell          size={15} style={{ color }} />;
   return                              <Info          size={15} style={{ color }} />;
@@ -47,6 +48,18 @@ function severityBadge(s: string) {
   if (s === 'CRITICAL') return <Badge variant="critical">{s}</Badge>;
   if (s === 'WARNING')  return <Badge variant="high">{s}</Badge>;
   return                       <Badge variant="info">{s}</Badge>;
+}
+
+// TREATMENT_FAILURE_RISK is a clinically distinct signal (possible treatment
+// failure, not just a missed-dose/adherence issue) — give it its own
+// critical-tinted chip instead of the generic gray "default" alertType badge,
+// so it stands out from routine adherence alerts even when raised at the
+// same severity.
+function alertTypeBadge(alertType: string) {
+  if (alertType === 'TREATMENT_FAILURE_RISK') {
+    return <Badge variant="critical" size="sm">Treatment Failure Risk</Badge>;
+  }
+  return <Badge variant="default" size="sm">{alertType.replace(/_/g, ' ')}</Badge>;
 }
 
 const SUMMARY_CHIPS = [
@@ -231,7 +244,7 @@ export default function AlertsPage() {
                     >
                       {/* Icon */}
                       <div className="mt-0.5 shrink-0">
-                        {alertIcon(alert.severity, s.iconColor)}
+                        {alertIcon(alert.severity, s.iconColor, alert.alertType)}
                       </div>
 
                       {/* Content */}
@@ -251,9 +264,7 @@ export default function AlertsPage() {
                         )}
                         <div className="flex items-center gap-2 mt-2 flex-wrap">
                           {severityBadge(alert.severity)}
-                          <Badge variant="default" size="sm">
-                            {alert.alertType.replace(/_/g, ' ')}
-                          </Badge>
+                          {alertTypeBadge(alert.alertType)}
                           {alert.escalatedAt && (
                             <Badge variant="critical" size="sm">Escalated</Badge>
                           )}

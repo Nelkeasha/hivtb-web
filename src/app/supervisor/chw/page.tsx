@@ -1,12 +1,13 @@
 'use client';
 import { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import Badge from '@/components/ui/Badge';
+import Badge, { RiskBadge } from '@/components/ui/Badge';
 import Pagination from '@/components/ui/Pagination';
 import SortSelect from '@/components/ui/SortSelect';
 import { api } from '@/lib/api';
+import { formatDate } from '@/lib/utils';
 import { useTableControls } from '@/lib/useTableControls';
-import { MapPin, Users, Activity, TrendingDown } from 'lucide-react';
+import { MapPin, Users, Activity, TrendingDown, X } from 'lucide-react';
 
 interface Chw {
   id: string;
@@ -22,6 +23,35 @@ interface Chw {
   isActive: boolean;
 }
 
+interface ChwDetailPatient {
+  id: string;
+  patientCode: string;
+  fullName: string;
+  riskLevel?: string;
+  recommendedAction?: string;
+}
+
+interface ChwDetailVisit {
+  id: string;
+  patientName?: string;
+  visitDate: string;
+  adherenceStatus: string;
+  pillCountDiscrepancy?: boolean;
+}
+
+interface ChwDetail {
+  id: string;
+  fullName: string;
+  employeeCode?: string;
+  assignedVillage?: string;
+  assignedSector?: string;
+  isActive: boolean;
+  homeVisits30d: number;
+  missedDoses7d: number;
+  patients: ChwDetailPatient[];
+  recentHomeVisits: ChwDetailVisit[];
+}
+
 function performanceBadge(chw: Chw) {
   if (chw.highRiskPatients > 3 || chw.missedDoses7d > 5) return <Badge variant="high">Needs Attention</Badge>;
   if (chw.highRiskPatients > 0 || chw.missedDoses7d > 0)  return <Badge variant="moderate">Monitor</Badge>;
@@ -31,6 +61,9 @@ function performanceBadge(chw: Chw) {
 export default function ChwPage() {
   const [chws, setChws]       = useState<Chw[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [detail, setDetail] = useState<ChwDetail | null>(null);
+  const [detailLoading, setDetailLoading] = useState(false);
 
   useEffect(() => {
     api.get('/api/supervisor/dashboard/chws')
@@ -38,6 +71,15 @@ export default function ChwPage() {
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    if (!selectedId) { setDetail(null); return; }
+    setDetailLoading(true);
+    api.get(`/api/supervisor/dashboard/chws/${selectedId}`)
+      .then((r) => setDetail(r.data))
+      .catch(console.error)
+      .finally(() => setDetailLoading(false));
+  }, [selectedId]);
 
   const active        = chws.filter((c) => c.isActive);
   const totalPatients = chws.reduce((s, c) => s + c.totalPatients, 0);
@@ -116,7 +158,7 @@ export default function ChwPage() {
             )}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
               {table.paged.map((chw) => (
-                <ChwCard key={chw.id} chw={chw} />
+                <ChwCard key={chw.id} chw={chw} onClick={() => setSelectedId(chw.id)} />
               ))}
             </div>
             <div className="rounded-xl bg-white" style={{ border: '1px solid #DCECF0' }}>
@@ -131,11 +173,119 @@ export default function ChwPage() {
           </>
         )}
       </div>
+
+      {selectedId && (
+        <ChwDetailPanel
+          detail={detail}
+          loading={detailLoading}
+          onClose={() => setSelectedId(null)}
+        />
+      )}
     </DashboardLayout>
   );
 }
 
-function ChwCard({ chw }: { chw: Chw }) {
+function ChwDetailPanel({ detail, loading, onClose }: {
+  detail: ChwDetail | null; loading: boolean; onClose: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex justify-end">
+      <div className="absolute inset-0 bg-black/30" onClick={onClose} />
+      <div className="relative bg-white w-full max-w-md h-full overflow-y-auto shadow-2xl">
+        <div
+          className="flex items-center justify-between px-5 py-4 sticky top-0 bg-white"
+          style={{ borderBottom: '1px solid #E8F4F8' }}
+        >
+          <h3 className="text-[14px] font-bold text-text-primary">CHW Detail</h3>
+          <button onClick={onClose} className="p-1 rounded-lg hover:bg-[#EDF6F9]">
+            <X size={18} className="text-text-hint" />
+          </button>
+        </div>
+
+        {loading || !detail ? (
+          <div className="flex justify-center py-16">
+            <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : (
+          <div className="px-5 py-4 space-y-5">
+            <div>
+              <p className="text-[15px] font-bold text-text-primary">{detail.fullName}</p>
+              <p className="data-num text-[11px] text-text-hint mt-0.5">{detail.employeeCode ?? '—'}</p>
+              {(detail.assignedSector || detail.assignedVillage) && (
+                <div className="flex items-center gap-1.5 mt-1.5">
+                  <MapPin size={11} style={{ color: '#AAB4BC' }} />
+                  <p className="text-[11px] text-text-hint">
+                    {[detail.assignedSector, detail.assignedVillage].filter(Boolean).join(', ')}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-lg p-3 text-center" style={{ background: '#EDF6F9', border: '1px solid #DCECF0' }}>
+                <p className="data-num text-[18px] font-semibold" style={{ color: '#006D77' }}>{detail.homeVisits30d}</p>
+                <p className="text-[10px] text-text-hint uppercase tracking-wide mt-0.5">Visits / 30d</p>
+              </div>
+              <div className="rounded-lg p-3 text-center" style={{ background: '#EDF6F9', border: '1px solid #DCECF0' }}>
+                <p className="data-num text-[18px] font-semibold" style={{ color: detail.missedDoses7d > 5 ? '#C0392B' : '#F39C12' }}>
+                  {detail.missedDoses7d}
+                </p>
+                <p className="text-[10px] text-text-hint uppercase tracking-wide mt-0.5">Missed / 7d</p>
+              </div>
+            </div>
+
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-text-hint mb-2">
+                Patients ({detail.patients.length})
+              </p>
+              {detail.patients.length === 0 ? (
+                <p className="text-[12px] text-text-hint">No patients assigned.</p>
+              ) : (
+                <div className="space-y-2">
+                  {detail.patients.map((p) => (
+                    <div key={p.id} className="flex items-center justify-between gap-2 rounded-lg px-3 py-2" style={{ border: '1px solid #E8F4F8' }}>
+                      <div className="min-w-0">
+                        <p className="text-[12.5px] font-medium text-text-primary truncate">{p.fullName}</p>
+                        <p className="data-num text-[10px] text-text-hint">{p.patientCode}</p>
+                      </div>
+                      {p.riskLevel && <RiskBadge level={p.riskLevel} />}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-text-hint mb-2">
+                Recent Home Visits
+              </p>
+              {detail.recentHomeVisits.length === 0 ? (
+                <p className="text-[12px] text-text-hint">No recent visits.</p>
+              ) : (
+                <div className="space-y-2">
+                  {detail.recentHomeVisits.map((v) => (
+                    <div key={v.id} className="flex items-center justify-between gap-2 rounded-lg px-3 py-2" style={{ border: '1px solid #E8F4F8' }}>
+                      <div className="min-w-0">
+                        <p className="text-[12.5px] font-medium text-text-primary truncate">{v.patientName ?? '—'}</p>
+                        <p className="data-num text-[10px] text-text-hint">{formatDate(v.visitDate)}</p>
+                      </div>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        {v.pillCountDiscrepancy && <Badge variant="high" size="sm">Discrepancy</Badge>}
+                        <Badge variant="default" size="sm">{v.adherenceStatus}</Badge>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ChwCard({ chw, onClick }: { chw: Chw; onClick: () => void }) {
   const patientPct = chw.totalPatients > 0
     ? Math.min((chw.activePatients / chw.totalPatients) * 100, 100)
     : 0;
@@ -144,7 +294,11 @@ function ChwCard({ chw }: { chw: Chw }) {
 
   return (
     <div
-      className="bg-white rounded-xl overflow-hidden transition-shadow hover:shadow-sm"
+      onClick={onClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter') onClick(); }}
+      className="bg-white rounded-xl overflow-hidden transition-shadow hover:shadow-sm cursor-pointer"
       style={{
         border: '1px solid #DCECF0',
         borderLeft: chw.isActive ? '3px solid #006D77' : '3px solid #DCECF0',

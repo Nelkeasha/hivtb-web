@@ -47,6 +47,15 @@ interface Patient {
   recommendedAction?: string;
 }
 
+interface BelowThresholdPatient {
+  id: string;
+  fullName: string;
+  patientCode: string;
+  diagnosisType?: string;
+  chwName?: string;
+  riskLevel?: string;
+}
+
 interface TrendPoint { day: string; adherence: number; confirmed: number; }
 
 const TOOLTIP_STYLE = {
@@ -64,6 +73,7 @@ export default function ClinicalDashboard() {
   const [alerts, setAlerts]     = useState<Alert[]>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [trendData, setTrendData] = useState<TrendPoint[]>([]);
+  const [belowThreshold, setBelowThreshold] = useState<BelowThresholdPatient[]>([]);
   const [loading, setLoading]   = useState(true);
 
   useEffect(() => {
@@ -72,13 +82,15 @@ export default function ClinicalDashboard() {
       api.get('/api/alerts/clinical'),
       api.get('/api/clinical/dashboard/patients'),
       api.get('/api/clinical/dashboard/adherence/trend'),
-    ]).then(([s, a, p, t]) => {
+      api.get('/api/clinical/dashboard/adherence/below-threshold'),
+    ]).then(([s, a, p, t, b]) => {
       setStats(s.data);
       setAlerts((a.data as Alert[]).filter(al => !al.isResolved).slice(0, 6));
       setPatients((p.data as Patient[])
         .filter(pt => pt.riskLevel === 'HIGH' || pt.riskLevel === 'CRITICAL')
         .slice(0, 8));
       setTrendData(t.data);
+      setBelowThreshold(b.data);
     }).catch(console.error)
       .finally(() => setLoading(false));
   }, []);
@@ -308,6 +320,58 @@ export default function ClinicalDashboard() {
                       <td className="py-3 pr-6 text-[12px] text-text-secondary">{p.chwName ?? '—'}</td>
                       <td className="py-3 text-[12px] text-text-secondary max-w-[160px] truncate">
                         {p.recommendedAction ?? '—'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+
+          {/* ── Below adherence threshold ────────────────────── */}
+          <Card
+            title="Below Adherence Threshold"
+            subtitle="Patients whose recent dose confirmations have fallen below the facility's adherence target"
+          >
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr style={{ borderBottom: '1px solid #DCECF0' }}>
+                    {['Patient', 'Code', 'Diagnosis', 'CHW', 'Risk'].map(h => (
+                      <th key={h} className="pb-3 pr-6 text-left text-[11px] font-semibold uppercase tracking-widest text-text-hint">
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {belowThreshold.length === 0 && (
+                    <tr>
+                      <td colSpan={5} className="py-10 text-center text-[13px] text-text-hint">
+                        No patients currently below the adherence threshold
+                      </td>
+                    </tr>
+                  )}
+                  {belowThreshold.map(p => (
+                    <tr
+                      key={p.id}
+                      className="table-row-hover transition-colors cursor-pointer"
+                      style={{ borderBottom: '1px solid #E8F4F8' }}
+                    >
+                      <td className="py-3 pr-6">
+                        <span className="text-[13px] font-semibold text-text-primary">{p.fullName}</span>
+                      </td>
+                      <td className="py-3 pr-6 data-num text-[12px] text-text-hint">
+                        {p.patientCode}
+                      </td>
+                      <td className="py-3 pr-6">
+                        <Badge variant="default" size="sm">
+                          {p.diagnosisType?.replace('_', '+') ?? '—'}
+                        </Badge>
+                      </td>
+                      <td className="py-3 pr-6 text-[12px] text-text-secondary">{p.chwName ?? '—'}</td>
+                      <td className="py-3 pr-6">
+                        {p.riskLevel ? <RiskBadge level={p.riskLevel} /> : <span className="text-[12px] text-text-hint">—</span>}
                       </td>
                     </tr>
                   ))}

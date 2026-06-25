@@ -755,14 +755,21 @@ function AddPlanForm({ patientId, onDone, onCancel }: {
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState('');
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [medications, setMedications] = useState<{ id: string; name: string }[]>([]);
   const [f, setF] = useState({
-    medicationName: '', dosage: '', frequency: 'ONCE_DAILY', startDate: '',
+    medicationId: '', dosage: '', frequency: 'ONCE_DAILY', startDate: '',
   });
+
+  useEffect(() => {
+    api.get('/api/treatment-plans/medications-formulary')
+      .then((r) => setMedications(r.data))
+      .catch(console.error);
+  }, []);
 
   function validate(): Record<string, string> {
     const errors: Record<string, string> = {};
-    const nameError = validateRequired(f.medicationName, 'Medication name') ?? validateMaxLength(f.medicationName, 100, 'Medication name');
-    if (nameError) errors.medicationName = nameError;
+    const nameError = validateRequired(f.medicationId, 'Medication');
+    if (nameError) errors.medicationId = nameError;
     const dosageError = validateRequired(f.dosage, 'Dosage') ?? validateMaxLength(f.dosage, 50, 'Dosage');
     if (dosageError) errors.dosage = dosageError;
     const startDateError = validateRequired(f.startDate, 'Start date');
@@ -799,9 +806,18 @@ function AddPlanForm({ patientId, onDone, onCancel }: {
       </p>
       {error && <p className="text-[12px] font-medium" style={{ color: '#C0392B' }}>{error}</p>}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <FormField label="Medication Name" value={f.medicationName}
-          onChange={(v) => setF({ ...f, medicationName: v })} placeholder="TDF/3TC/EFV"
-          error={fieldErrors.medicationName} />
+        <FormSelect
+          label="Medication"
+          value={f.medicationId}
+          onChange={(v) => setF({ ...f, medicationId: v })}
+          error={fieldErrors.medicationId}
+          required
+        >
+          <option value="">Select medication…</option>
+          {medications.map((m) => (
+            <option key={m.id} value={m.id}>{m.name}</option>
+          ))}
+        </FormSelect>
         <FormField label="Dosage" value={f.dosage}
           onChange={(v) => setF({ ...f, dosage: v })}
           placeholder="1 tablet (300mg/300mg/600mg)" error={fieldErrors.dosage} />

@@ -7,7 +7,7 @@ import SortableTh from '@/components/ui/SortableTh';
 import { api } from '@/lib/api';
 import { timeAgo } from '@/lib/utils';
 import { useTableControls } from '@/lib/useTableControls';
-import { Search, ShieldCheck } from 'lucide-react';
+import { Search, ShieldCheck, ShieldAlert, Link2 } from 'lucide-react';
 
 interface AuditLog {
   id: string;
@@ -16,6 +16,13 @@ interface AuditLog {
   targetTable?: string;
   details?: string;
   timestamp: string;
+}
+
+interface ChainVerification {
+  intact: boolean;
+  entriesChecked: number;
+  brokenAtEntryId?: string;
+  reason?: string;
 }
 
 const ACTIONS = [
@@ -50,6 +57,20 @@ export default function AuditLogPage() {
   const [action, setAction] = useState('ALL');
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
+  const [verification, setVerification] = useState<ChainVerification | null>(null);
+  const [verifying, setVerifying] = useState(false);
+
+  async function verifyChain() {
+    setVerifying(true);
+    try {
+      const r = await api.get('/api/admin/audit-log/verify-chain');
+      setVerification(r.data);
+    } catch {
+      setVerification({ intact: false, entriesChecked: 0, reason: 'Could not reach the server.' });
+    } finally {
+      setVerifying(false);
+    }
+  }
 
   useEffect(() => {
     setLoading(true);
@@ -92,6 +113,48 @@ export default function AuditLogPage() {
           )}
         </div>
 
+        {/* ── Tamper-evidence chain verification ────────────── */}
+        <div
+          className="bg-white rounded-xl px-5 py-4 flex items-center justify-between gap-4 flex-wrap"
+          style={{ border: '1px solid #DCECF0' }}
+        >
+          <div className="flex items-center gap-3">
+            <Link2 size={16} className="text-text-hint shrink-0" />
+            <div>
+              <p className="text-[12.5px] font-semibold text-text-primary">
+                Tamper-evidence chain
+              </p>
+              <p className="text-[11px] text-text-hint mt-0.5">
+                Each entry is hash-chained to the one before it — verifying recomputes every hash to confirm nothing was altered.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            {verification && (
+              verification.intact ? (
+                <span className="flex items-center gap-1.5 text-[12px] font-semibold" style={{ color: '#27AE60' }}>
+                  <ShieldCheck size={14} />
+                  Intact — {verification.entriesChecked} entries checked
+                </span>
+              ) : (
+                <span className="flex items-center gap-1.5 text-[12px] font-semibold" style={{ color: '#C0392B' }}>
+                  <ShieldAlert size={14} />
+                  {verification.reason ?? 'Chain broken'}
+                  {verification.brokenAtEntryId && ` (at entry ${verification.brokenAtEntryId.slice(0, 8)}…)`}
+                </span>
+              )
+            )}
+            <button
+              onClick={verifyChain}
+              disabled={verifying}
+              className="text-[11px] px-3 py-1.5 rounded-lg font-semibold transition-colors disabled:opacity-50"
+              style={{ background: '#006D77', color: '#fff' }}
+            >
+              {verifying ? 'Verifying…' : 'Verify chain'}
+            </button>
+          </div>
+        </div>
+
         {/* ── Main card ────────────────────────────────────── */}
         <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #DCECF0' }}>
 
@@ -112,7 +175,7 @@ export default function AuditLogPage() {
             <div className="flex items-center gap-2 flex-wrap">
               {/* Action filter pills */}
               <div className="flex gap-1 flex-wrap">
-                {ACTIONS.slice(0, 5).map((a) => (
+                {ACTIONS.map((a) => (
                   <button
                     key={a}
                     onClick={() => setAction(a)}
