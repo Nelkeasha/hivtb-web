@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Badge from '@/components/ui/Badge';
@@ -78,7 +78,7 @@ export default function AlertsPage() {
   useEffect(() => {
     api.get('/api/alerts/clinical')
       .then((r) => setAlerts(r.data))
-      .catch(console.error)
+      .catch(e => setError(extractErrorMessage(e, 'Failed to load alerts. Try refreshing.')))
       .finally(() => setLoading(false));
   }, []);
 
@@ -194,9 +194,9 @@ export default function AlertsPage() {
                     onClick={() => setFilter(f)}
                     className="text-[11px] px-2.5 py-1 rounded font-semibold transition-colors"
                     style={{
-                      background: filter === f ? '#006D77' : '#EDF6F9',
+                      background: filter === f ? '#D12C1F' : '#EDF6F9',
                       color:      filter === f ? '#fff'    : '#5A6474',
-                      border:     `1px solid ${filter === f ? '#006D77' : '#DCECF0'}`,
+                      border:     `1px solid ${filter === f ? '#D12C1F' : '#DCECF0'}`,
                     }}
                   >
                     {f === 'ALL' ? 'All' : f.charAt(0) + f.slice(1).toLowerCase()}

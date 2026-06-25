@@ -4,7 +4,8 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import Badge from '@/components/ui/Badge';
 import Pagination from '@/components/ui/Pagination';
 import SortSelect from '@/components/ui/SortSelect';
-import { api } from '@/lib/api';
+import { api, extractErrorMessage } from '@/lib/api';
+import ApiErrorBanner from '@/components/ui/ApiErrorBanner';
 import { formatDate, timeAgo } from '@/lib/utils';
 import { useTableControls } from '@/lib/useTableControls';
 import { AlertTriangle, Clock, UserX, TrendingDown } from 'lucide-react';
@@ -42,7 +43,7 @@ const STATUS_STYLE: Record<string, { accent: string; bg: string; border: string 
 };
 
 function caseStyle(status: string) {
-  return STATUS_STYLE[status] ?? { accent: '#006D77', bg: 'rgba(0,95,107,0.02)', border: '#DCECF0' };
+  return STATUS_STYLE[status] ?? { accent: '#D12C1F', bg: 'rgba(209,44,31,0.02)', border: '#DCECF0' };
 }
 
 function statusBadge(s: string) {
@@ -57,6 +58,7 @@ export default function LtfuPage() {
   const [tasks, setTasks]     = useState<TracingTask[]>([]);
   const [tab, setTab]         = useState<TabKey>('ESCALATED');
   const [loading, setLoading] = useState(true);
+  const [apiError, setApiError] = useState('');
 
   useEffect(() => {
     api.get('/api/tracing/supervisor/escalated')
@@ -70,7 +72,7 @@ export default function LtfuPage() {
           setTasks(unique);
         });
       })
-      .catch(console.error)
+      .catch(e => setApiError(extractErrorMessage(e, 'Failed to load tracing data. Try refreshing.')))
       .finally(() => setLoading(false));
   }, []);
 
@@ -86,6 +88,7 @@ export default function LtfuPage() {
   return (
     <DashboardLayout title="Treatment Interruption Cases">
       <div className="space-y-6">
+        {apiError && <ApiErrorBanner message={apiError} onDismiss={() => setApiError('')} />}
 
         {/* ── Page header ─────────────────────────────────── */}
         <div className="flex items-end justify-between">
@@ -160,9 +163,9 @@ export default function LtfuPage() {
                       onClick={() => setTab(key)}
                       className="text-[11px] px-2.5 py-1 rounded font-semibold transition-colors"
                       style={{
-                        background: tab === key ? '#006D77' : '#EDF6F9',
+                        background: tab === key ? '#D12C1F' : '#EDF6F9',
                         color:      tab === key ? '#fff'    : '#5A6474',
-                        border:     `1px solid ${tab === key ? '#006D77' : '#DCECF0'}`,
+                        border:     `1px solid ${tab === key ? '#D12C1F' : '#DCECF0'}`,
                       }}
                     >
                       {label}{count > 0 && ` (${count})`}

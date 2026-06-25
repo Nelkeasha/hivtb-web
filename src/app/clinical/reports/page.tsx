@@ -4,7 +4,7 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import StatCard from '@/components/ui/StatCard';
 import Card from '@/components/ui/Card';
 import ExportMenu from '@/components/ui/ExportMenu';
-import { api } from '@/lib/api';
+import { api, extractErrorMessage } from '@/lib/api';
 import { Users, TrendingUp, AlertCircle, ArrowLeftRight } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
@@ -44,11 +44,12 @@ const AXIS_TICK_MONO = { fontSize: 11, fill: '#AAB4BC', fontFamily: "'JetBrains 
 export default function ReportsPage() {
   const [report, setReport] = useState<Report | null>(null);
   const [loading, setLoading] = useState(true);
+  const [apiError, setApiError] = useState('');
 
   useEffect(() => {
     api.get('/api/clinical/dashboard/reports/summary')
       .then((r) => setReport(r.data))
-      .catch(console.error)
+      .catch(e => setApiError(extractErrorMessage(e, 'Failed to load report data. Try refreshing.')))
       .finally(() => setLoading(false));
   }, []);
 
@@ -62,14 +63,21 @@ export default function ReportsPage() {
 
   if (!report) return (
     <DashboardLayout title="Facility Report">
-      <div className="text-center py-20 text-[13px] text-text-hint">Could not load report</div>
+      <div className="text-center py-20">
+        <p className="text-[13px] font-semibold" style={{ color: '#D12C1F' }}>
+          {apiError || 'Could not load report data'}
+        </p>
+        <p className="text-[12px] text-text-hint mt-1">
+          Try refreshing the page. If the problem persists, the server may be starting up.
+        </p>
+      </div>
     </DashboardLayout>
   );
 
   const adherencePct = Math.round(report.facilityAdherenceAvg);
 
   const diagnosisData = [
-    { name: 'HIV',    value: report.hivOnly,         fill: '#006D77' },
+    { name: 'HIV',    value: report.hivOnly,         fill: '#D12C1F' },
     { name: 'TB',     value: report.tbOnly,           fill: '#00919E' },
     { name: 'HIV+TB', value: report.hivTbCoinfection, fill: '#3DCAD4' },
   ];
@@ -253,7 +261,7 @@ export default function ReportsPage() {
               >
                 <p
                   className="data-num text-[20px] font-semibold leading-none"
-                  style={{ color: item.warn ? '#C0392B' : '#006D77' }}
+                  style={{ color: item.warn ? '#C0392B' : '#D12C1F' }}
                 >
                   {item.value}
                 </p>

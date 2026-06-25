@@ -4,7 +4,8 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import StatCard from '@/components/ui/StatCard';
 import Card from '@/components/ui/Card';
 import { RiskBadge } from '@/components/ui/Badge';
-import { api } from '@/lib/api';
+import { api, extractErrorMessage } from '@/lib/api';
+import ApiErrorBanner from '@/components/ui/ApiErrorBanner';
 import { riskDot } from '@/lib/utils';
 import { Users, AlertCircle, Activity, TrendingDown } from 'lucide-react';
 import {
@@ -66,6 +67,7 @@ export default function SupervisorDashboard() {
   const [patients, setPatients]     = useState<Patient[]>([]);
   const [loading, setLoading]       = useState(true);
   const [visitData, setVisitData]   = useState<ActivityPoint[]>([]);
+  const [apiError, setApiError]     = useState('');
 
   useEffect(() => {
     Promise.all([
@@ -78,7 +80,7 @@ export default function SupervisorDashboard() {
       setChws((c.data as Chw[]).slice(0, 6));
       setPatients((p.data as Patient[]).slice(0, 6));
       setVisitData(a.data);
-    }).catch(console.error)
+    }).catch(e => setApiError(extractErrorMessage(e, 'Failed to load dashboard data. Try refreshing.')))
       .finally(() => setLoading(false));
   }, []);
 
@@ -92,6 +94,7 @@ export default function SupervisorDashboard() {
         </div>
       ) : (
         <div className="space-y-6">
+          {apiError && <ApiErrorBanner message={apiError} onDismiss={() => setApiError('')} />}
 
           {/* ── Page header ─────────────────────────────────── */}
           {stats && (
@@ -168,8 +171,8 @@ export default function SupervisorDashboard() {
                 <AreaChart data={visitData} margin={{ top: 4, right: 8, left: -26, bottom: 0 }}>
                   <defs>
                     <linearGradient id="gVisits" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%"  stopColor="#006D77" stopOpacity={0.14} />
-                      <stop offset="95%" stopColor="#006D77" stopOpacity={0} />
+                      <stop offset="5%"  stopColor="#D12C1F" stopOpacity={0.14} />
+                      <stop offset="95%" stopColor="#D12C1F" stopOpacity={0} />
                     </linearGradient>
                     <linearGradient id="gMissed" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%"  stopColor="#E29578" stopOpacity={0.12} />
@@ -189,7 +192,7 @@ export default function SupervisorDashboard() {
                   />
                   <Area
                     type="monotone" dataKey="visits"
-                    stroke="#006D77" strokeWidth={2}
+                    stroke="#D12C1F" strokeWidth={2}
                     fill="url(#gVisits)" name="Visits"
                   />
                   <Area
@@ -210,7 +213,7 @@ export default function SupervisorDashboard() {
                 <a
                   href="/supervisor/chw"
                   className="text-[12px] font-semibold hover:underline"
-                  style={{ color: '#006D77' }}
+                  style={{ color: '#D12C1F' }}
                 >
                   View all →
                 </a>
@@ -228,7 +231,7 @@ export default function SupervisorDashboard() {
                   >
                     <div
                       className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 text-[10px] font-bold text-white"
-                      style={{ background: c.isActive ? '#006D77' : '#AAB4BC' }}
+                      style={{ background: c.isActive ? '#D12C1F' : '#AAB4BC' }}
                     >
                       {c.fullName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
                     </div>
@@ -265,7 +268,7 @@ export default function SupervisorDashboard() {
               <a
                 href="/supervisor/analytics"
                 className="text-[12px] font-semibold hover:underline"
-                style={{ color: '#006D77' }}
+                style={{ color: '#D12C1F' }}
               >
                 Analytics →
               </a>

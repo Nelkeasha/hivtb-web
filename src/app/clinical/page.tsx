@@ -4,7 +4,8 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import StatCard from '@/components/ui/StatCard';
 import Card from '@/components/ui/Card';
 import Badge, { RiskBadge } from '@/components/ui/Badge';
-import { api } from '@/lib/api';
+import { api, extractErrorMessage } from '@/lib/api';
+import ApiErrorBanner from '@/components/ui/ApiErrorBanner';
 import { timeAgo, riskDot } from '@/lib/utils';
 import {
   Users, AlertCircle, Activity, TrendingDown, CheckCircle2,
@@ -75,6 +76,7 @@ export default function ClinicalDashboard() {
   const [trendData, setTrendData] = useState<TrendPoint[]>([]);
   const [belowThreshold, setBelowThreshold] = useState<BelowThresholdPatient[]>([]);
   const [loading, setLoading]   = useState(true);
+  const [apiError, setApiError] = useState('');
 
   useEffect(() => {
     Promise.all([
@@ -91,7 +93,7 @@ export default function ClinicalDashboard() {
         .slice(0, 8));
       setTrendData(t.data);
       setBelowThreshold(b.data);
-    }).catch(console.error)
+    }).catch(e => setApiError(extractErrorMessage(e, 'Failed to load dashboard data. Try refreshing.')))
       .finally(() => setLoading(false));
   }, []);
 
@@ -110,6 +112,7 @@ export default function ClinicalDashboard() {
         </div>
       ) : (
         <div className="space-y-6">
+          {apiError && <ApiErrorBanner message={apiError} onDismiss={() => setApiError('')} />}
 
           {/* ── Page header ────────────────────────────────── */}
           {stats && (
@@ -197,7 +200,7 @@ export default function ClinicalDashboard() {
                   <Legend wrapperStyle={{ fontSize: 11, paddingTop: 10 }} />
                   <Line
                     type="monotone" dataKey="adherence"
-                    stroke="#006D77" strokeWidth={2}
+                    stroke="#D12C1F" strokeWidth={2}
                     dot={false} name="Adherence %"
                   />
                   <Line
@@ -249,7 +252,7 @@ export default function ClinicalDashboard() {
                       title="Resolve"
                       className="opacity-0 group-hover:opacity-100 transition-opacity mt-0.5"
                       style={{ color: '#AAB4BC' }}
-                      onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#006D77'; }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#D12C1F'; }}
                       onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#AAB4BC'; }}
                     >
                       <CheckCircle2 size={13} />
@@ -268,7 +271,7 @@ export default function ClinicalDashboard() {
               <a
                 href="/clinical/patients"
                 className="text-[12px] font-semibold hover:underline"
-                style={{ color: '#006D77' }}
+                style={{ color: '#D12C1F' }}
               >
                 View all →
               </a>

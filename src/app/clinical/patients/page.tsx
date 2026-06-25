@@ -8,7 +8,8 @@ import Button from '@/components/ui/Button';
 import Pagination from '@/components/ui/Pagination';
 import SortableTh from '@/components/ui/SortableTh';
 import SortSelect from '@/components/ui/SortSelect';
-import { api } from '@/lib/api';
+import { api, extractErrorMessage } from '@/lib/api';
+import ApiErrorBanner from '@/components/ui/ApiErrorBanner';
 import { riskDot } from '@/lib/utils';
 import { useTableControls } from '@/lib/useTableControls';
 import { Search, Plus, AlertCircle } from 'lucide-react';
@@ -32,6 +33,7 @@ export default function PatientsPage() {
   const [search, setSearch]           = useState('');
   const [riskFilter, setRiskFilter]   = useState('ALL');
   const [loading, setLoading]         = useState(true);
+  const [apiError, setApiError]       = useState('');
 
   useEffect(() => {
     Promise.all([
@@ -40,7 +42,7 @@ export default function PatientsPage() {
     ]).then(([ar, pr]) => {
       setPatients(ar.data);
       setProvisional(pr.data);
-    }).catch(console.error)
+    }).catch(e => setApiError(extractErrorMessage(e, 'Failed to load patients. Try refreshing.')))
       .finally(() => setLoading(false));
   }, []);
 
@@ -63,6 +65,7 @@ export default function PatientsPage() {
 
   return (
     <DashboardLayout title="Patients">
+      {apiError && <ApiErrorBanner message={apiError} onDismiss={() => setApiError('')} className="mb-4" />}
       {/* ── Page header + register button ───────────────────── */}
       <div className="flex items-end justify-between mb-5">
         <div>
@@ -119,9 +122,9 @@ export default function PatientsPage() {
                     onClick={() => setRiskFilter(r)}
                     className="text-[11px] px-2.5 py-1 rounded font-semibold transition-colors"
                     style={{
-                      background: riskFilter === r ? '#006D77' : '#EDF6F9',
+                      background: riskFilter === r ? '#D12C1F' : '#EDF6F9',
                       color: riskFilter === r ? '#fff' : '#5A6474',
-                      border: `1px solid ${riskFilter === r ? '#006D77' : '#DCECF0'}`,
+                      border: `1px solid ${riskFilter === r ? '#D12C1F' : '#DCECF0'}`,
                     }}
                   >
                     {r === 'ALL' ? 'All' : r.charAt(0) + r.slice(1).toLowerCase()}
@@ -137,7 +140,7 @@ export default function PatientsPage() {
                   placeholder="Search…"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  onFocus={e => { (e.currentTarget as HTMLInputElement).style.borderColor = '#006D77'; }}
+                  onFocus={e => { (e.currentTarget as HTMLInputElement).style.borderColor = '#D12C1F'; }}
                   onBlur={e  => { (e.currentTarget as HTMLInputElement).style.borderColor = '#DCECF0'; }}
                 />
               </div>
@@ -245,7 +248,7 @@ export default function PatientsPage() {
                     placeholder="Search name or referral ID…"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    onFocus={e => { (e.currentTarget as HTMLInputElement).style.borderColor = '#006D77'; }}
+                    onFocus={e => { (e.currentTarget as HTMLInputElement).style.borderColor = '#D12C1F'; }}
                     onBlur={e  => { (e.currentTarget as HTMLInputElement).style.borderColor = '#DCECF0'; }}
                   />
                 </div>

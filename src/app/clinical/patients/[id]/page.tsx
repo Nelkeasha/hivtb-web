@@ -17,6 +17,7 @@ import {
   MapPin, Stethoscope, Calendar, Pill, AlertCircle, Phone, User,
   Home, Bell,
 } from 'lucide-react';
+import ApiErrorBanner from '@/components/ui/ApiErrorBanner';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -70,6 +71,7 @@ export default function PatientDetailPage() {
   const [patient, setPatient]   = useState<Patient | null>(null);
   const [plans, setPlans]       = useState<Plan[]>([]);
   const [loading, setLoading]   = useState(true);
+  const [apiError, setApiError] = useState('');
   const [showAddPlan, setShowAddPlan]           = useState(false);
   const [addingScheduleTo, setAddingScheduleTo] = useState<string | null>(null);
 
@@ -80,14 +82,14 @@ export default function PatientDetailPage() {
     ]).then(([pr, plr]) => {
       setPatient(pr.data);
       setPlans(plr.data);
-    }).catch(console.error)
+    }).catch(e => setApiError(extractErrorMessage(e, 'Failed to load patient data. Try refreshing.')))
       .finally(() => setLoading(false));
   }, [id]);
 
   function reload() {
     api.get(`/api/treatment-plans/patient/${id}`)
       .then((r) => setPlans(r.data))
-      .catch(console.error);
+      .catch(e => setApiError(extractErrorMessage(e, 'Failed to reload plans.')));
   }
 
   if (loading) {
@@ -103,7 +105,16 @@ export default function PatientDetailPage() {
   if (!patient) {
     return (
       <DashboardLayout title="Patient">
-        <p className="text-[13px] text-text-secondary">Patient not found.</p>
+        <div className="text-center py-20">
+          <p className="text-[13px] font-semibold" style={{ color: '#D12C1F' }}>
+            {apiError || 'Patient not found.'}
+          </p>
+          {apiError && (
+            <p className="text-[12px] text-text-hint mt-1">
+              Try refreshing the page.
+            </p>
+          )}
+        </div>
       </DashboardLayout>
     );
   }
@@ -120,6 +131,8 @@ export default function PatientDetailPage() {
 
   return (
     <DashboardLayout title={patient.fullName}>
+
+      {apiError && <ApiErrorBanner message={apiError} onDismiss={() => setApiError('')} className="mb-4" />}
 
       {/* ── Back + breadcrumb ──────────────────────────────── */}
       <button
@@ -138,14 +151,14 @@ export default function PatientDetailPage() {
           <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #DCECF0' }}>
 
             {/* Teal header accent */}
-            <div style={{ height: 3, background: '#006D77' }} />
+            <div style={{ height: 3, background: '#D12C1F' }} />
 
             <div className="p-5">
               {/* Avatar + name */}
               <div className="flex items-start gap-3 mb-5">
                 <div
                   className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 text-white font-bold text-[14px]"
-                  style={{ background: '#006D77' }}
+                  style={{ background: '#D12C1F' }}
                 >
                   {initials}
                 </div>
@@ -267,7 +280,7 @@ export default function PatientDetailPage() {
           {(patient.recentHomeVisits?.length ?? 0) > 0 && (
             <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #DCECF0' }}>
               <div className="flex items-center gap-2 px-6 py-4" style={{ borderBottom: '1px solid #E8F4F8' }}>
-                <Home size={14} style={{ color: '#006D77' }} />
+                <Home size={14} style={{ color: '#D12C1F' }} />
                 <h3 className="text-[13px] font-semibold text-text-primary tracking-tight">
                   Recent Home Visits
                 </h3>
@@ -377,12 +390,12 @@ export default function PatientDetailPage() {
                   onDeactivate={() =>
                     api.put(`/api/treatment-plans/${plan.id}`, { isActive: false })
                       .then(reload)
-                      .catch(console.error)
+                      .catch(e => setApiError(extractErrorMessage(e, 'Failed to deactivate plan.')))
                   }
                   onDeactivateSchedule={(sid) =>
                     api.put(`/api/treatment-plans/schedules/${sid}/deactivate`)
                       .then(reload)
-                      .catch(console.error)
+                      .catch(e => setApiError(extractErrorMessage(e, 'Failed to deactivate schedule.')))
                   }
                 />
               ))}
@@ -600,9 +613,9 @@ function PlanBlock({
         <div className="flex items-center gap-3">
           <div
             className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-            style={{ background: 'rgba(0,95,107,0.09)' }}
+            style={{ background: 'rgba(209,44,31,0.09)' }}
           >
-            <Pill size={15} style={{ color: '#006D77' }} />
+            <Pill size={15} style={{ color: '#D12C1F' }} />
           </div>
           <div>
             <p className="text-[14px] font-semibold text-text-primary leading-tight">
@@ -676,9 +689,9 @@ function PlanBlock({
           <button
             onClick={onAddSchedule}
             className="mt-3 flex items-center gap-1.5 text-[12px] font-semibold transition-colors"
-            style={{ color: '#006D77' }}
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#004E57'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#006D77'; }}
+            style={{ color: '#D12C1F' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#8B1A11'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#D12C1F'; }}
           >
             <Plus size={13} /> Add Dose Schedule
           </button>
@@ -704,10 +717,10 @@ function ScheduleRow({
       className="flex items-center gap-3 rounded-lg px-3 py-2.5"
       style={{ background: '#EDF6F9', border: '1px solid #DCECF0' }}
     >
-      <Clock size={12} className="shrink-0" style={{ color: schedule.isActive ? '#006D77' : '#AAB4BC' }} />
+      <Clock size={12} className="shrink-0" style={{ color: schedule.isActive ? '#D12C1F' : '#AAB4BC' }} />
       <p
         className="data-num text-[14px] font-semibold shrink-0"
-        style={{ color: schedule.isActive ? '#006D77' : '#AAB4BC', minWidth: 40 }}
+        style={{ color: schedule.isActive ? '#D12C1F' : '#AAB4BC', minWidth: 40 }}
       >
         {time}
       </p>
@@ -763,7 +776,7 @@ function AddPlanForm({ patientId, onDone, onCancel }: {
   useEffect(() => {
     api.get('/api/treatment-plans/medications-formulary')
       .then((r) => setMedications(r.data))
-      .catch(console.error);
+      .catch(e => setError(extractErrorMessage(e, 'Could not load medications list.')));
   }, []);
 
   function validate(): Record<string, string> {

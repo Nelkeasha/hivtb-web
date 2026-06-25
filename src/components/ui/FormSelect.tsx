@@ -24,8 +24,8 @@ export default function FormSelect({ label, value, onChange, required = true, ch
         onChange={(e) => onChange(e.target.value)}
         className="w-full px-3 py-2.5 text-[13px] rounded-lg bg-white outline-none"
         style={{
-          border:    error ? '1px solid #C0392B' : focused ? '1px solid #006D77' : '1px solid #DCECF0',
-          boxShadow: focused ? `0 0 0 3px ${error ? 'rgba(194,57,57,0.08)' : 'rgba(0,95,107,0.08)'}` : 'none',
+          border:    error ? '1px solid #C0392B' : focused ? '1px solid #D12C1F' : '1px solid #DCECF0',
+          boxShadow: focused ? `0 0 0 3px ${error ? 'rgba(194,57,57,0.08)' : 'rgba(209,44,31,0.08)'}` : 'none',
         }}
         onFocus={() => setFocused(true)}
         onBlur={()  => setFocused(false)}

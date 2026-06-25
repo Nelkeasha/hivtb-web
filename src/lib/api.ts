@@ -19,7 +19,9 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Redirect to login on 401 (invalid/missing token) or 403 (expired token).
+// 401 on auth endpoints = wrong credentials — let the login form's catch block handle it.
+// 401 on other endpoints = session expired — redirect with an explanation.
+// 403 = authenticated but not permitted — never redirect; the caller shows the error.
 api.interceptors.response.use(
   (res) => res,
   (err) => {
@@ -29,13 +31,15 @@ api.interceptors.response.use(
     }
 
     const status = err.response?.status;
-    if ((status === 401 || status === 403) && typeof window !== 'undefined') {
+    const isAuthCall = (err.config?.url ?? '').includes('/api/auth/login');
+
+    if (status === 401 && !isAuthCall && typeof window !== 'undefined') {
       Cookies.remove('access_token');
       Cookies.remove('refresh_token');
       Cookies.remove('user_role');
       Cookies.remove('user_name');
       Cookies.remove('user_id');
-      window.location.href = '/login';
+      window.location.href = '/login?reason=session_expired';
     }
 
     return Promise.reject(err);
@@ -49,6 +53,16 @@ api.interceptors.response.use(
  * generic placeholder instead of the actual reason a request was rejected.
  */
 export function extractErrorMessage(err: unknown, fallback: string): string {
+  const status = (err as { response?: { status?: number } })?.response?.status;
+  const code   = (err as { code?: string })?.code;
+
+  if (status === 403) return "Access denied. You don't have permission to perform this action.";
+  if (status && status >= 500) return 'Server error. Please try again later.';
+  if (code === 'ECONNABORTED' || code === 'ERR_CANCELED') return 'Request timed out. Please try again.';
+  if (!status && (code === 'ERR_NETWORK' || code === 'ERR_CONNECTION_REFUSED')) {
+    return 'Cannot reach the server. Check your connection or wait for it to start.';
+  }
+
   const data = (err as { response?: { data?: unknown } })?.response?.data;
   if (data && typeof data === 'object') {
     const details = (data as Record<string, unknown>).details;

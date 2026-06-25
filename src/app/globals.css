@@ -3,10 +3,10 @@
 
 @theme inline {
   /* ── Brand ─────────────────────────────────────────────────── */
-  --color-primary:           #006D77;
-  --color-primary-dark:      #004E57;
-  --color-primary-light:     #83C5BE;
-  --color-primary-container: #CCEEEF;
+  --color-primary:           #D12C1F;
+  --color-primary-dark:      #8B1A11;
+  --color-primary-light:     #F07068;
+  --color-primary-container: #FDDCDA;
   --color-accent:            #E29578;
   --color-accent-light:      #FFD9D2;
 
@@ -64,17 +64,17 @@ body {
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #B8D8E0; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #83C5BE; }
+::-webkit-scrollbar-thumb:hover { background: #F07068; border-radius: 4px; }
 
 /* ── Focus ring ──────────────────────────────────────────────── */
 :focus-visible {
-  outline: 2px solid #006D77;
+  outline: 2px solid #D12C1F;
   outline-offset: 2px;
   border-radius: 4px;
 }
 
 /* ── Selection ───────────────────────────────────────────────── */
-::selection { background: #CCEEEF; color: #004E57; }
+::selection { background: #FDDCDA; color: #8B1A11; }
 
 /* ── Animations ──────────────────────────────────────────────── */
 @keyframes live-pulse {

@@ -54,7 +54,7 @@ export default function CreateUserPage() {
   useEffect(() => {
     api.get('/api/admin/users/facilities')
       .then((r) => { setFacilities(r.data); if (r.data[0]) setFacilityId(r.data[0].id); })
-      .catch(console.error);
+      .catch(() => { /* facilities list is unavailable — user sees empty dropdown */ });
   }, []);
 
   function validate(): Record<string, string> {
@@ -146,7 +146,7 @@ export default function CreateUserPage() {
                 >
                   <p
                     className="data-num text-[26px] font-semibold tracking-widest"
-                    style={{ color: '#006D77' }}
+                    style={{ color: '#D12C1F' }}
                   >
                     {done.tempPass}
                   </p>
@@ -208,7 +208,7 @@ export default function CreateUserPage() {
                 Generates a system account with a temporary password
               </p>
             </div>
-            <div className="flex items-center gap-1.5" style={{ color: '#006D77' }}>
+            <div className="flex items-center gap-1.5" style={{ color: '#D12C1F' }}>
               <UserPlus size={13} />
               <span className="text-[11px] font-semibold uppercase tracking-wide">Admin only</span>
             </div>
@@ -241,15 +241,15 @@ export default function CreateUserPage() {
                       onClick={() => setRole(r)}
                       className="p-3 rounded-lg text-left transition-all"
                       style={{
-                        border:     role === r ? '1px solid #006D77' : '1px solid #DCECF0',
-                        background: role === r ? 'rgba(0,95,107,0.06)' : '#EDF6F9',
-                        color:      role === r ? '#006D77' : '#5A6474',
+                        border:     role === r ? '1px solid #D12C1F' : '1px solid #DCECF0',
+                        background: role === r ? 'rgba(209,44,31,0.06)' : '#EDF6F9',
+                        color:      role === r ? '#D12C1F' : '#5A6474',
                       }}
                     >
                       {role === r && (
                         <div
                           className="w-1.5 h-1.5 rounded-full mb-2"
-                          style={{ background: '#006D77' }}
+                          style={{ background: '#D12C1F' }}
                         />
                       )}
                       <p className="text-[12px] font-semibold leading-snug">

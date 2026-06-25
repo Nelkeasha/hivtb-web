@@ -4,7 +4,8 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import Badge, { RiskBadge } from '@/components/ui/Badge';
 import Pagination from '@/components/ui/Pagination';
 import SortSelect from '@/components/ui/SortSelect';
-import { api } from '@/lib/api';
+import { api, extractErrorMessage } from '@/lib/api';
+import ApiErrorBanner from '@/components/ui/ApiErrorBanner';
 import { formatDate } from '@/lib/utils';
 import { useTableControls } from '@/lib/useTableControls';
 import { MapPin, Users, Activity, TrendingDown, X } from 'lucide-react';
@@ -61,6 +62,7 @@ function performanceBadge(chw: Chw) {
 export default function ChwPage() {
   const [chws, setChws]       = useState<Chw[]>([]);
   const [loading, setLoading] = useState(true);
+  const [apiError, setApiError] = useState('');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [detail, setDetail] = useState<ChwDetail | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
@@ -68,7 +70,7 @@ export default function ChwPage() {
   useEffect(() => {
     api.get('/api/supervisor/dashboard/chws')
       .then((r) => setChws(r.data))
-      .catch(console.error)
+      .catch(e => setApiError(extractErrorMessage(e, 'Failed to load CHW data. Try refreshing.')))
       .finally(() => setLoading(false));
   }, []);
 
@@ -77,7 +79,7 @@ export default function ChwPage() {
     setDetailLoading(true);
     api.get(`/api/supervisor/dashboard/chws/${selectedId}`)
       .then((r) => setDetail(r.data))
-      .catch(console.error)
+      .catch(e => setApiError(extractErrorMessage(e, 'Failed to load CHW detail.')))
       .finally(() => setDetailLoading(false));
   }, [selectedId]);
 
@@ -89,6 +91,7 @@ export default function ChwPage() {
   return (
     <DashboardLayout title="CHW Team Performance">
       <div className="space-y-6">
+        {apiError && <ApiErrorBanner message={apiError} onDismiss={() => setApiError('')} />}
 
         {/* ── Page header ─────────────────────────────────── */}
         <div className="flex items-end justify-between">
@@ -101,7 +104,7 @@ export default function ChwPage() {
             </h1>
           </div>
           <div className="text-right">
-            <p className="data-num text-[30px] font-semibold leading-none" style={{ color: '#006D77' }}>
+            <p className="data-num text-[30px] font-semibold leading-none" style={{ color: '#D12C1F' }}>
               {active.length}
               <span className="text-[18px] text-text-hint">/{chws.length}</span>
             </p>
@@ -112,7 +115,7 @@ export default function ChwPage() {
         {/* ── Summary strip ───────────────────────────────── */}
         <div className="grid grid-cols-3 gap-3">
           {[
-            { label: 'Total CHWs',     value: chws.length,   icon: Users,        color: '#006D77' },
+            { label: 'Total CHWs',     value: chws.length,   icon: Users,        color: '#D12C1F' },
             { label: 'Total Patients', value: totalPatients, icon: Activity,     color: '#1A1A2E' },
             { label: 'Visits / 30d',   value: totalVisits,   icon: TrendingDown, color: '#27AE60' },
           ].map((s) => (
@@ -223,7 +226,7 @@ function ChwDetailPanel({ detail, loading, onClose }: {
 
             <div className="grid grid-cols-2 gap-3">
               <div className="rounded-lg p-3 text-center" style={{ background: '#EDF6F9', border: '1px solid #DCECF0' }}>
-                <p className="data-num text-[18px] font-semibold" style={{ color: '#006D77' }}>{detail.homeVisits30d}</p>
+                <p className="data-num text-[18px] font-semibold" style={{ color: '#D12C1F' }}>{detail.homeVisits30d}</p>
                 <p className="text-[10px] text-text-hint uppercase tracking-wide mt-0.5">Visits / 30d</p>
               </div>
               <div className="rounded-lg p-3 text-center" style={{ background: '#EDF6F9', border: '1px solid #DCECF0' }}>
@@ -301,7 +304,7 @@ function ChwCard({ chw, onClick }: { chw: Chw; onClick: () => void }) {
       className="bg-white rounded-xl overflow-hidden transition-shadow hover:shadow-sm cursor-pointer"
       style={{
         border: '1px solid #DCECF0',
-        borderLeft: chw.isActive ? '3px solid #006D77' : '3px solid #DCECF0',
+        borderLeft: chw.isActive ? '3px solid #D12C1F' : '3px solid #DCECF0',
         opacity: chw.isActive ? 1 : 0.55,
       }}
     >
@@ -311,7 +314,7 @@ function ChwCard({ chw, onClick }: { chw: Chw; onClick: () => void }) {
           <div className="flex items-center gap-2.5">
             <div
               className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 text-[11px] font-bold text-white"
-              style={{ background: chw.isActive ? '#006D77' : '#AAB4BC' }}
+              style={{ background: chw.isActive ? '#D12C1F' : '#AAB4BC' }}
             >
               {chw.fullName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
             </div>
@@ -354,7 +357,7 @@ function ChwCard({ chw, onClick }: { chw: Chw; onClick: () => void }) {
               className="h-full rounded-full transition-all duration-500"
               style={{
                 width: `${patientPct}%`,
-                background: '#006D77',
+                background: '#D12C1F',
               }}
             />
           </div>
@@ -365,7 +368,7 @@ function ChwCard({ chw, onClick }: { chw: Chw; onClick: () => void }) {
           <MetricTile
             label="Visits/30d"
             value={chw.homeVisits30d}
-            color="#006D77"
+            color="#D12C1F"
           />
           <MetricTile
             label="Missed/7d"

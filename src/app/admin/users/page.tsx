@@ -6,7 +6,8 @@ import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import Pagination from '@/components/ui/Pagination';
 import SortableTh from '@/components/ui/SortableTh';
-import { api } from '@/lib/api';
+import { api, extractErrorMessage } from '@/lib/api';
+import ApiErrorBanner from '@/components/ui/ApiErrorBanner';
 import { useTableControls } from '@/lib/useTableControls';
 import { Search, UserX, UserCheck, Key, UserPlus, LockOpen } from 'lucide-react';
 
@@ -51,13 +52,14 @@ export default function UsersPage() {
   const [search, setSearch]       = useState('');
   const [roleFilter, setRoleFilter] = useState('ALL');
   const [loading, setLoading]     = useState(true);
+  const [apiError, setApiError]   = useState('');
   const [acting, setActing]       = useState<string | null>(null);
   const [resetResult, setResetResult] = useState<{ name: string; pass: string } | null>(null);
 
   useEffect(() => {
     api.get('/api/admin/users')
       .then((r) => setUsers(r.data))
-      .catch(console.error)
+      .catch(e => setApiError(extractErrorMessage(e, 'Failed to load users. Try refreshing.')))
       .finally(() => setLoading(false));
   }, []);
 
@@ -102,6 +104,7 @@ export default function UsersPage() {
   return (
     <DashboardLayout title="User Management">
       <div className="space-y-4">
+        {apiError && <ApiErrorBanner message={apiError} onDismiss={() => setApiError('')} />}
 
         {/* ── Password reset modal ─────────────────────────────── */}
         {resetResult && (
@@ -125,7 +128,7 @@ export default function UsersPage() {
                 className="rounded-lg p-4 text-center mb-3"
                 style={{ background: '#EDF6F9', border: '1px solid #DCECF0' }}
               >
-                <p className="data-num text-[22px] font-semibold tracking-widest" style={{ color: '#006D77' }}>
+                <p className="data-num text-[22px] font-semibold tracking-widest" style={{ color: '#D12C1F' }}>
                   {resetResult.pass}
                 </p>
               </div>
@@ -164,9 +167,9 @@ export default function UsersPage() {
                     onClick={() => setRoleFilter(r)}
                     className="text-[11px] px-2.5 py-1 rounded font-semibold transition-colors"
                     style={{
-                      background: roleFilter === r ? '#006D77' : '#EDF6F9',
+                      background: roleFilter === r ? '#D12C1F' : '#EDF6F9',
                       color: roleFilter === r ? '#fff' : '#5A6474',
-                      border: `1px solid ${roleFilter === r ? '#006D77' : '#DCECF0'}`,
+                      border: `1px solid ${roleFilter === r ? '#D12C1F' : '#DCECF0'}`,
                     }}
                   >
                     {r === 'ALL' ? 'All' : ROLE_LABELS[r] ?? r}
@@ -182,7 +185,7 @@ export default function UsersPage() {
                   placeholder="Search…"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  onFocus={e => { (e.currentTarget as HTMLInputElement).style.borderColor = '#006D77'; }}
+                  onFocus={e => { (e.currentTarget as HTMLInputElement).style.borderColor = '#D12C1F'; }}
                   onBlur={e  => { (e.currentTarget as HTMLInputElement).style.borderColor = '#DCECF0'; }}
                 />
               </div>
@@ -223,7 +226,7 @@ export default function UsersPage() {
                         <div className="flex items-center gap-2.5">
                           <div
                             className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 text-[10px] font-bold text-white"
-                            style={{ background: u.isActive ? '#006D77' : '#AAB4BC' }}
+                            style={{ background: u.isActive ? '#D12C1F' : '#AAB4BC' }}
                           >
                             {u.fullName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
                           </div>
@@ -273,7 +276,7 @@ export default function UsersPage() {
                             disabled={acting === u.id}
                             title="Reset password"
                             className="p-1.5 rounded transition-colors text-text-hint"
-                            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#EDF6F9'; (e.currentTarget as HTMLButtonElement).style.color = '#006D77'; }}
+                            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#EDF6F9'; (e.currentTarget as HTMLButtonElement).style.color = '#D12C1F'; }}
                             onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; (e.currentTarget as HTMLButtonElement).style.color = '#AAB4BC'; }}
                           >
                             <Key size={14} />

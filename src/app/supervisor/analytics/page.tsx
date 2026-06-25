@@ -5,7 +5,8 @@ import StatCard from '@/components/ui/StatCard';
 import Card from '@/components/ui/Card';
 import Pagination from '@/components/ui/Pagination';
 import SortableTh from '@/components/ui/SortableTh';
-import { api } from '@/lib/api';
+import { api, extractErrorMessage } from '@/lib/api';
+import ApiErrorBanner from '@/components/ui/ApiErrorBanner';
 import { useTableControls } from '@/lib/useTableControls';
 import { Users, TrendingDown, Activity, AlertCircle } from 'lucide-react';
 import {
@@ -48,6 +49,7 @@ export default function AnalyticsPage() {
   const [stats, setStats]   = useState<SupervisorStats | null>(null);
   const [chws, setChws]     = useState<Chw[]>([]);
   const [loading, setLoading] = useState(true);
+  const [apiError, setApiError] = useState('');
   const table = useTableControls(chws);
 
   useEffect(() => {
@@ -57,7 +59,7 @@ export default function AnalyticsPage() {
     ]).then(([s, c]) => {
       setStats(s.data);
       setChws(c.data);
-    }).catch(console.error)
+    }).catch(e => setApiError(extractErrorMessage(e, 'Failed to load analytics data. Try refreshing.')))
       .finally(() => setLoading(false));
   }, []);
 
@@ -90,6 +92,7 @@ export default function AnalyticsPage() {
   return (
     <DashboardLayout title="Population Analytics">
       <div className="space-y-6">
+        {apiError && <ApiErrorBanner message={apiError} onDismiss={() => setApiError('')} />}
 
         {/* ── Page header ─────────────────────────────────── */}
         <div className="flex items-end justify-between">
@@ -144,8 +147,8 @@ export default function AnalyticsPage() {
                 <Radar
                   name="Score"
                   dataKey="value"
-                  stroke="#006D77"
-                  fill="#006D77"
+                  stroke="#D12C1F"
+                  fill="#D12C1F"
                   fillOpacity={0.12}
                   strokeWidth={2}
                 />
@@ -181,7 +184,7 @@ export default function AnalyticsPage() {
                   cursor={{ fill: '#EDF6F9' }}
                 />
                 <Legend wrapperStyle={{ fontSize: 11, paddingTop: 10 }} />
-                <Bar dataKey="visits" name="Visits"       fill="#006D77" radius={[3, 3, 0, 0]} />
+                <Bar dataKey="visits" name="Visits"       fill="#D12C1F" radius={[3, 3, 0, 0]} />
                 <Bar dataKey="missed" name="Missed Doses" fill="#E29578" radius={[3, 3, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -227,7 +230,7 @@ export default function AnalyticsPage() {
                     <td className="py-3 pr-6">
                       <span
                         className="data-num text-[13px] font-semibold"
-                        style={{ color: '#006D77' }}
+                        style={{ color: '#D12C1F' }}
                       >
                         {c.homeVisits30d}
                       </span>

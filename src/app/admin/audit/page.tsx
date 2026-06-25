@@ -4,10 +4,11 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import Badge from '@/components/ui/Badge';
 import Pagination from '@/components/ui/Pagination';
 import SortableTh from '@/components/ui/SortableTh';
-import { api } from '@/lib/api';
+import { api, extractErrorMessage } from '@/lib/api';
 import { timeAgo } from '@/lib/utils';
 import { useTableControls } from '@/lib/useTableControls';
 import { Search, ShieldCheck, ShieldAlert, Link2 } from 'lucide-react';
+import ApiErrorBanner from '@/components/ui/ApiErrorBanner';
 
 interface AuditLog {
   id: string;
@@ -57,6 +58,7 @@ export default function AuditLogPage() {
   const [action, setAction] = useState('ALL');
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
+  const [apiError, setApiError] = useState('');
   const [verification, setVerification] = useState<ChainVerification | null>(null);
   const [verifying, setVerifying] = useState(false);
 
@@ -77,7 +79,7 @@ export default function AuditLogPage() {
     const params = action !== 'ALL' ? `?action=${action}` : '';
     api.get(`/api/admin/audit-log${params}`)
       .then((r) => setLogs(r.data))
-      .catch(console.error)
+      .catch(e => setApiError(extractErrorMessage(e, 'Failed to load audit log. Try refreshing.')))
       .finally(() => setLoading(false));
   }, [action]);
 
@@ -90,6 +92,7 @@ export default function AuditLogPage() {
   return (
     <DashboardLayout title="Audit Log">
       <div className="space-y-5">
+        {apiError && <ApiErrorBanner message={apiError} onDismiss={() => setApiError('')} />}
 
         {/* ── Page header ─────────────────────────────────── */}
         <div className="flex items-end justify-between">
@@ -103,7 +106,7 @@ export default function AuditLogPage() {
           </div>
           {!loading && (
             <div className="text-right">
-              <p className="data-num text-[30px] font-semibold leading-none" style={{ color: '#006D77' }}>
+              <p className="data-num text-[30px] font-semibold leading-none" style={{ color: '#D12C1F' }}>
                 {filtered.length}
               </p>
               <p className="text-[11px] text-text-hint mt-1 uppercase tracking-wide">
@@ -148,7 +151,7 @@ export default function AuditLogPage() {
               onClick={verifyChain}
               disabled={verifying}
               className="text-[11px] px-3 py-1.5 rounded-lg font-semibold transition-colors disabled:opacity-50"
-              style={{ background: '#006D77', color: '#fff' }}
+              style={{ background: '#D12C1F', color: '#fff' }}
             >
               {verifying ? 'Verifying…' : 'Verify chain'}
             </button>
@@ -181,9 +184,9 @@ export default function AuditLogPage() {
                     onClick={() => setAction(a)}
                     className="text-[11px] px-2.5 py-1 rounded font-semibold transition-colors"
                     style={{
-                      background: action === a ? '#006D77' : '#EDF6F9',
+                      background: action === a ? '#D12C1F' : '#EDF6F9',
                       color:      action === a ? '#fff'    : '#5A6474',
-                      border:     `1px solid ${action === a ? '#006D77' : '#DCECF0'}`,
+                      border:     `1px solid ${action === a ? '#D12C1F' : '#DCECF0'}`,
                     }}
                   >
                     {ACTION_LABELS[a] ?? a}
@@ -203,7 +206,7 @@ export default function AuditLogPage() {
                   placeholder="Filter…"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  onFocus={e  => { (e.currentTarget as HTMLInputElement).style.borderColor = '#006D77'; }}
+                  onFocus={e  => { (e.currentTarget as HTMLInputElement).style.borderColor = '#D12C1F'; }}
                   onBlur={e   => { (e.currentTarget as HTMLInputElement).style.borderColor = '#DCECF0'; }}
                 />
               </div>

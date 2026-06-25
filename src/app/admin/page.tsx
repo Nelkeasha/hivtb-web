@@ -7,7 +7,8 @@ import Badge from '@/components/ui/Badge';
 import Pagination from '@/components/ui/Pagination';
 import SortableTh from '@/components/ui/SortableTh';
 import ExportMenu from '@/components/ui/ExportMenu';
-import { api } from '@/lib/api';
+import { api, extractErrorMessage } from '@/lib/api';
+import ApiErrorBanner from '@/components/ui/ApiErrorBanner';
 import { useTableControls } from '@/lib/useTableControls';
 import { Users, UserCheck, Shield, Activity } from 'lucide-react';
 import {
@@ -61,12 +62,13 @@ const AXIS_TICK = { fontSize: 11, fill: '#AAB4BC', fontFamily: 'Poppins, system-
 export default function AdminDashboard() {
   const [report, setReport] = useState<AdminReport | null>(null);
   const [loading, setLoading] = useState(true);
+  const [apiError, setApiError] = useState('');
   const facilityTable = useTableControls(report?.facilityBreakdown ?? []);
 
   useEffect(() => {
     api.get('/api/admin/reports/summary')
       .then(r => setReport(r.data))
-      .catch(console.error)
+      .catch(e => setApiError(extractErrorMessage(e, 'Failed to load dashboard data. Try refreshing.')))
       .finally(() => setLoading(false));
   }, []);
 
@@ -92,7 +94,7 @@ export default function AdminDashboard() {
     (report?.totalSupervisors ?? 0) + (report?.totalPatients ?? 0);
 
   const staffBars = [
-    { label: 'Community Health Workers', value: report?.totalChw ?? 0,        color: '#006D77' },
+    { label: 'Community Health Workers', value: report?.totalChw ?? 0,        color: '#D12C1F' },
     { label: 'Facility Providers',       value: report?.totalProviders ?? 0,   color: '#00919E' },
     { label: 'Supervisors',              value: report?.totalSupervisors ?? 0, color: '#3DCAD4' },
     { label: 'Patient Accounts',         value: report?.totalPatients ?? 0,    color: '#C4E8EB' },
@@ -101,6 +103,7 @@ export default function AdminDashboard() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
+        {apiError && <ApiErrorBanner message={apiError} onDismiss={() => setApiError('')} />}
 
         {/* ── Page header ─────────────────────────────────── */}
         <div className="flex items-end justify-between">
@@ -119,7 +122,7 @@ export default function AdminDashboard() {
               filenamePrefix="admin-report"
             />
             <div className="text-right">
-              <p className="data-num text-[30px] font-semibold leading-none" style={{ color: '#006D77' }}>
+              <p className="data-num text-[30px] font-semibold leading-none" style={{ color: '#D12C1F' }}>
                 {adherencePct}<span className="text-[18px]">%</span>
               </p>
               <p className="text-[11px] text-text-hint mt-1 uppercase tracking-wide">System adherence</p>
@@ -199,7 +202,7 @@ export default function AdminDashboard() {
                     <tr key={i} className="table-row-hover" style={{ borderBottom: '1px solid #E8F4F8' }}>
                       <td className="py-3 pr-6 text-[13px] font-semibold text-text-primary">{f.facilityName}</td>
                       <td className="py-3 pr-6 text-[13px] text-text-secondary">{f.district ?? '—'}</td>
-                      <td className="py-3 pr-6 data-num text-[13px] font-semibold" style={{ color: '#006D77' }}>{f.activePatients}</td>
+                      <td className="py-3 pr-6 data-num text-[13px] font-semibold" style={{ color: '#D12C1F' }}>{f.activePatients}</td>
                       <td className="py-3 pr-6 data-num text-[13px] text-text-secondary">{f.totalChws}</td>
                       <td className="py-3 pr-6">
                         {f.adherenceAvg != null ? (

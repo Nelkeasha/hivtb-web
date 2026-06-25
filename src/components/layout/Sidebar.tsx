@@ -90,12 +90,15 @@ export default function Sidebar() {
     <aside
       className="fixed inset-y-0 left-0 w-60 flex flex-col z-40"
       style={{
-        background: 'linear-gradient(175deg, #006D77 0%, #004E57 100%)',
+        background: 'linear-gradient(175deg, #D12C1F 0%, #8B1A11 100%)',
       }}
     >
       {/* ── Logo ─────────────────────────────────────────── */}
       <div className="px-5 py-5" style={{ borderBottom: `1px solid ${BR}` }}>
         <div className="flex items-center gap-3">
+          {/* TODO(logo): replace MedicalServicesIcon with the DMC heart-and-cross mark once
+              the asset is supplied. Place dmc-logo.png/svg in public/ and swap in:
+              <img src="/dmc-logo.png" alt="DMC" width={36} height={36} className="rounded-xl" /> */}
           <div
             className="w-9 h-9 rounded-2xl flex items-center justify-center shrink-0"
             style={{

@@ -1,6 +1,6 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Eye, EyeOff, Lock, Mail, AlertCircle, Wifi, Clock } from 'lucide-react';
 
 /* Exact replica of Flutter's Icons.medical_services_rounded */
@@ -78,8 +78,11 @@ function EcgLine() {
 
 
 /* ── Page ───────────────────────────────────────────────────────────────────── */
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const sessionExpired = searchParams.get('reason') === 'session_expired';
+
   const [email, setEmail]         = useState('');
   const [password, setPassword]   = useState('');
   const [showPass, setShowPass]   = useState(false);
@@ -131,13 +134,13 @@ export default function LoginPage() {
   const ErrorIcon = errorType === 'network' ? Wifi : errorType === 'server' ? Clock : AlertCircle;
 
   return (
-    <div className="min-h-screen flex" style={{ background: '#004E57' }}>
+    <div className="min-h-screen flex" style={{ background: '#8B1A11' }}>
 
       {/* ── Left panel ──────────────────────────────────────────────────── */}
       <div
         className="hidden lg:flex flex-col w-[480px] shrink-0 relative overflow-hidden"
         style={{
-          background: 'linear-gradient(175deg, #006D77 0%, #004E57 100%)',
+          background: 'linear-gradient(175deg, #D12C1F 0%, #8B1A11 100%)',
         }}
       >
         {/* Content — justify-between splits top block from bottom block */}
@@ -252,8 +255,8 @@ export default function LoginPage() {
       <div
         className="flex-1 flex items-center justify-center px-8 py-12 relative"
         style={{
-          background: '#004E57',
-          backgroundImage: 'radial-gradient(ellipse at 50% 44%, rgba(0,109,119,0.20) 0%, transparent 62%)',
+          background: '#8B1A11',
+          backgroundImage: 'radial-gradient(ellipse at 50% 44%, rgba(209,44,31,0.20) 0%, transparent 62%)',
         }}
       >
         <div className="w-full max-w-[460px]">
@@ -284,7 +287,7 @@ export default function LoginPage() {
             }}
           >
             {/* Teal accent strip */}
-            <div style={{ height: 3, background: 'linear-gradient(90deg, #006D77, #83C5BE 60%, #CCEEEF)' }} />
+            <div style={{ height: 3, background: 'linear-gradient(90deg, #D12C1F, #F07068 60%, #FDDCDA)' }} />
 
             <div className="px-8 py-10">
               <div className="mb-8">
@@ -295,6 +298,19 @@ export default function LoginPage() {
                   Sign in to your clinical dashboard
                 </p>
               </div>
+
+              {/* Session expired notice */}
+              {sessionExpired && !error && (
+                <div
+                  className="flex items-start gap-3 rounded-lg p-4 mb-6"
+                  style={{ background: 'rgba(41,128,185,0.07)', border: '1px solid #BEE3F8' }}
+                >
+                  <AlertCircle size={16} className="shrink-0 mt-0.5" style={{ color: '#2980B9' }} />
+                  <p className="text-[13px] leading-relaxed" style={{ color: '#1A6A99' }}>
+                    Your session expired. Please sign in again.
+                  </p>
+                </div>
+              )}
 
               {/* Error */}
               {error && (
@@ -397,6 +413,14 @@ export default function LoginPage() {
   );
 }
 
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
 /* ── Sub-components ──────────────────────────────────────────────────────────── */
 
 function InputField({
@@ -409,8 +433,8 @@ function InputField({
       className={`w-full py-2.5 text-[14px] rounded-lg disabled:opacity-50 text-text-primary placeholder:text-text-hint outline-none transition-all ${className}`}
       style={{
         background: focused ? '#fff' : '#FAFAF9',
-        border: focused ? '1px solid #005F6B' : '1px solid #DCECF0',
-        boxShadow: focused ? '0 0 0 3px rgba(0,95,107,0.08)' : 'none',
+        border: focused ? '1px solid #D12C1F' : '1px solid #DCECF0',
+        boxShadow: focused ? '0 0 0 3px rgba(209,44,31,0.08)' : 'none',
       }}
       onFocus={e => { setFocused(true);  props.onFocus?.(e); }}
       onBlur={e  => { setFocused(false); props.onBlur?.(e);  }}
@@ -427,8 +451,8 @@ function SubmitButton({ loading, locked }: { loading: boolean; locked: boolean }
       className="w-full py-2.5 text-white text-[13px] font-semibold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-1"
       style={{
         background: hovered && !loading && !locked
-          ? '#004450'
-          : '#005F6B',
+          ? '#8B1A11'
+          : '#D12C1F',
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}

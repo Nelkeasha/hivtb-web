@@ -4,7 +4,7 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import StatCard from '@/components/ui/StatCard';
 import Card from '@/components/ui/Card';
 import ExportMenu from '@/components/ui/ExportMenu';
-import { api } from '@/lib/api';
+import { api, extractErrorMessage } from '@/lib/api';
 import { Users, Activity, TrendingDown, UserCheck } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
@@ -43,11 +43,12 @@ const AXIS_TICK = { fontSize: 11, fill: '#AAB4BC' };
 export default function SupervisorReportPage() {
   const [report, setReport] = useState<SupervisorReport | null>(null);
   const [loading, setLoading] = useState(true);
+  const [apiError, setApiError] = useState('');
 
   useEffect(() => {
     api.get('/api/supervisor/dashboard/reports/summary')
       .then((r) => setReport(r.data))
-      .catch(console.error)
+      .catch(e => setApiError(extractErrorMessage(e, 'Failed to load report data. Try refreshing.')))
       .finally(() => setLoading(false));
   }, []);
 
@@ -61,7 +62,14 @@ export default function SupervisorReportPage() {
 
   if (!report) return (
     <DashboardLayout title="Supervisor Report">
-      <div className="text-center py-20 text-[13px] text-text-hint">Could not load report</div>
+      <div className="text-center py-20">
+        <p className="text-[13px] font-semibold" style={{ color: '#D12C1F' }}>
+          {apiError || 'Could not load report data'}
+        </p>
+        <p className="text-[12px] text-text-hint mt-1">
+          Try refreshing the page. If the problem persists, the server may be starting up.
+        </p>
+      </div>
     </DashboardLayout>
   );
 
@@ -75,7 +83,7 @@ export default function SupervisorReportPage() {
   ];
 
   const diagData = [
-    { name: 'HIV',    value: report.hivOnly,          color: '#006D77' },
+    { name: 'HIV',    value: report.hivOnly,          color: '#D12C1F' },
     { name: 'TB',     value: report.tbOnly,            color: '#00919E' },
     { name: 'HIV+TB', value: report.hivTbCoinfection,  color: '#3DCAD4' },
   ];
@@ -210,7 +218,7 @@ export default function SupervisorReportPage() {
               >
                 <p
                   className="data-num text-[20px] font-semibold leading-none"
-                  style={{ color: item.warn ? '#C0392B' : '#006D77' }}
+                  style={{ color: item.warn ? '#C0392B' : '#D12C1F' }}
                 >
                   {item.value}
                 </p>
