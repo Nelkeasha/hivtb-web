@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import StatCard from '@/components/ui/StatCard';
@@ -32,14 +32,14 @@ interface Report {
 
 const TOOLTIP_STYLE = {
   borderRadius: 8,
-  border: '1px solid #DCECF0',
+  border: '1px solid #E9E9E9',
   fontSize: 12,
   fontFamily: 'Poppins, system-ui, sans-serif',
   boxShadow: '0 4px 20px rgba(0,0,0,0.07)',
   background: '#fff',
 };
-const AXIS_TICK = { fontSize: 11, fill: '#AAB4BC' };
-const AXIS_TICK_MONO = { fontSize: 11, fill: '#AAB4BC', fontFamily: "'JetBrains Mono', monospace" };
+const AXIS_TICK = { fontSize: 11, fill: '#9CA3AF' };
+const AXIS_TICK_MONO = { fontSize: 11, fill: '#9CA3AF', fontFamily: "'JetBrains Mono', monospace" };
 
 export default function ReportsPage() {
   const [report, setReport] = useState<Report | null>(null);
@@ -64,7 +64,7 @@ export default function ReportsPage() {
   if (!report) return (
     <DashboardLayout title="Facility Report">
       <div className="text-center py-20">
-        <p className="text-[13px] font-semibold" style={{ color: '#E8714A' }}>
+        <p className="text-[13px] font-semibold" style={{ color: '#D9643A' }}>
           {apiError || 'Could not load report data'}
         </p>
         <p className="text-[12px] text-text-hint mt-1">
@@ -77,7 +77,7 @@ export default function ReportsPage() {
   const adherencePct = Math.round(report.facilityAdherenceAvg);
 
   const diagnosisData = [
-    { name: 'HIV',    value: report.hivOnly,         fill: '#E8714A' },
+    { name: 'HIV',    value: report.hivOnly,         fill: '#D9643A' },
     { name: 'TB',     value: report.tbOnly,           fill: '#00919E' },
     { name: 'HIV+TB', value: report.hivTbCoinfection, fill: '#3DCAD4' },
   ];
@@ -204,10 +204,10 @@ export default function ReportsPage() {
           <Card title="Risk Distribution" subtitle="Patients by risk level">
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={riskData} margin={{ top: 4, right: 4, left: -24, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="2 6" stroke="#DCECF0" vertical={false} />
+                <CartesianGrid strokeDasharray="2 6" stroke="#E9E9E9" vertical={false} />
                 <XAxis dataKey="name" tick={AXIS_TICK} axisLine={false} tickLine={false} />
                 <YAxis tick={AXIS_TICK_MONO} axisLine={false} tickLine={false} />
-                <Tooltip contentStyle={TOOLTIP_STYLE} cursor={{ fill: '#EDF6F9' }} />
+                <Tooltip contentStyle={TOOLTIP_STYLE} cursor={{ fill: '#FAFAFA' }} />
                 <Bar dataKey="value" radius={[3, 3, 0, 0]}>
                   {riskData.map((d, i) => <Cell key={i} fill={d.color} />)}
                 </Bar>
@@ -223,7 +223,7 @@ export default function ReportsPage() {
                 layout="vertical"
                 margin={{ top: 4, right: 12, left: 16, bottom: 0 }}
               >
-                <CartesianGrid strokeDasharray="2 6" stroke="#DCECF0" horizontal={false} />
+                <CartesianGrid strokeDasharray="2 6" stroke="#E9E9E9" horizontal={false} />
                 <XAxis
                   type="number"
                   tick={AXIS_TICK_MONO}
@@ -238,7 +238,7 @@ export default function ReportsPage() {
                   tickLine={false}
                   width={76}
                 />
-                <Tooltip contentStyle={TOOLTIP_STYLE} cursor={{ fill: '#EDF6F9' }} />
+                <Tooltip contentStyle={TOOLTIP_STYLE} cursor={{ fill: '#FAFAFA' }} />
                 <Bar dataKey="count" radius={[0, 3, 3, 0]}>
                   {alertData.map((d, i) => <Cell key={i} fill={d.fill} />)}
                 </Bar>
@@ -255,13 +255,13 @@ export default function ReportsPage() {
                 key={item.label}
                 className="rounded-lg p-3 text-center"
                 style={{
-                  background: item.warn ? 'rgba(194,40,40,0.03)' : '#EDF6F9',
-                  border: `1px solid ${item.warn ? '#FECACA' : '#DCECF0'}`,
+                  background: item.warn ? 'rgba(194,40,40,0.03)' : '#FAFAFA',
+                  border: `1px solid ${item.warn ? '#FECACA' : '#E9E9E9'}`,
                 }}
               >
                 <p
                   className="data-num text-[20px] font-semibold leading-none"
-                  style={{ color: item.warn ? '#C0392B' : '#E8714A' }}
+                  style={{ color: item.warn ? '#C0392B' : '#D9643A' }}
                 >
                   {item.value}
                 </p>

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Badge from '@/components/ui/Badge';
@@ -171,12 +171,12 @@ export default function AlertsPage() {
         )}
 
         {/* ── Main card ────────────────────────────────────── */}
-        <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #DCECF0' }}>
+        <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #E9E9E9' }}>
 
           {/* Card header + filter pills */}
           <div
             className="flex items-center justify-between px-6 py-4 flex-wrap gap-3"
-            style={{ borderBottom: '1px solid #E8F4F8' }}
+            style={{ borderBottom: '1px solid #F0F0F0' }}
           >
             <div>
               <h3 className="text-[13px] font-semibold text-text-primary tracking-tight">
@@ -194,9 +194,9 @@ export default function AlertsPage() {
                     onClick={() => setFilter(f)}
                     className="text-[11px] px-2.5 py-1 rounded font-semibold transition-colors"
                     style={{
-                      background: filter === f ? '#E8714A' : '#EDF6F9',
-                      color:      filter === f ? '#fff'    : '#5A6474',
-                      border:     `1px solid ${filter === f ? '#E8714A' : '#DCECF0'}`,
+                      background: filter === f ? '#D9643A' : '#FAFAFA',
+                      color:      filter === f ? '#fff'    : '#6B7280',
+                      border:     `1px solid ${filter === f ? '#D9643A' : '#E9E9E9'}`,
                     }}
                   >
                     {f === 'ALL' ? 'All' : f.charAt(0) + f.slice(1).toLowerCase()}
@@ -270,7 +270,7 @@ export default function AlertsPage() {
                           )}
                           <span
                             className="data-num text-[11px]"
-                            style={{ color: '#AAB4BC' }}
+                            style={{ color: '#9CA3AF' }}
                           >
                             {timeAgo(alert.createdAt)}
                           </span>

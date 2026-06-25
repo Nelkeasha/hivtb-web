@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Badge from '@/components/ui/Badge';
@@ -37,7 +37,7 @@ const STATUS_TABS: { key: Tab; label: string }[] = [
 const URGENCY_STYLE: Record<string, { accent: string; bg: string; border: string }> = {
   EMERGENCY: { accent: '#C0392B', bg: 'rgba(194,40,40,0.03)',  border: '#FECACA' },
   URGENT:    { accent: '#E67E22', bg: 'rgba(184,68,0,0.03)',   border: '#FED7AA' },
-  ROUTINE:   { accent: '#E8714A', bg: 'rgba(232,113,74,0.02)',   border: '#DCECF0' },
+  ROUTINE:   { accent: '#D9643A', bg: 'rgba(217,100,58,0.02)',   border: '#E9E9E9' },
 };
 
 function urgencyStyle(u: string) {
@@ -138,7 +138,7 @@ export default function ReferralsPage() {
           </div>
           {!loading && referrals.length > 0 && (
             <div className="text-right">
-              <p className="data-num text-[30px] font-semibold leading-none" style={{ color: '#E8714A' }}>
+              <p className="data-num text-[30px] font-semibold leading-none" style={{ color: '#D9643A' }}>
                 {referrals.length}
               </p>
               <p className="text-[11px] text-text-hint mt-1 uppercase tracking-wide">Total referrals</p>
@@ -156,12 +156,12 @@ export default function ReferralsPage() {
         )}
 
         {/* ── Main card ────────────────────────────────────── */}
-        <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #DCECF0' }}>
+        <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #E9E9E9' }}>
 
           {/* Header + tab filter */}
           <div
             className="flex items-center justify-between gap-3 px-6 py-4 flex-wrap"
-            style={{ borderBottom: '1px solid #E8F4F8' }}
+            style={{ borderBottom: '1px solid #F0F0F0' }}
           >
             <div>
               <h3 className="text-[13px] font-semibold text-text-primary tracking-tight">
@@ -180,9 +180,9 @@ export default function ReferralsPage() {
                     onClick={() => setTab(key)}
                     className="text-[11px] px-2.5 py-1 rounded font-semibold transition-colors"
                     style={{
-                      background: tab === key ? '#E8714A' : '#EDF6F9',
-                      color:      tab === key ? '#fff'    : '#5A6474',
-                      border:     `1px solid ${tab === key ? '#E8714A' : '#DCECF0'}`,
+                      background: tab === key ? '#D9643A' : '#FAFAFA',
+                      color:      tab === key ? '#fff'    : '#6B7280',
+                      border:     `1px solid ${tab === key ? '#D9643A' : '#E9E9E9'}`,
                     }}
                   >
                     {label}{count > 0 && key !== 'ALL' && ` (${count})`}
@@ -255,14 +255,14 @@ export default function ReferralsPage() {
                         <div className="flex items-center gap-4 mt-2 flex-wrap">
                           <span
                             className="data-num text-[11px]"
-                            style={{ color: '#AAB4BC' }}
+                            style={{ color: '#9CA3AF' }}
                           >
                             Referred {timeAgo(ref.referralDate)}
                           </span>
                           {ref.facilityAppointmentDate && (
                             <span
                               className="data-num text-[11px]"
-                              style={{ color: '#AAB4BC' }}
+                              style={{ color: '#9CA3AF' }}
                             >
                               Appt: {formatDate(ref.facilityAppointmentDate)}
                             </span>

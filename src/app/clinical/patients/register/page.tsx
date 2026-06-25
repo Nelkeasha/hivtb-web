@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import DashboardLayout from '@/components/layout/DashboardLayout';
@@ -20,15 +20,15 @@ interface Chw { id: string; fullName: string; employeeCode?: string; assignedVil
 type DiagnosisType = 'HIV' | 'TB' | 'HIV_TB_COINFECTION';
 
 function SectionCard({
-  title, icon: Icon, iconColor = '#E8714A', children,
+  title, icon: Icon, iconColor = '#D9643A', children,
 }: {
   title: string; icon: React.ElementType; iconColor?: string; children: React.ReactNode;
 }) {
   return (
-    <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #DCECF0' }}>
+    <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #E9E9E9' }}>
       <div
         className="flex items-center gap-2.5 px-6 py-4"
-        style={{ borderBottom: '1px solid #E8F4F8' }}
+        style={{ borderBottom: '1px solid #F0F0F0' }}
       >
         <Icon size={14} style={{ color: iconColor }} />
         <h3 className="text-[13px] font-semibold text-text-primary tracking-tight">{title}</h3>
@@ -165,7 +165,7 @@ export default function RegisterPatientPage() {
     return (
       <DashboardLayout title="Register Patient">
         <div className="w-full max-w-4xl mx-auto mt-8">
-          <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #DCECF0' }}>
+          <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #E9E9E9' }}>
             <div style={{ height: 3, background: '#27AE60' }} />
             <div className="px-8 py-10 text-center">
               <div
@@ -182,12 +182,12 @@ export default function RegisterPatientPage() {
               </p>
               <div
                 className="mt-5 rounded-lg px-6 py-3"
-                style={{ background: '#EDF6F9', border: '1px solid #DCECF0' }}
+                style={{ background: '#FAFAFA', border: '1px solid #E9E9E9' }}
               >
                 <p className="text-[11px] font-semibold uppercase tracking-widest text-text-hint mb-1">
                   Patient Code
                 </p>
-                <p className="data-num text-[22px] font-semibold" style={{ color: '#E8714A' }}>
+                <p className="data-num text-[22px] font-semibold" style={{ color: '#D9643A' }}>
                   {done.code}
                 </p>
               </div>
@@ -223,8 +223,8 @@ export default function RegisterPatientPage() {
           <button
             onClick={() => router.push('/clinical/patients')}
             className="flex items-center gap-1.5 text-[13px] text-text-secondary mb-5 transition-colors"
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#1A1A2E'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#5A6474'; }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#2C2C2C'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#6B7280'; }}
           >
             <ArrowLeft size={14} /> Back to Patients
           </button>
@@ -286,7 +286,7 @@ export default function RegisterPatientPage() {
                   checked={hasSmartphone}
                   onChange={e => setHasSmartphone(e.target.checked)}
                   className="w-4 h-4 rounded"
-                  style={{ accentColor: '#E8714A' }}
+                  style={{ accentColor: '#D9643A' }}
                 />
                 <label htmlFor="smartphone" className="text-[13px] text-text-secondary cursor-pointer">
                   Has smartphone for app
@@ -296,7 +296,7 @@ export default function RegisterPatientPage() {
           </SectionCard>
 
           {/* ── Location ──────────────────────────────────── */}
-          <SectionCard title="Location" icon={MapPin} iconColor="#5A6474">
+          <SectionCard title="Location" icon={MapPin} iconColor="#6B7280">
             <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
               <FormField label="Province" value={province} onChange={setProvince} required={false} placeholder="Kigali" />
               <FormField label="District" value={district} onChange={setDistrict} required={false} placeholder="Gasabo" />
@@ -357,7 +357,7 @@ export default function RegisterPatientPage() {
             {diagnosis && (
               <div
                 className="mt-4 rounded-lg px-4 py-3 flex items-start gap-2.5"
-                style={{ background: '#EDF6F9', border: '1px solid #DCECF0' }}
+                style={{ background: '#FAFAFA', border: '1px solid #E9E9E9' }}
               >
                 <Stethoscope size={13} className="shrink-0 mt-0.5 text-text-hint" />
                 <p className="text-[12px] text-text-secondary">
@@ -370,7 +370,7 @@ export default function RegisterPatientPage() {
           </SectionCard>
 
           {/* ── CHW assignment ────────────────────────────── */}
-          <SectionCard title="CHW Assignment" icon={Phone} iconColor="#E8714A">
+          <SectionCard title="CHW Assignment" icon={Phone} iconColor="#D9643A">
 
             {/* Mode toggle */}
             <div className="grid grid-cols-2 gap-3 mb-4">
@@ -397,7 +397,7 @@ export default function RegisterPatientPage() {
                   {chws.length === 0 ? (
                     <div
                       className="px-3 py-2.5 text-[13px] rounded-lg"
-                      style={{ border: '1px solid #DCECF0', color: '#AAB4BC' }}
+                      style={{ border: '1px solid #E9E9E9', color: '#9CA3AF' }}
                     >
                       Loading CHWs…
                     </div>
@@ -420,12 +420,12 @@ export default function RegisterPatientPage() {
                   return (
                     <div
                       className="rounded-lg p-4"
-                      style={{ background: 'rgba(232,113,74,0.04)', border: '1px solid rgba(232,113,74,0.15)' }}
+                      style={{ background: 'rgba(217,100,58,0.04)', border: '1px solid rgba(217,100,58,0.15)' }}
                     >
                       <div className="flex items-center gap-3">
                         <div
                           className="w-9 h-9 rounded-lg flex items-center justify-center text-[11px] font-bold text-white shrink-0"
-                          style={{ background: '#E8714A' }}
+                          style={{ background: '#D9643A' }}
                         >
                           {chw.fullName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
                         </div>
@@ -486,14 +486,14 @@ function AssignmentModeOption({
       onClick={onClick}
       className="text-left rounded-lg p-3.5 transition-colors"
       style={{
-        border:     active ? '1.5px solid #E8714A' : '1px solid #DCECF0',
-        background: active ? 'rgba(232,113,74,0.04)' : '#FFFFFF',
+        border:     active ? '1.5px solid #D9643A' : '1px solid #E9E9E9',
+        background: active ? 'rgba(217,100,58,0.04)' : '#FFFFFF',
       }}
     >
       <div className="flex items-center gap-2">
         <div
           className="w-3.5 h-3.5 rounded-full flex items-center justify-center shrink-0"
-          style={{ border: active ? '4px solid #E8714A' : '1.5px solid #AAB4BC' }}
+          style={{ border: active ? '4px solid #D9643A' : '1.5px solid #9CA3AF' }}
         />
         <p className="text-[13px] font-semibold text-text-primary">{title}</p>
       </div>
@@ -513,8 +513,8 @@ function ChwSelect({ chws, value, onChange }: {
       onChange={e => onChange(e.target.value)}
       className="w-full px-3 py-2.5 text-[13px] rounded-lg bg-white outline-none"
       style={{
-        border:    focused ? '1px solid #E8714A' : '1px solid #DCECF0',
-        boxShadow: focused ? '0 0 0 3px rgba(232,113,74,0.08)' : 'none',
+        border:    focused ? '1px solid #D9643A' : '1px solid #E9E9E9',
+        boxShadow: focused ? '0 0 0 3px rgba(217,100,58,0.08)' : 'none',
       }}
       onFocus={() => setFocused(true)}
       onBlur={()  => setFocused(false)}

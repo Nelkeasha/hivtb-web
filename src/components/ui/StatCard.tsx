@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { LucideIcon } from 'lucide-react';
 
 interface Props {
@@ -11,7 +11,7 @@ interface Props {
 }
 
 const palette: Record<string, { accent: string; iconBg: string; iconColor: string }> = {
-  teal:   { accent: '#E8714A', iconBg: 'rgba(232,113,74,0.10)',  iconColor: '#E8714A' },
+  teal:   { accent: '#D9643A', iconBg: 'rgba(217,100,58,0.10)',  iconColor: '#D9643A' },
   green:  { accent: '#27AE60', iconBg: 'rgba(39,174,96,0.10)',  iconColor: '#27AE60' },
   red:    { accent: '#C0392B', iconBg: 'rgba(192,57,43,0.09)',  iconColor: '#C0392B' },
   amber:  { accent: '#F39C12', iconBg: 'rgba(243,156,18,0.10)', iconColor: '#F39C12' },
@@ -28,7 +28,7 @@ export default function StatCard({ title, value, icon: Icon, color = 'teal', sub
   return (
     <div
       className="bg-white rounded-xl overflow-hidden transition-shadow hover:shadow-sm"
-      style={{ border: '1px solid #DCECF0', borderLeft: `3px solid ${accent}` }}
+      style={{ border: '1px solid #E9E9E9', borderLeft: `3px solid ${accent}` }}
     >
       <div className="p-5">
 

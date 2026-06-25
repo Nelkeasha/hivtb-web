@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import DashboardLayout from '@/components/layout/DashboardLayout';
@@ -120,7 +120,7 @@ export default function CreateUserPage() {
     return (
       <DashboardLayout title="Create User">
         <div className="w-full max-w-4xl mx-auto">
-          <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #DCECF0' }}>
+          <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #E9E9E9' }}>
             <div style={{ height: 3, background: '#27AE60' }} />
             <div className="px-8 py-10 text-center">
               <div
@@ -142,11 +142,11 @@ export default function CreateUserPage() {
                 </p>
                 <div
                   className="rounded-lg px-6 py-4"
-                  style={{ background: '#EDF6F9', border: '1px solid #DCECF0' }}
+                  style={{ background: '#FAFAFA', border: '1px solid #E9E9E9' }}
                 >
                   <p
                     className="data-num text-[26px] font-semibold tracking-widest"
-                    style={{ color: '#E8714A' }}
+                    style={{ color: '#D9643A' }}
                   >
                     {done.tempPass}
                   </p>
@@ -180,8 +180,8 @@ export default function CreateUserPage() {
           <button
             onClick={() => router.push('/admin/users')}
             className="flex items-center gap-1.5 text-[13px] text-text-secondary mb-5 transition-colors"
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#1A1A2E'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#5A6474'; }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#2C2C2C'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#6B7280'; }}
           >
             <ArrowLeft size={14} /> Back to Users
           </button>
@@ -193,12 +193,12 @@ export default function CreateUserPage() {
           </h1>
         </div>
 
-        <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #DCECF0' }}>
+        <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #E9E9E9' }}>
 
           {/* Card header */}
           <div
             className="flex items-center justify-between px-6 py-4"
-            style={{ borderBottom: '1px solid #E8F4F8' }}
+            style={{ borderBottom: '1px solid #F0F0F0' }}
           >
             <div>
               <h3 className="text-[13px] font-semibold text-text-primary tracking-tight">
@@ -208,7 +208,7 @@ export default function CreateUserPage() {
                 Generates a system account with a temporary password
               </p>
             </div>
-            <div className="flex items-center gap-1.5" style={{ color: '#E8714A' }}>
+            <div className="flex items-center gap-1.5" style={{ color: '#D9643A' }}>
               <UserPlus size={13} />
               <span className="text-[11px] font-semibold uppercase tracking-wide">Admin only</span>
             </div>
@@ -241,15 +241,15 @@ export default function CreateUserPage() {
                       onClick={() => setRole(r)}
                       className="p-3 rounded-lg text-left transition-all"
                       style={{
-                        border:     role === r ? '1px solid #E8714A' : '1px solid #DCECF0',
-                        background: role === r ? 'rgba(232,113,74,0.06)' : '#EDF6F9',
-                        color:      role === r ? '#E8714A' : '#5A6474',
+                        border:     role === r ? '1px solid #D9643A' : '1px solid #E9E9E9',
+                        background: role === r ? 'rgba(217,100,58,0.06)' : '#FAFAFA',
+                        color:      role === r ? '#D9643A' : '#6B7280',
                       }}
                     >
                       {role === r && (
                         <div
                           className="w-1.5 h-1.5 rounded-full mb-2"
-                          style={{ background: '#E8714A' }}
+                          style={{ background: '#D9643A' }}
                         />
                       )}
                       <p className="text-[12px] font-semibold leading-snug">
@@ -261,7 +261,7 @@ export default function CreateUserPage() {
               </div>
 
               {/* Divider */}
-              <div style={{ borderTop: '1px solid #E8F4F8' }} />
+              <div style={{ borderTop: '1px solid #F0F0F0' }} />
 
               {/* Common fields */}
               <div>
@@ -292,7 +292,7 @@ export default function CreateUserPage() {
               {role === 'CHW' && (
                 <div
                   className="rounded-lg p-4"
-                  style={{ background: '#EDF6F9', border: '1px solid #DCECF0' }}
+                  style={{ background: '#FAFAFA', border: '1px solid #E9E9E9' }}
                 >
                   <p className="text-[11px] font-semibold uppercase tracking-widest text-text-hint mb-3">
                     CHW Details
@@ -308,7 +308,7 @@ export default function CreateUserPage() {
               {role === 'FACILITY_PROVIDER' && (
                 <div
                   className="rounded-lg p-4"
-                  style={{ background: '#EDF6F9', border: '1px solid #DCECF0' }}
+                  style={{ background: '#FAFAFA', border: '1px solid #E9E9E9' }}
                 >
                   <p className="text-[11px] font-semibold uppercase tracking-widest text-text-hint mb-3">
                     Provider Details
@@ -323,7 +323,7 @@ export default function CreateUserPage() {
               {role === 'SUPERVISOR' && (
                 <div
                   className="rounded-lg p-4"
-                  style={{ background: '#EDF6F9', border: '1px solid #DCECF0' }}
+                  style={{ background: '#FAFAFA', border: '1px solid #E9E9E9' }}
                 >
                   <p className="text-[11px] font-semibold uppercase tracking-widest text-text-hint mb-3">
                     Supervisor Details

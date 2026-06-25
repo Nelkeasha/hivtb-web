@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { ArrowUpDown } from 'lucide-react';
 import type { SortDir } from '@/lib/useTableControls';
 
@@ -23,7 +23,7 @@ export default function SortSelect({ options, sortKey, sortDir, onChange }: Prop
         value={sortKey ?? ''}
         onChange={(e) => onChange(e.target.value)}
         className="text-[12px] font-medium text-text-secondary bg-white rounded-lg px-2.5 py-1.5 outline-none cursor-pointer"
-        style={{ border: '1px solid #DCECF0' }}
+        style={{ border: '1px solid #E9E9E9' }}
       >
         <option value="">Sort by…</option>
         {options.map((o) => (

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Lock, Eye, EyeOff, CheckCircle2, AlertCircle } from 'lucide-react';
@@ -44,7 +44,7 @@ export default function ChangePasswordPage() {
   return (
     <div
       className="min-h-screen flex items-center justify-center px-6"
-      style={{ background: '#EDF6F9' }}
+      style={{ background: '#FAFAFA' }}
     >
       <div className="w-full max-w-[460px]">
 
@@ -52,7 +52,7 @@ export default function ChangePasswordPage() {
         <div className="flex items-center gap-3 mb-8">
           <div
             className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-            style={{ background: '#E8714A' }}
+            style={{ background: '#D9643A' }}
           >
             <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden>
               <path d="M7.5 2v11M2 7.5h11" stroke="white" strokeWidth="2" strokeLinecap="round" />
@@ -65,8 +65,8 @@ export default function ChangePasswordPage() {
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #DCECF0' }}>
-          <div style={{ height: 3, background: done ? '#27AE60' : '#E8714A' }} />
+        <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #E9E9E9' }}>
+          <div style={{ height: 3, background: done ? '#27AE60' : '#D9643A' }} />
 
           <div className="px-8 py-8">
             {done ? (
@@ -168,8 +168,8 @@ export default function ChangePasswordPage() {
                 <button
                   onClick={logout}
                   className="w-full mt-4 text-[12px] text-text-hint transition-colors"
-                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#5A6474'; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#AAB4BC'; }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#6B7280'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#9CA3AF'; }}
                 >
                   Sign out instead
                 </button>
@@ -198,13 +198,13 @@ function PasswordInput({
   const [focused, setFocused] = useState(false);
 
   const borderColor = focused
-    ? '#E8714A'
+    ? '#D9643A'
     : mismatch
     ? '#C0392B'
-    : '#DCECF0';
+    : '#E9E9E9';
 
   const shadow = focused
-    ? '0 0 0 3px rgba(232,113,74,0.08)'
+    ? '0 0 0 3px rgba(217,100,58,0.08)'
     : mismatch
     ? '0 0 0 3px rgba(194,40,40,0.08)'
     : 'none';
@@ -252,7 +252,7 @@ function SubmitButton({ loading }: { loading: boolean }) {
       type="submit"
       disabled={loading}
       className="w-full py-2.5 text-white text-[13px] font-semibold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-1"
-      style={{ background: hovered && !loading ? '#C4552F' : '#E8714A' }}
+      style={{ background: hovered && !loading ? '#C9552F' : '#D9643A' }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >

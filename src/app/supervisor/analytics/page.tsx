@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import StatCard from '@/components/ui/StatCard';
@@ -37,13 +37,13 @@ interface Chw {
 
 const TOOLTIP_STYLE = {
   borderRadius: 8,
-  border: '1px solid #DCECF0',
+  border: '1px solid #E9E9E9',
   fontSize: 12,
   fontFamily: 'Poppins, system-ui, sans-serif',
   boxShadow: '0 4px 20px rgba(0,0,0,0.07)',
   background: '#fff',
 };
-const AXIS_TICK = { fontSize: 11, fill: '#AAB4BC' };
+const AXIS_TICK = { fontSize: 11, fill: '#9CA3AF' };
 
 export default function AnalyticsPage() {
   const [stats, setStats]   = useState<SupervisorStats | null>(null);
@@ -139,16 +139,16 @@ export default function AnalyticsPage() {
           >
             <ResponsiveContainer width="100%" height={240}>
               <RadarChart data={radarData} margin={{ top: 8, right: 16, bottom: 8, left: 16 }}>
-                <PolarGrid stroke="#DCECF0" />
+                <PolarGrid stroke="#E9E9E9" />
                 <PolarAngleAxis
                   dataKey="metric"
-                  tick={{ fontSize: 11, fill: '#AAB4BC', fontFamily: 'Poppins, system-ui' }}
+                  tick={{ fontSize: 11, fill: '#9CA3AF', fontFamily: 'Poppins, system-ui' }}
                 />
                 <Radar
                   name="Score"
                   dataKey="value"
-                  stroke="#E8714A"
-                  fill="#E8714A"
+                  stroke="#D9643A"
+                  fill="#D9643A"
                   fillOpacity={0.12}
                   strokeWidth={2}
                 />
@@ -167,7 +167,7 @@ export default function AnalyticsPage() {
           >
             <ResponsiveContainer width="100%" height={240}>
               <BarChart data={chwBarData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="2 6" stroke="#DCECF0" vertical={false} />
+                <CartesianGrid strokeDasharray="2 6" stroke="#E9E9E9" vertical={false} />
                 <XAxis
                   dataKey="name"
                   tick={{ ...AXIS_TICK, fontFamily: 'Poppins, system-ui' }}
@@ -181,10 +181,10 @@ export default function AnalyticsPage() {
                 />
                 <Tooltip
                   contentStyle={TOOLTIP_STYLE}
-                  cursor={{ fill: '#EDF6F9' }}
+                  cursor={{ fill: '#FAFAFA' }}
                 />
                 <Legend wrapperStyle={{ fontSize: 11, paddingTop: 10 }} />
-                <Bar dataKey="visits" name="Visits"       fill="#E8714A" radius={[3, 3, 0, 0]} />
+                <Bar dataKey="visits" name="Visits"       fill="#D9643A" radius={[3, 3, 0, 0]} />
                 <Bar dataKey="missed" name="Missed Doses" fill="#E29578" radius={[3, 3, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -199,7 +199,7 @@ export default function AnalyticsPage() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr style={{ borderBottom: '1px solid #DCECF0' }}>
+                <tr style={{ borderBottom: '1px solid #E9E9E9' }}>
                   <SortableTh label="CHW" sortKey="fullName" activeSortKey={table.sortKey} sortDir={table.sortDir} onSort={table.toggleSort} />
                   <SortableTh label="Patients" sortKey="activePatients" activeSortKey={table.sortKey} sortDir={table.sortDir} onSort={table.toggleSort} />
                   <SortableTh label="Visits / 30d" sortKey="homeVisits30d" activeSortKey={table.sortKey} sortDir={table.sortDir} onSort={table.toggleSort} />
@@ -219,7 +219,7 @@ export default function AnalyticsPage() {
                   <tr
                     key={c.id}
                     className="table-row-hover transition-colors"
-                    style={{ borderBottom: '1px solid #E8F4F8' }}
+                    style={{ borderBottom: '1px solid #F0F0F0' }}
                   >
                     <td className="py-3 pr-6 text-[13px] font-semibold text-text-primary">
                       {c.fullName}
@@ -230,7 +230,7 @@ export default function AnalyticsPage() {
                     <td className="py-3 pr-6">
                       <span
                         className="data-num text-[13px] font-semibold"
-                        style={{ color: '#E8714A' }}
+                        style={{ color: '#D9643A' }}
                       >
                         {c.homeVisits30d}
                       </span>

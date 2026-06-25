@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useEffect, useRef, useState } from 'react';
 import { ChevronDown, FileText, FileSpreadsheet, FileDown, AlertCircle, X } from 'lucide-react';
 import { downloadReport } from '@/lib/utils';
@@ -74,9 +74,9 @@ export default function ExportMenu({ baseUrl, filenamePrefix, label = 'Export Re
         onClick={() => { setOpen((v) => !v); setExportError(''); }}
         className="inline-flex items-center gap-1.5 text-[12px] font-semibold px-3 py-1.5 rounded-lg border transition-colors"
         style={{
-          color: '#E8714A',
-          borderColor: '#E8714A',
-          background: open ? '#EDF6F9' : '#fff',
+          color: '#D9643A',
+          borderColor: '#D9643A',
+          background: open ? '#FAFAFA' : '#fff',
         }}
       >
         {downloading ? (
@@ -107,7 +107,7 @@ export default function ExportMenu({ baseUrl, filenamePrefix, label = 'Export Re
         <div
           ref={menuRef}
           className="absolute right-0 mt-1 w-56 rounded-xl overflow-hidden shadow-lg z-50"
-          style={{ top: '100%', border: '1px solid #DCECF0', background: '#fff' }}
+          style={{ top: '100%', border: '1px solid #E9E9E9', background: '#fff' }}
         >
           {FORMATS.map((fmt, i) => {
             const Icon = fmt.icon;
@@ -117,17 +117,17 @@ export default function ExportMenu({ baseUrl, filenamePrefix, label = 'Export Re
                 onClick={() => handleSelect(fmt)}
                 disabled={downloading !== null}
                 className="w-full flex items-start gap-3 px-4 py-3 text-left transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{ borderBottom: i < FORMATS.length - 1 ? '1px solid #E8F4F8' : 'none' }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#F5FAFB'; }}
+                style={{ borderBottom: i < FORMATS.length - 1 ? '1px solid #F0F0F0' : 'none' }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#F9F9F9'; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = ''; }}
               >
-                <Icon size={16} style={{ color: '#E8714A' }} className="mt-0.5 shrink-0" />
+                <Icon size={16} style={{ color: '#D9643A' }} className="mt-0.5 shrink-0" />
                 <span className="min-w-0">
                   <span className="block text-[12px] font-semibold text-text-primary">{fmt.label}</span>
                   <span className="block text-[11px] text-text-hint leading-snug">{fmt.desc}</span>
                 </span>
                 {downloading === fmt.value && (
-                  <span className="w-3 h-3 mt-1 border-2 border-current border-t-transparent rounded-full animate-spin shrink-0" style={{ color: '#E8714A' }} />
+                  <span className="w-3 h-3 mt-1 border-2 border-current border-t-transparent rounded-full animate-spin shrink-0" style={{ color: '#D9643A' }} />
                 )}
               </button>
             );

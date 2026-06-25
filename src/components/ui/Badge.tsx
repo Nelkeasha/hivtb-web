@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+﻿import { cn } from '@/lib/utils';
 
 interface Props {
   children: React.ReactNode;
@@ -13,7 +13,7 @@ const styles: Record<string, string> = {
   low:      'bg-green-50  text-[#27AE60] border border-green-100',
   info:     'bg-blue-50   text-[#2980B9] border border-blue-100',
   warning:  'bg-amber-50  text-[#F39C12] border border-amber-100',
-  default:  'bg-[#EDF6F9] text-text-secondary border border-[#DCECF0]',
+  default:  'bg-[#FAFAFA] text-text-secondary border border-[#E9E9E9]',
 };
 
 export default function Badge({ children, variant = 'default', size = 'sm' }: Props) {

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import DashboardLayout from '@/components/layout/DashboardLayout';
@@ -84,7 +84,7 @@ export default function PatientsPage() {
       {/* ── Tabs ────────────────────────────────────────────── */}
       <div
         className="inline-flex gap-1 p-1 rounded-lg mb-4"
-        style={{ background: '#F5FAFB', border: '1px solid #DCECF0' }}
+        style={{ background: '#F9F9F9', border: '1px solid #E9E9E9' }}
       >
         <TabBtn active={tab === 'active'} onClick={() => { setTab('active'); setSearch(''); }}>
           Active Patients
@@ -122,9 +122,9 @@ export default function PatientsPage() {
                     onClick={() => setRiskFilter(r)}
                     className="text-[11px] px-2.5 py-1 rounded font-semibold transition-colors"
                     style={{
-                      background: riskFilter === r ? '#E8714A' : '#EDF6F9',
-                      color: riskFilter === r ? '#fff' : '#5A6474',
-                      border: `1px solid ${riskFilter === r ? '#E8714A' : '#DCECF0'}`,
+                      background: riskFilter === r ? '#D9643A' : '#FAFAFA',
+                      color: riskFilter === r ? '#fff' : '#6B7280',
+                      border: `1px solid ${riskFilter === r ? '#D9643A' : '#E9E9E9'}`,
                     }}
                   >
                     {r === 'ALL' ? 'All' : r.charAt(0) + r.slice(1).toLowerCase()}
@@ -136,12 +136,12 @@ export default function PatientsPage() {
                 <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-text-hint pointer-events-none" />
                 <input
                   className="pl-8 pr-3 py-1.5 text-[12px] rounded-lg bg-white outline-none w-36"
-                  style={{ border: '1px solid #DCECF0' }}
+                  style={{ border: '1px solid #E9E9E9' }}
                   placeholder="Search…"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  onFocus={e => { (e.currentTarget as HTMLInputElement).style.borderColor = '#E8714A'; }}
-                  onBlur={e  => { (e.currentTarget as HTMLInputElement).style.borderColor = '#DCECF0'; }}
+                  onFocus={e => { (e.currentTarget as HTMLInputElement).style.borderColor = '#D9643A'; }}
+                  onBlur={e  => { (e.currentTarget as HTMLInputElement).style.borderColor = '#E9E9E9'; }}
                 />
               </div>
             </div>
@@ -151,7 +151,7 @@ export default function PatientsPage() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr style={{ borderBottom: '1px solid #DCECF0' }}>
+                  <tr style={{ borderBottom: '1px solid #E9E9E9' }}>
                     <SortableTh label="Patient" sortKey="fullName" activeSortKey={activeTable.sortKey} sortDir={activeTable.sortDir} onSort={activeTable.toggleSort} className="whitespace-nowrap" />
                     <SortableTh label="Code" sortKey="patientCode" activeSortKey={activeTable.sortKey} sortDir={activeTable.sortDir} onSort={activeTable.toggleSort} className="whitespace-nowrap" />
                     <SortableTh label="Diagnosis" sortKey="diagnosisType" activeSortKey={activeTable.sortKey} sortDir={activeTable.sortDir} onSort={activeTable.toggleSort} className="whitespace-nowrap" />
@@ -177,7 +177,7 @@ export default function PatientsPage() {
                       key={p.id}
                       onClick={() => router.push(`/clinical/patients/${p.id}`)}
                       className="table-row-hover transition-colors cursor-pointer"
-                      style={{ borderBottom: '1px solid #E8F4F8' }}
+                      style={{ borderBottom: '1px solid #F0F0F0' }}
                     >
                       <td className="py-3 pr-4">
                         <div className="flex items-center gap-2">
@@ -244,12 +244,12 @@ export default function PatientsPage() {
                   <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-text-hint pointer-events-none" />
                   <input
                     className="pl-8 pr-3 py-1.5 text-[12px] rounded-lg bg-white outline-none w-52"
-                    style={{ border: '1px solid #DCECF0' }}
+                    style={{ border: '1px solid #E9E9E9' }}
                     placeholder="Search name or referral ID…"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    onFocus={e => { (e.currentTarget as HTMLInputElement).style.borderColor = '#E8714A'; }}
-                    onBlur={e  => { (e.currentTarget as HTMLInputElement).style.borderColor = '#DCECF0'; }}
+                    onFocus={e => { (e.currentTarget as HTMLInputElement).style.borderColor = '#D9643A'; }}
+                    onBlur={e  => { (e.currentTarget as HTMLInputElement).style.borderColor = '#E9E9E9'; }}
                   />
                 </div>
                 <SortSelect
@@ -325,7 +325,7 @@ function TabBtn({ active, onClick, children }: {
       className="flex items-center text-[12px] px-3 py-1.5 rounded font-semibold transition-colors"
       style={{
         background: active ? '#fff' : 'transparent',
-        color: active ? '#1A1A2E' : '#5A6474',
+        color: active ? '#2C2C2C' : '#6B7280',
         boxShadow: active ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
       }}
     >

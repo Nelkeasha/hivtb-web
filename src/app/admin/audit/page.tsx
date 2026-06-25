@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Badge from '@/components/ui/Badge';
@@ -106,7 +106,7 @@ export default function AuditLogPage() {
           </div>
           {!loading && (
             <div className="text-right">
-              <p className="data-num text-[30px] font-semibold leading-none" style={{ color: '#E8714A' }}>
+              <p className="data-num text-[30px] font-semibold leading-none" style={{ color: '#D9643A' }}>
                 {filtered.length}
               </p>
               <p className="text-[11px] text-text-hint mt-1 uppercase tracking-wide">
@@ -119,7 +119,7 @@ export default function AuditLogPage() {
         {/* ── Tamper-evidence chain verification ────────────── */}
         <div
           className="bg-white rounded-xl px-5 py-4 flex items-center justify-between gap-4 flex-wrap"
-          style={{ border: '1px solid #DCECF0' }}
+          style={{ border: '1px solid #E9E9E9' }}
         >
           <div className="flex items-center gap-3">
             <Link2 size={16} className="text-text-hint shrink-0" />
@@ -151,7 +151,7 @@ export default function AuditLogPage() {
               onClick={verifyChain}
               disabled={verifying}
               className="text-[11px] px-3 py-1.5 rounded-lg font-semibold transition-colors disabled:opacity-50"
-              style={{ background: '#E8714A', color: '#fff' }}
+              style={{ background: '#D9643A', color: '#fff' }}
             >
               {verifying ? 'Verifying…' : 'Verify chain'}
             </button>
@@ -159,12 +159,12 @@ export default function AuditLogPage() {
         </div>
 
         {/* ── Main card ────────────────────────────────────── */}
-        <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #DCECF0' }}>
+        <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #E9E9E9' }}>
 
           {/* Header: filters + search */}
           <div
             className="flex items-center justify-between gap-3 px-6 py-4 flex-wrap"
-            style={{ borderBottom: '1px solid #E8F4F8' }}
+            style={{ borderBottom: '1px solid #F0F0F0' }}
           >
             <div>
               <h3 className="text-[13px] font-semibold text-text-primary tracking-tight">
@@ -184,9 +184,9 @@ export default function AuditLogPage() {
                     onClick={() => setAction(a)}
                     className="text-[11px] px-2.5 py-1 rounded font-semibold transition-colors"
                     style={{
-                      background: action === a ? '#E8714A' : '#EDF6F9',
-                      color:      action === a ? '#fff'    : '#5A6474',
-                      border:     `1px solid ${action === a ? '#E8714A' : '#DCECF0'}`,
+                      background: action === a ? '#D9643A' : '#FAFAFA',
+                      color:      action === a ? '#fff'    : '#6B7280',
+                      border:     `1px solid ${action === a ? '#D9643A' : '#E9E9E9'}`,
                     }}
                   >
                     {ACTION_LABELS[a] ?? a}
@@ -202,12 +202,12 @@ export default function AuditLogPage() {
                 />
                 <input
                   className="pl-8 pr-3 py-1.5 text-[12px] rounded-lg bg-white outline-none w-36"
-                  style={{ border: '1px solid #DCECF0' }}
+                  style={{ border: '1px solid #E9E9E9' }}
                   placeholder="Filter…"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  onFocus={e  => { (e.currentTarget as HTMLInputElement).style.borderColor = '#E8714A'; }}
-                  onBlur={e   => { (e.currentTarget as HTMLInputElement).style.borderColor = '#DCECF0'; }}
+                  onFocus={e  => { (e.currentTarget as HTMLInputElement).style.borderColor = '#D9643A'; }}
+                  onBlur={e   => { (e.currentTarget as HTMLInputElement).style.borderColor = '#E9E9E9'; }}
                 />
               </div>
             </div>
@@ -229,7 +229,7 @@ export default function AuditLogPage() {
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr style={{ borderBottom: '1px solid #DCECF0' }}>
+                    <tr style={{ borderBottom: '1px solid #E9E9E9' }}>
                       <SortableTh label="Action" sortKey="action" activeSortKey={table.sortKey} sortDir={table.sortDir} onSort={table.toggleSort} />
                       <SortableTh label="User" sortKey="userEmail" activeSortKey={table.sortKey} sortDir={table.sortDir} onSort={table.toggleSort} />
                       <SortableTh label="Target" sortKey="targetTable" activeSortKey={table.sortKey} sortDir={table.sortDir} onSort={table.toggleSort} />
@@ -242,7 +242,7 @@ export default function AuditLogPage() {
                       <tr
                         key={log.id}
                         className="table-row-hover transition-colors"
-                        style={{ borderBottom: '1px solid #E8F4F8' }}
+                        style={{ borderBottom: '1px solid #F0F0F0' }}
                       >
                         <td className="py-3 pr-6">
                           {actionBadge(log.action)}
@@ -256,7 +256,7 @@ export default function AuditLogPage() {
                         <td className="py-3 pr-6 text-[12px] text-text-secondary max-w-[200px] truncate">
                           {log.details ?? '—'}
                         </td>
-                        <td className="py-3 data-num text-[11px] whitespace-nowrap" style={{ color: '#AAB4BC' }}>
+                        <td className="py-3 data-num text-[11px] whitespace-nowrap" style={{ color: '#9CA3AF' }}>
                           {timeAgo(log.timestamp)}
                         </td>
                       </tr>

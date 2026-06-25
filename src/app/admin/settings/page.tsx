@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Button from '@/components/ui/Button';
@@ -22,7 +22,7 @@ function Slider({ label, value, min, max, step = 1, onChange, unit = '', hint }:
     <div>
       <div className="flex items-baseline justify-between mb-2">
         <label className="text-[13px] text-text-secondary">{label}</label>
-        <span className="data-num text-[15px] font-semibold" style={{ color: '#E8714A' }}>
+        <span className="data-num text-[15px] font-semibold" style={{ color: '#D9643A' }}>
           {value}{unit}
         </span>
       </div>
@@ -30,7 +30,7 @@ function Slider({ label, value, min, max, step = 1, onChange, unit = '', hint }:
         type="range" min={min} max={max} step={step} value={value}
         onChange={(e) => onChange(Number(e.target.value))}
         className="w-full appearance-none cursor-pointer"
-        style={{ height: 5, borderRadius: 9999, accentColor: '#E8714A', background: '#F5FAFB' }}
+        style={{ height: 5, borderRadius: 9999, accentColor: '#D9643A', background: '#F9F9F9' }}
       />
       <div className="flex justify-between mt-1.5">
         <span className="data-num text-[10px] text-text-hint">{min}{unit}</span>
@@ -49,8 +49,8 @@ function FormInput({ placeholder }: { placeholder?: string }) {
       className="w-full px-3 py-2.5 text-[13px] rounded-lg bg-white outline-none placeholder:text-text-hint"
       placeholder={placeholder}
       style={{
-        border:     focused ? '1px solid #E8714A' : '1px solid #DCECF0',
-        boxShadow:  focused ? '0 0 0 3px rgba(232,113,74,0.08)' : 'none',
+        border:     focused ? '1px solid #D9643A' : '1px solid #E9E9E9',
+        boxShadow:  focused ? '0 0 0 3px rgba(217,100,58,0.08)' : 'none',
       }}
       onFocus={() => setFocused(true)}
       onBlur={()  => setFocused(false)}
@@ -66,10 +66,10 @@ function SectionCard({
   badge: React.ReactNode; children: React.ReactNode;
 }) {
   return (
-    <div id={id} className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #DCECF0' }}>
+    <div id={id} className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #E9E9E9' }}>
       <div
         className="flex items-center justify-between px-6 py-4"
-        style={{ borderBottom: '1px solid #E8F4F8' }}
+        style={{ borderBottom: '1px solid #F0F0F0' }}
       >
         <h3 className="text-[13px] font-semibold text-text-primary tracking-tight">{title}</h3>
         {badge}
@@ -87,14 +87,14 @@ function NavLink({ href, icon: Icon, label, color }: {
     <a
       href={href}
       className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium transition-colors"
-      style={{ color: '#5A6474' }}
+      style={{ color: '#6B7280' }}
       onMouseEnter={e => {
-        (e.currentTarget as HTMLAnchorElement).style.background = '#F5FAFB';
-        (e.currentTarget as HTMLAnchorElement).style.color = '#1A1A2E';
+        (e.currentTarget as HTMLAnchorElement).style.background = '#F9F9F9';
+        (e.currentTarget as HTMLAnchorElement).style.color = '#2C2C2C';
       }}
       onMouseLeave={e => {
         (e.currentTarget as HTMLAnchorElement).style.background = '';
-        (e.currentTarget as HTMLAnchorElement).style.color = '#5A6474';
+        (e.currentTarget as HTMLAnchorElement).style.color = '#6B7280';
       }}
     >
       <Icon size={14} style={{ color }} />
@@ -197,7 +197,7 @@ export default function SettingsPage() {
             Sections
           </p>
           <div className="space-y-0.5">
-            <NavLink href="#alerts"   icon={Bell}     label="Alert Thresholds"  color="#E8714A" />
+            <NavLink href="#alerts"   icon={Bell}     label="Alert Thresholds"  color="#D9643A" />
             <NavLink href="#risk"     icon={Activity} label="Risk Thresholds"   color="#E67E22" />
             <NavLink href="#fhir"     icon={Database} label="FHIR Integration"  color="#2980B9" />
             <NavLink href="#security" icon={Shield}   label="Security"          color="#2980B9" />
@@ -212,7 +212,7 @@ export default function SettingsPage() {
             id="alerts"
             title="Alert Thresholds"
             badge={
-              <div className="flex items-center gap-1.5" style={{ color: '#E8714A' }}>
+              <div className="flex items-center gap-1.5" style={{ color: '#D9643A' }}>
                 <Bell size={13} />
                 <span className="text-[11px] font-semibold uppercase tracking-wide">Notification</span>
               </div>
@@ -269,7 +269,7 @@ export default function SettingsPage() {
             </div>
 
             {/* Visual risk scale */}
-            <div className="mt-6 pt-5" style={{ borderTop: '1px solid #E8F4F8' }}>
+            <div className="mt-6 pt-5" style={{ borderTop: '1px solid #F0F0F0' }}>
               <p className="text-[11px] font-semibold uppercase tracking-widest text-text-hint mb-3">
                 Risk Scale Preview
               </p>
@@ -387,7 +387,7 @@ export default function SettingsPage() {
                 <div
                   key={item.label}
                   className="flex items-start gap-3 py-3"
-                  style={{ borderBottom: '1px solid #E8F4F8' }}
+                  style={{ borderBottom: '1px solid #F0F0F0' }}
                 >
                   <div
                     className="w-5 h-5 rounded flex items-center justify-center shrink-0 mt-0.5"

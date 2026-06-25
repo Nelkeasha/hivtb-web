@@ -6,16 +6,8 @@ import { logout, getUserName, getRole } from '@/lib/auth';
 import {
   LayoutDashboard, Users, AlertCircle, FileText, ArrowLeftRight,
   BarChart3, UserCheck, LogOut, History, Settings, PersonStanding,
+  Heart,
 } from 'lucide-react';
-
-/* Exact replica of Flutter's Icons.medical_services_rounded */
-function MedicalServicesIcon({ size = 24 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="white" aria-hidden>
-      <path d="M20,6H16V4c0-1.1-0.9-2-2-2h-4C8.9,2,8,2.9,8,4v2H4C2.9,6,2,6.9,2,8v12c0,1.1,0.9,2,2,2h16c1.1,0,2-0.9,2-2V8C22,6.9,21.1,6,20,6z M14,4h-4v2h4V4z M13,17h-2v-2H9v-2h2v-2h2v2h2v2h-2V17z"/>
-    </svg>
-  );
-}
 
 interface NavItem { href: string; label: string; icon: React.ElementType; }
 
@@ -28,12 +20,12 @@ const clinicalNav: NavItem[] = [
 ];
 
 const supervisorNav: NavItem[] = [
-  { href: '/supervisor',           label: 'Overview',   icon: LayoutDashboard },
-  { href: '/supervisor/chw',       label: 'CHW Team',   icon: UserCheck       },
+  { href: '/supervisor',           label: 'Overview',               icon: LayoutDashboard },
+  { href: '/supervisor/chw',       label: 'CHW Team',               icon: UserCheck       },
   { href: '/supervisor/ltfu',      label: 'Treatment Interruptions', icon: PersonStanding  },
-  { href: '/supervisor/analytics', label: 'Analytics',  icon: BarChart3       },
-  { href: '/supervisor/alerts',    label: 'Alerts',     icon: AlertCircle     },
-  { href: '/supervisor/reports',   label: 'Reports',    icon: FileText        },
+  { href: '/supervisor/analytics', label: 'Analytics',              icon: BarChart3       },
+  { href: '/supervisor/alerts',    label: 'Alerts',                 icon: AlertCircle     },
+  { href: '/supervisor/reports',   label: 'Reports',                icon: FileText        },
 ];
 
 const adminNav: NavItem[] = [
@@ -64,66 +56,51 @@ function navByRole(role: string | undefined): NavItem[] {
   return clinicalNav;
 }
 
-const W  = 'rgba(255,255,255,0.90)';   // white text — active / name
-const WD = 'rgba(255,255,255,0.58)';   // white dim — inactive nav
-const WG = 'rgba(255,255,255,0.38)';   // white ghost — labels, role
-const WH = 'rgba(255,255,255,0.10)';   // white hover bg
-const WA = 'rgba(255,255,255,0.16)';   // white active bg
-const BR = 'rgba(255,255,255,0.12)';   // border / divider
-
 export default function Sidebar() {
   const pathname = usePathname();
-  const [name, setName]   = useState('');
-  const [role, setRole]   = useState<string | undefined>(undefined);
+  const [name, setName] = useState('');
+  const [role, setRole] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     setName(getUserName());
     setRole(getRole() ?? undefined);
   }, []);
 
-  const nav      = navByRole(role);
-  const initials = name ? name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() : '';
-  const section  = role ? (SECTION_LABELS[role] ?? 'Clinical') : 'Clinical';
+  const nav       = navByRole(role);
+  const initials  = name ? name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() : '';
+  const section   = role ? (SECTION_LABELS[role] ?? 'Clinical') : 'Clinical';
   const roleLabel = role ? (ROLE_LABELS[role] ?? role.replace(/_/g, ' ')) : '';
 
   return (
     <aside
-      className="fixed inset-y-0 left-0 w-60 flex flex-col z-40"
-      style={{
-        background: 'linear-gradient(175deg, #E8714A 0%, #C4552F 100%)',
-      }}
+      className="fixed inset-y-0 left-0 w-[220px] flex flex-col z-40"
+      style={{ background: 'linear-gradient(180deg, #D9643A 0%, #B84E28 100%)', boxShadow: '2px 0 12px rgba(0,0,0,0.10)' }}
     >
-      {/* ── Logo ─────────────────────────────────────────── */}
-      <div className="px-5 py-5" style={{ borderBottom: `1px solid ${BR}` }}>
+      {/* ── Brand header ─────────────────────────────────── */}
+      <div className="px-5 py-5" style={{ borderBottom: '1px solid rgba(255,255,255,0.12)' }}>
         <div className="flex items-center gap-3">
-          {/* TODO(logo): replace MedicalServicesIcon with the DMC heart-and-cross mark once
-              the asset is supplied. Place dmc-logo.png/svg in public/ and swap in:
-              <img src="/dmc-logo.png" alt="DMC" width={36} height={36} className="rounded-xl" /> */}
           <div
-            className="w-9 h-9 rounded-2xl flex items-center justify-center shrink-0"
-            style={{
-              background: 'rgba(255,255,255,0.18)',
-              border: '1.5px solid rgba(255,255,255,0.30)',
-            }}
+            className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+            style={{ background: 'rgba(255,255,255,0.20)', border: '1.5px solid rgba(255,255,255,0.30)' }}
           >
-            <MedicalServicesIcon size={18} />
+            <Heart size={16} fill="white" stroke="white" />
           </div>
           <div>
-            <p className="font-semibold text-[13px] leading-none text-white tracking-tight">
+            <p className="font-bold text-[13px] leading-none text-white tracking-tight">
               HIV·TB Monitor
             </p>
-            <p className="text-[10px] mt-[5px] tracking-wide" style={{ color: WG }}>
-              Dream Medical · Rwanda
+            <p className="text-[10px] mt-[5px] tracking-wide" style={{ color: 'rgba(255,255,255,0.60)' }}>
+              Dream Medical Center
             </p>
           </div>
         </div>
       </div>
 
-      {/* ── Navigation ────────────────────────────────────── */}
-      <nav className="flex-1 px-3 pt-5 pb-3 space-y-[2px] overflow-y-auto">
+      {/* ── Navigation ───────────────────────────────────── */}
+      <nav className="flex-1 px-3 pt-5 pb-3 space-y-[1px] overflow-y-auto">
         <p
-          className="text-[10px] font-semibold uppercase tracking-widest px-3 mb-2.5"
-          style={{ color: WG }}
+          className="text-[9px] font-bold uppercase tracking-[0.12em] px-3 mb-3"
+          style={{ color: 'rgba(255,255,255,0.50)' }}
         >
           {section}
         </p>
@@ -138,21 +115,21 @@ export default function Sidebar() {
             <Link
               key={href}
               href={href}
-              className="flex items-center gap-2.5 px-3 py-[7px] rounded-lg text-[13px] font-medium transition-all"
+              className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[12.5px] font-medium transition-all"
               style={active
-                ? { background: WA, borderLeft: `2px solid ${W}`, color: '#fff' }
-                : { borderLeft: '2px solid transparent', color: WD }
+                ? { background: 'rgba(255,255,255,0.20)', color: '#fff', fontWeight: 600 }
+                : { color: 'rgba(255,255,255,0.68)' }
               }
               onMouseEnter={e => {
                 if (!active) {
-                  (e.currentTarget as HTMLAnchorElement).style.background = WH;
-                  (e.currentTarget as HTMLAnchorElement).style.color = W;
+                  (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(255,255,255,0.10)';
+                  (e.currentTarget as HTMLAnchorElement).style.color = '#fff';
                 }
               }}
               onMouseLeave={e => {
                 if (!active) {
                   (e.currentTarget as HTMLAnchorElement).style.background = '';
-                  (e.currentTarget as HTMLAnchorElement).style.color = WD;
+                  (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(255,255,255,0.68)';
                 }
               }}
             >
@@ -163,20 +140,20 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* ── User footer ───────────────────────────────────── */}
-      <div className="px-3 py-4" style={{ borderTop: `1px solid ${BR}` }}>
-        <div className="flex items-center gap-2.5 px-2.5 py-2 mb-1">
+      {/* ── User footer ──────────────────────────────────── */}
+      <div className="px-3 py-4" style={{ borderTop: '1px solid rgba(255,255,255,0.12)' }}>
+        <div className="flex items-center gap-2.5 px-2.5 py-2 mb-2 rounded-lg"
+          style={{ background: 'rgba(255,255,255,0.10)' }}>
           <div
-            className="w-7 h-7 rounded-lg flex items-center justify-center text-[11px] font-bold shrink-0"
-            style={{ background: WA, color: '#fff' }}
+            className="w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-bold shrink-0 text-white"
+            style={{ background: 'rgba(255,255,255,0.25)' }}
           >
             {initials}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-[12px] font-semibold truncate" style={{ color: W }}>
-              {name}
-            </p>
-            <p className="text-[10px] uppercase tracking-wide truncate mt-[2px]" style={{ color: WG }}>
+            <p className="text-[12px] font-semibold truncate text-white">{name}</p>
+            <p className="text-[9px] uppercase tracking-wider truncate mt-[1px]"
+              style={{ color: 'rgba(255,255,255,0.55)' }}>
               {roleLabel}
             </p>
           </div>
@@ -184,15 +161,15 @@ export default function Sidebar() {
 
         <button
           onClick={logout}
-          className="w-full flex items-center gap-2.5 px-2.5 py-[7px] rounded-lg text-[12px] font-medium transition-all"
-          style={{ color: WD }}
+          className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-[12px] font-medium transition-all"
+          style={{ color: 'rgba(255,255,255,0.60)' }}
           onMouseEnter={e => {
-            (e.currentTarget as HTMLButtonElement).style.background = WH;
-            (e.currentTarget as HTMLButtonElement).style.color = W;
+            (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.10)';
+            (e.currentTarget as HTMLButtonElement).style.color = '#fff';
           }}
           onMouseLeave={e => {
             (e.currentTarget as HTMLButtonElement).style.background = '';
-            (e.currentTarget as HTMLButtonElement).style.color = WD;
+            (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.60)';
           }}
         >
           <LogOut size={13} />

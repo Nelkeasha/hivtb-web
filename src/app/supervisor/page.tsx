@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import StatCard from '@/components/ui/StatCard';
@@ -53,13 +53,13 @@ interface ActivityPoint { day: string; visits: number; missed: number; }
 
 const TOOLTIP_STYLE = {
   borderRadius: 8,
-  border: '1px solid #DCECF0',
+  border: '1px solid #E9E9E9',
   fontSize: 12,
   fontFamily: 'Poppins, system-ui, sans-serif',
   boxShadow: '0 4px 20px rgba(0,0,0,0.07)',
   background: '#fff',
 };
-const AXIS_TICK = { fontSize: 11, fill: '#AAB4BC' };
+const AXIS_TICK = { fontSize: 11, fill: '#9CA3AF' };
 
 export default function SupervisorDashboard() {
   const [stats, setStats]           = useState<SupervisorStats | null>(null);
@@ -171,15 +171,15 @@ export default function SupervisorDashboard() {
                 <AreaChart data={visitData} margin={{ top: 4, right: 8, left: -26, bottom: 0 }}>
                   <defs>
                     <linearGradient id="gVisits" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%"  stopColor="#E8714A" stopOpacity={0.14} />
-                      <stop offset="95%" stopColor="#E8714A" stopOpacity={0} />
+                      <stop offset="5%"  stopColor="#D9643A" stopOpacity={0.14} />
+                      <stop offset="95%" stopColor="#D9643A" stopOpacity={0} />
                     </linearGradient>
                     <linearGradient id="gMissed" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%"  stopColor="#E29578" stopOpacity={0.12} />
                       <stop offset="95%" stopColor="#E29578" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="2 6" stroke="#DCECF0" vertical={false} />
+                  <CartesianGrid strokeDasharray="2 6" stroke="#E9E9E9" vertical={false} />
                   <XAxis dataKey="day" tick={AXIS_TICK} axisLine={false} tickLine={false} />
                   <YAxis
                     tick={{ ...AXIS_TICK, fontFamily: "'JetBrains Mono', monospace" }}
@@ -188,11 +188,11 @@ export default function SupervisorDashboard() {
                   />
                   <Tooltip
                     contentStyle={TOOLTIP_STYLE}
-                    cursor={{ stroke: '#DCECF0', strokeWidth: 1 }}
+                    cursor={{ stroke: '#E9E9E9', strokeWidth: 1 }}
                   />
                   <Area
                     type="monotone" dataKey="visits"
-                    stroke="#E8714A" strokeWidth={2}
+                    stroke="#D9643A" strokeWidth={2}
                     fill="url(#gVisits)" name="Visits"
                   />
                   <Area
@@ -213,7 +213,7 @@ export default function SupervisorDashboard() {
                 <a
                   href="/supervisor/chw"
                   className="text-[12px] font-semibold hover:underline"
-                  style={{ color: '#E8714A' }}
+                  style={{ color: '#D9643A' }}
                 >
                   View all →
                 </a>
@@ -227,11 +227,11 @@ export default function SupervisorDashboard() {
                   <div
                     key={c.id}
                     className="flex items-center gap-3 py-3"
-                    style={{ borderBottom: '1px solid #E8F4F8' }}
+                    style={{ borderBottom: '1px solid #F0F0F0' }}
                   >
                     <div
                       className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 text-[10px] font-bold text-white"
-                      style={{ background: c.isActive ? '#E8714A' : '#AAB4BC' }}
+                      style={{ background: c.isActive ? '#D9643A' : '#9CA3AF' }}
                     >
                       {c.fullName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
                     </div>
@@ -241,7 +241,7 @@ export default function SupervisorDashboard() {
                       </p>
                       <p
                         className="text-[10px] mt-0.5"
-                        style={{ color: '#AAB4BC', fontFamily: "'JetBrains Mono', monospace" }}
+                        style={{ color: '#9CA3AF', fontFamily: "'JetBrains Mono', monospace" }}
                       >
                         {c.activePatients}/{c.totalPatients} pts · {c.homeVisits30d} visits
                       </p>
@@ -268,7 +268,7 @@ export default function SupervisorDashboard() {
               <a
                 href="/supervisor/analytics"
                 className="text-[12px] font-semibold hover:underline"
-                style={{ color: '#E8714A' }}
+                style={{ color: '#D9643A' }}
               >
                 Analytics →
               </a>
@@ -277,7 +277,7 @@ export default function SupervisorDashboard() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr style={{ borderBottom: '1px solid #DCECF0' }}>
+                  <tr style={{ borderBottom: '1px solid #E9E9E9' }}>
                     {['Patient', 'Code', 'Risk', 'Score', 'CHW', 'Recommended Action'].map(h => (
                       <th
                         key={h}
@@ -300,7 +300,7 @@ export default function SupervisorDashboard() {
                     <tr
                       key={p.id}
                       className="table-row-hover transition-colors cursor-pointer"
-                      style={{ borderBottom: '1px solid #E8F4F8' }}
+                      style={{ borderBottom: '1px solid #F0F0F0' }}
                     >
                       <td className="py-3 pr-6">
                         <div className="flex items-center gap-2">

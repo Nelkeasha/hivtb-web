@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import StatCard from '@/components/ui/StatCard';
@@ -61,13 +61,13 @@ interface TrendPoint { day: string; adherence: number; confirmed: number; }
 
 const TOOLTIP_STYLE = {
   borderRadius: 8,
-  border: '1px solid #DCECF0',
+  border: '1px solid #E9E9E9',
   fontSize: 12,
   fontFamily: 'Poppins, system-ui, sans-serif',
   boxShadow: '0 4px 20px rgba(0,0,0,0.07)',
   background: '#fff',
 };
-const AXIS_TICK = { fontSize: 11, fill: '#AAB4BC' };
+const AXIS_TICK = { fontSize: 11, fill: '#9CA3AF' };
 
 export default function ClinicalDashboard() {
   const [stats, setStats]       = useState<FacilityStats | null>(null);
@@ -185,7 +185,7 @@ export default function ClinicalDashboard() {
             >
               <ResponsiveContainer width="100%" height={228}>
                 <LineChart data={trendData} margin={{ top: 4, right: 8, left: -26, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="2 6" stroke="#DCECF0" vertical={false} />
+                  <CartesianGrid strokeDasharray="2 6" stroke="#E9E9E9" vertical={false} />
                   <XAxis dataKey="day" tick={AXIS_TICK} axisLine={false} tickLine={false} />
                   <YAxis
                     tick={{ ...AXIS_TICK, fontFamily: "'JetBrains Mono', monospace" }}
@@ -195,12 +195,12 @@ export default function ClinicalDashboard() {
                   />
                   <Tooltip
                     contentStyle={TOOLTIP_STYLE}
-                    cursor={{ stroke: '#DCECF0', strokeWidth: 1 }}
+                    cursor={{ stroke: '#E9E9E9', strokeWidth: 1 }}
                   />
                   <Legend wrapperStyle={{ fontSize: 11, paddingTop: 10 }} />
                   <Line
                     type="monotone" dataKey="adherence"
-                    stroke="#E8714A" strokeWidth={2}
+                    stroke="#D9643A" strokeWidth={2}
                     dot={false} name="Adherence %"
                   />
                   <Line
@@ -227,7 +227,7 @@ export default function ClinicalDashboard() {
                   <div
                     key={alert.id}
                     className="flex items-start gap-3 py-3 group"
-                    style={{ borderBottom: '1px solid #E8F4F8' }}
+                    style={{ borderBottom: '1px solid #F0F0F0' }}
                   >
                     <div
                       className="w-1.5 h-1.5 rounded-full mt-[5px] shrink-0"
@@ -242,7 +242,7 @@ export default function ClinicalDashboard() {
                       <p className="text-[12px] text-text-secondary truncate mt-0.5">{alert.title}</p>
                       <p
                         className="text-[11px] mt-1"
-                        style={{ color: '#AAB4BC', fontFamily: "'JetBrains Mono', monospace" }}
+                        style={{ color: '#9CA3AF', fontFamily: "'JetBrains Mono', monospace" }}
                       >
                         {timeAgo(alert.createdAt)}
                       </p>
@@ -251,9 +251,9 @@ export default function ClinicalDashboard() {
                       onClick={() => resolveAlert(alert.id)}
                       title="Resolve"
                       className="opacity-0 group-hover:opacity-100 transition-opacity mt-0.5"
-                      style={{ color: '#AAB4BC' }}
-                      onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#E8714A'; }}
-                      onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#AAB4BC'; }}
+                      style={{ color: '#9CA3AF' }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#D9643A'; }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#9CA3AF'; }}
                     >
                       <CheckCircle2 size={13} />
                     </button>
@@ -271,7 +271,7 @@ export default function ClinicalDashboard() {
               <a
                 href="/clinical/patients"
                 className="text-[12px] font-semibold hover:underline"
-                style={{ color: '#E8714A' }}
+                style={{ color: '#D9643A' }}
               >
                 View all →
               </a>
@@ -280,7 +280,7 @@ export default function ClinicalDashboard() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr style={{ borderBottom: '1px solid #DCECF0' }}>
+                  <tr style={{ borderBottom: '1px solid #E9E9E9' }}>
                     {['Patient', 'Code', 'Diagnosis', 'Risk', 'Score', 'CHW', 'Recommended Action'].map(h => (
                       <th key={h} className="pb-3 pr-6 text-left text-[11px] font-semibold uppercase tracking-widest text-text-hint">
                         {h}
@@ -300,7 +300,7 @@ export default function ClinicalDashboard() {
                     <tr
                       key={p.id}
                       className="table-row-hover transition-colors cursor-pointer"
-                      style={{ borderBottom: '1px solid #E8F4F8' }}
+                      style={{ borderBottom: '1px solid #F0F0F0' }}
                     >
                       <td className="py-3 pr-6">
                         <div className="flex items-center gap-2">
@@ -339,7 +339,7 @@ export default function ClinicalDashboard() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr style={{ borderBottom: '1px solid #DCECF0' }}>
+                  <tr style={{ borderBottom: '1px solid #E9E9E9' }}>
                     {['Patient', 'Code', 'Diagnosis', 'CHW', 'Risk'].map(h => (
                       <th key={h} className="pb-3 pr-6 text-left text-[11px] font-semibold uppercase tracking-widest text-text-hint">
                         {h}
@@ -359,7 +359,7 @@ export default function ClinicalDashboard() {
                     <tr
                       key={p.id}
                       className="table-row-hover transition-colors cursor-pointer"
-                      style={{ borderBottom: '1px solid #E8F4F8' }}
+                      style={{ borderBottom: '1px solid #F0F0F0' }}
                     >
                       <td className="py-3 pr-6">
                         <span className="text-[13px] font-semibold text-text-primary">{p.fullName}</span>

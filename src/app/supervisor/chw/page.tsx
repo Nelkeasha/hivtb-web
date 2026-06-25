@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Badge, { RiskBadge } from '@/components/ui/Badge';
@@ -104,7 +104,7 @@ export default function ChwPage() {
             </h1>
           </div>
           <div className="text-right">
-            <p className="data-num text-[30px] font-semibold leading-none" style={{ color: '#E8714A' }}>
+            <p className="data-num text-[30px] font-semibold leading-none" style={{ color: '#D9643A' }}>
               {active.length}
               <span className="text-[18px] text-text-hint">/{chws.length}</span>
             </p>
@@ -115,14 +115,14 @@ export default function ChwPage() {
         {/* ── Summary strip ───────────────────────────────── */}
         <div className="grid grid-cols-3 gap-3">
           {[
-            { label: 'Total CHWs',     value: chws.length,   icon: Users,        color: '#E8714A' },
-            { label: 'Total Patients', value: totalPatients, icon: Activity,     color: '#1A1A2E' },
+            { label: 'Total CHWs',     value: chws.length,   icon: Users,        color: '#D9643A' },
+            { label: 'Total Patients', value: totalPatients, icon: Activity,     color: '#2C2C2C' },
             { label: 'Visits / 30d',   value: totalVisits,   icon: TrendingDown, color: '#27AE60' },
           ].map((s) => (
             <div
               key={s.label}
               className="bg-white rounded-xl p-4 text-center"
-              style={{ border: '1px solid #DCECF0' }}
+              style={{ border: '1px solid #E9E9E9' }}
             >
               <s.icon size={16} className="mx-auto mb-2" style={{ color: s.color }} />
               <p className="data-num text-[22px] font-semibold leading-none" style={{ color: s.color }}>
@@ -164,7 +164,7 @@ export default function ChwPage() {
                 <ChwCard key={chw.id} chw={chw} onClick={() => setSelectedId(chw.id)} />
               ))}
             </div>
-            <div className="rounded-xl bg-white" style={{ border: '1px solid #DCECF0' }}>
+            <div className="rounded-xl bg-white" style={{ border: '1px solid #E9E9E9' }}>
               <Pagination
                 page={table.page}
                 totalPages={table.totalPages}
@@ -197,10 +197,10 @@ function ChwDetailPanel({ detail, loading, onClose }: {
       <div className="relative bg-white w-full max-w-md h-full overflow-y-auto shadow-2xl">
         <div
           className="flex items-center justify-between px-5 py-4 sticky top-0 bg-white"
-          style={{ borderBottom: '1px solid #E8F4F8' }}
+          style={{ borderBottom: '1px solid #F0F0F0' }}
         >
           <h3 className="text-[14px] font-bold text-text-primary">CHW Detail</h3>
-          <button onClick={onClose} className="p-1 rounded-lg hover:bg-[#EDF6F9]">
+          <button onClick={onClose} className="p-1 rounded-lg hover:bg-[#FAFAFA]">
             <X size={18} className="text-text-hint" />
           </button>
         </div>
@@ -216,7 +216,7 @@ function ChwDetailPanel({ detail, loading, onClose }: {
               <p className="data-num text-[11px] text-text-hint mt-0.5">{detail.employeeCode ?? '—'}</p>
               {(detail.assignedSector || detail.assignedVillage) && (
                 <div className="flex items-center gap-1.5 mt-1.5">
-                  <MapPin size={11} style={{ color: '#AAB4BC' }} />
+                  <MapPin size={11} style={{ color: '#9CA3AF' }} />
                   <p className="text-[11px] text-text-hint">
                     {[detail.assignedSector, detail.assignedVillage].filter(Boolean).join(', ')}
                   </p>
@@ -225,11 +225,11 @@ function ChwDetailPanel({ detail, loading, onClose }: {
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-              <div className="rounded-lg p-3 text-center" style={{ background: '#EDF6F9', border: '1px solid #DCECF0' }}>
-                <p className="data-num text-[18px] font-semibold" style={{ color: '#E8714A' }}>{detail.homeVisits30d}</p>
+              <div className="rounded-lg p-3 text-center" style={{ background: '#FAFAFA', border: '1px solid #E9E9E9' }}>
+                <p className="data-num text-[18px] font-semibold" style={{ color: '#D9643A' }}>{detail.homeVisits30d}</p>
                 <p className="text-[10px] text-text-hint uppercase tracking-wide mt-0.5">Visits / 30d</p>
               </div>
-              <div className="rounded-lg p-3 text-center" style={{ background: '#EDF6F9', border: '1px solid #DCECF0' }}>
+              <div className="rounded-lg p-3 text-center" style={{ background: '#FAFAFA', border: '1px solid #E9E9E9' }}>
                 <p className="data-num text-[18px] font-semibold" style={{ color: detail.missedDoses7d > 5 ? '#C0392B' : '#F39C12' }}>
                   {detail.missedDoses7d}
                 </p>
@@ -246,7 +246,7 @@ function ChwDetailPanel({ detail, loading, onClose }: {
               ) : (
                 <div className="space-y-2">
                   {detail.patients.map((p) => (
-                    <div key={p.id} className="flex items-center justify-between gap-2 rounded-lg px-3 py-2" style={{ border: '1px solid #E8F4F8' }}>
+                    <div key={p.id} className="flex items-center justify-between gap-2 rounded-lg px-3 py-2" style={{ border: '1px solid #F0F0F0' }}>
                       <div className="min-w-0">
                         <p className="text-[12.5px] font-medium text-text-primary truncate">{p.fullName}</p>
                         <p className="data-num text-[10px] text-text-hint">{p.patientCode}</p>
@@ -267,7 +267,7 @@ function ChwDetailPanel({ detail, loading, onClose }: {
               ) : (
                 <div className="space-y-2">
                   {detail.recentHomeVisits.map((v) => (
-                    <div key={v.id} className="flex items-center justify-between gap-2 rounded-lg px-3 py-2" style={{ border: '1px solid #E8F4F8' }}>
+                    <div key={v.id} className="flex items-center justify-between gap-2 rounded-lg px-3 py-2" style={{ border: '1px solid #F0F0F0' }}>
                       <div className="min-w-0">
                         <p className="text-[12.5px] font-medium text-text-primary truncate">{v.patientName ?? '—'}</p>
                         <p className="data-num text-[10px] text-text-hint">{formatDate(v.visitDate)}</p>
@@ -303,18 +303,18 @@ function ChwCard({ chw, onClick }: { chw: Chw; onClick: () => void }) {
       onKeyDown={(e) => { if (e.key === 'Enter') onClick(); }}
       className="bg-white rounded-xl overflow-hidden transition-shadow hover:shadow-sm cursor-pointer"
       style={{
-        border: '1px solid #DCECF0',
-        borderLeft: chw.isActive ? '3px solid #E8714A' : '3px solid #DCECF0',
+        border: '1px solid #E9E9E9',
+        borderLeft: chw.isActive ? '3px solid #D9643A' : '3px solid #E9E9E9',
         opacity: chw.isActive ? 1 : 0.55,
       }}
     >
       {/* Card header */}
-      <div className="px-4 pt-4 pb-3" style={{ borderBottom: '1px solid #E8F4F8' }}>
+      <div className="px-4 pt-4 pb-3" style={{ borderBottom: '1px solid #F0F0F0' }}>
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-2.5">
             <div
               className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 text-[11px] font-bold text-white"
-              style={{ background: chw.isActive ? '#E8714A' : '#AAB4BC' }}
+              style={{ background: chw.isActive ? '#D9643A' : '#9CA3AF' }}
             >
               {chw.fullName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
             </div>
@@ -332,7 +332,7 @@ function ChwCard({ chw, onClick }: { chw: Chw; onClick: () => void }) {
 
         {location && (
           <div className="flex items-center gap-1.5 mt-2">
-            <MapPin size={11} style={{ color: '#AAB4BC' }} />
+            <MapPin size={11} style={{ color: '#9CA3AF' }} />
             <p className="text-[11px] text-text-hint truncate">{location}</p>
           </div>
         )}
@@ -351,13 +351,13 @@ function ChwCard({ chw, onClick }: { chw: Chw; onClick: () => void }) {
           </div>
           <div
             className="w-full rounded-full overflow-hidden"
-            style={{ height: 5, background: '#F5FAFB' }}
+            style={{ height: 5, background: '#F9F9F9' }}
           >
             <div
               className="h-full rounded-full transition-all duration-500"
               style={{
                 width: `${patientPct}%`,
-                background: '#E8714A',
+                background: '#D9643A',
               }}
             />
           </div>
@@ -368,7 +368,7 @@ function ChwCard({ chw, onClick }: { chw: Chw; onClick: () => void }) {
           <MetricTile
             label="Visits/30d"
             value={chw.homeVisits30d}
-            color="#E8714A"
+            color="#D9643A"
           />
           <MetricTile
             label="Missed/7d"
@@ -390,7 +390,7 @@ function MetricTile({ label, value, color }: { label: string; value: number; col
   return (
     <div
       className="rounded-lg p-2 text-center"
-      style={{ background: '#EDF6F9', border: '1px solid #DCECF0' }}
+      style={{ background: '#FAFAFA', border: '1px solid #E9E9E9' }}
     >
       <p className="data-num text-[16px] font-semibold leading-none" style={{ color }}>
         {value}

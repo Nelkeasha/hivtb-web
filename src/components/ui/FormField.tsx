@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useState } from 'react';
 
 interface Props {
@@ -33,8 +33,8 @@ export default function FormField({
         onChange={(e) => onChange(e.target.value)}
         className="w-full px-3 py-2.5 text-[13px] rounded-lg bg-white outline-none placeholder:text-text-hint"
         style={{
-          border:    error ? '1px solid #C0392B' : focused ? '1px solid #E8714A' : '1px solid #DCECF0',
-          boxShadow: focused ? `0 0 0 3px ${error ? 'rgba(194,57,57,0.08)' : 'rgba(232,113,74,0.08)'}` : 'none',
+          border:    error ? '1px solid #C0392B' : focused ? '1px solid #D9643A' : '1px solid #E9E9E9',
+          boxShadow: focused ? `0 0 0 3px ${error ? 'rgba(194,57,57,0.08)' : 'rgba(217,100,58,0.08)'}` : 'none',
         }}
         onFocus={() => setFocused(true)}
         onBlur={()  => setFocused(false)}

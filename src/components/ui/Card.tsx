@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+﻿import { cn } from '@/lib/utils';
 
 interface CardProps {
   children: React.ReactNode;
@@ -11,9 +11,9 @@ interface CardProps {
 export default function Card({ children, className, title, subtitle, action }: CardProps) {
   const hasHeader = title || action;
   return (
-    <div className={cn('bg-white rounded-xl', className)} style={{ border: '1px solid #DCECF0' }}>
+    <div className={cn('bg-white rounded-xl', className)} style={{ border: '1px solid #E9E9E9' }}>
       {hasHeader && (
-        <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid #E8F4F8' }}>
+        <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid #F0F0F0' }}>
           <div>
             {title && (
               <h3 className="text-[13px] font-semibold text-text-primary tracking-tight">{title}</h3>
@@ -36,7 +36,7 @@ export function CardSimple({ children, className }: { children: React.ReactNode;
   return (
     <div
       className={cn('bg-white rounded-xl p-6', className)}
-      style={{ border: '1px solid #DCECF0' }}
+      style={{ border: '1px solid #E9E9E9' }}
     >
       {children}
     </div>

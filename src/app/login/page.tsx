@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Eye, EyeOff, Lock, Mail, AlertCircle, Wifi, Clock } from 'lucide-react';
@@ -134,13 +134,13 @@ function LoginForm() {
   const ErrorIcon = errorType === 'network' ? Wifi : errorType === 'server' ? Clock : AlertCircle;
 
   return (
-    <div className="min-h-screen flex" style={{ background: '#C4552F' }}>
+    <div className="min-h-screen flex" style={{ background: '#C9552F' }}>
 
       {/* ── Left panel ──────────────────────────────────────────────────── */}
       <div
         className="hidden lg:flex flex-col w-[480px] shrink-0 relative overflow-hidden"
         style={{
-          background: 'linear-gradient(175deg, #E8714A 0%, #C4552F 100%)',
+          background: 'linear-gradient(175deg, #D9643A 0%, #C9552F 100%)',
         }}
       >
         {/* Content — justify-between splits top block from bottom block */}
@@ -255,8 +255,8 @@ function LoginForm() {
       <div
         className="flex-1 flex items-center justify-center px-8 py-12 relative"
         style={{
-          background: '#C4552F',
-          backgroundImage: 'radial-gradient(ellipse at 50% 44%, rgba(232,113,74,0.20) 0%, transparent 62%)',
+          background: '#C9552F',
+          backgroundImage: 'radial-gradient(ellipse at 50% 44%, rgba(217,100,58,0.20) 0%, transparent 62%)',
         }}
       >
         <div className="w-full max-w-[460px]">
@@ -287,7 +287,7 @@ function LoginForm() {
             }}
           >
             {/* Teal accent strip */}
-            <div style={{ height: 3, background: 'linear-gradient(90deg, #E8714A, #F0967A 60%, #FDE8E0)' }} />
+            <div style={{ height: 3, background: 'linear-gradient(90deg, #D9643A, #E9764C 60%, #FEF0EB)' }} />
 
             <div className="px-8 py-10">
               <div className="mb-8">
@@ -433,8 +433,8 @@ function InputField({
       className={`w-full py-2.5 text-[14px] rounded-lg disabled:opacity-50 text-text-primary placeholder:text-text-hint outline-none transition-all ${className}`}
       style={{
         background: focused ? '#fff' : '#FAFAF9',
-        border: focused ? '1px solid #E8714A' : '1px solid #DCECF0',
-        boxShadow: focused ? '0 0 0 3px rgba(232,113,74,0.08)' : 'none',
+        border: focused ? '1px solid #D9643A' : '1px solid #E9E9E9',
+        boxShadow: focused ? '0 0 0 3px rgba(217,100,58,0.08)' : 'none',
       }}
       onFocus={e => { setFocused(true);  props.onFocus?.(e); }}
       onBlur={e  => { setFocused(false); props.onBlur?.(e);  }}
@@ -451,8 +451,8 @@ function SubmitButton({ loading, locked }: { loading: boolean; locked: boolean }
       className="w-full py-2.5 text-white text-[13px] font-semibold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-1"
       style={{
         background: hovered && !loading && !locked
-          ? '#C4552F'
-          : '#E8714A',
+          ? '#C9552F'
+          : '#D9643A',
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}

@@ -106,7 +106,7 @@ export default function PatientDetailPage() {
     return (
       <DashboardLayout title="Patient">
         <div className="text-center py-20">
-          <p className="text-[13px] font-semibold" style={{ color: '#E8714A' }}>
+          <p className="text-[13px] font-semibold" style={{ color: '#D9643A' }}>
             {apiError || 'Patient not found.'}
           </p>
           {apiError && (
@@ -138,8 +138,8 @@ export default function PatientDetailPage() {
       <button
         onClick={() => router.push('/clinical/patients')}
         className="flex items-center gap-1.5 text-[13px] text-text-secondary mb-6 transition-colors"
-        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#1A1A2E'; }}
-        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#5A6474'; }}
+        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#2C2C2C'; }}
+        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#6B7280'; }}
       >
         <ArrowLeft size={14} /> Back to Patients
       </button>
@@ -148,17 +148,17 @@ export default function PatientDetailPage() {
 
         {/* ── Left — patient card ──────────────────────────── */}
         <div className="space-y-4">
-          <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #DCECF0' }}>
+          <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #E9E9E9' }}>
 
             {/* Teal header accent */}
-            <div style={{ height: 3, background: '#E8714A' }} />
+            <div style={{ height: 3, background: '#D9643A' }} />
 
             <div className="p-5">
               {/* Avatar + name */}
               <div className="flex items-start gap-3 mb-5">
                 <div
                   className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 text-white font-bold text-[14px]"
-                  style={{ background: '#E8714A' }}
+                  style={{ background: '#D9643A' }}
                 >
                   {initials}
                 </div>
@@ -176,7 +176,7 @@ export default function PatientDetailPage() {
               </div>
 
               {/* Demographics */}
-              <div className="space-y-0" style={{ borderTop: '1px solid #E8F4F8' }}>
+              <div className="space-y-0" style={{ borderTop: '1px solid #F0F0F0' }}>
                 <InfoRow icon={<Stethoscope size={12} />} label="Diagnosis"
                   value={patient.diagnosisType?.replace('_', ' + ') ?? '—'} />
                 <InfoRow icon={<User size={12} />} label="Sex" value={patient.sex ?? '—'} />
@@ -201,7 +201,7 @@ export default function PatientDetailPage() {
 
               {/* Treatment dates */}
               {(patient.artStartDate || patient.tbTreatmentStartDate) && (
-                <div className="mt-4 pt-4 space-y-0" style={{ borderTop: '1px solid #E8F4F8' }}>
+                <div className="mt-4 pt-4 space-y-0" style={{ borderTop: '1px solid #F0F0F0' }}>
                   {patient.artStartDate && (
                     <InfoRow icon={<Calendar size={12} />} label="ART start"
                       value={patient.artStartDate} mono />
@@ -217,7 +217,7 @@ export default function PatientDetailPage() {
               {patient.riskScore != null && (
                 <div
                   className="mt-4 pt-4 flex items-center justify-between"
-                  style={{ borderTop: '1px solid #E8F4F8' }}
+                  style={{ borderTop: '1px solid #F0F0F0' }}
                 >
                   <span className="text-[11px] font-semibold uppercase tracking-widest text-text-hint">
                     AI Risk Score
@@ -250,8 +250,8 @@ export default function PatientDetailPage() {
 
           {/* Active alerts */}
           {(patient.unresolvedAlerts?.length ?? 0) > 0 && (
-            <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #DCECF0' }}>
-              <div className="flex items-center gap-2 px-6 py-4" style={{ borderBottom: '1px solid #E8F4F8' }}>
+            <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #E9E9E9' }}>
+              <div className="flex items-center gap-2 px-6 py-4" style={{ borderBottom: '1px solid #F0F0F0' }}>
                 <Bell size={14} style={{ color: '#C0392B' }} />
                 <h3 className="text-[13px] font-semibold text-text-primary tracking-tight">
                   Active Alerts
@@ -278,16 +278,16 @@ export default function PatientDetailPage() {
 
           {/* Recent home visits */}
           {(patient.recentHomeVisits?.length ?? 0) > 0 && (
-            <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #DCECF0' }}>
-              <div className="flex items-center gap-2 px-6 py-4" style={{ borderBottom: '1px solid #E8F4F8' }}>
-                <Home size={14} style={{ color: '#E8714A' }} />
+            <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #E9E9E9' }}>
+              <div className="flex items-center gap-2 px-6 py-4" style={{ borderBottom: '1px solid #F0F0F0' }}>
+                <Home size={14} style={{ color: '#D9643A' }} />
                 <h3 className="text-[13px] font-semibold text-text-primary tracking-tight">
                   Recent Home Visits
                 </h3>
               </div>
               <div className="px-6 py-4 space-y-3">
                 {patient.recentHomeVisits!.map((v) => (
-                  <div key={v.id} className="rounded-lg p-3" style={{ background: '#EDF6F9', border: '1px solid #DCECF0' }}>
+                  <div key={v.id} className="rounded-lg p-3" style={{ background: '#FAFAFA', border: '1px solid #E9E9E9' }}>
                     <div className="flex items-center justify-between gap-2 mb-1.5">
                       <p className="data-num text-[12px] font-semibold text-text-primary">
                         {new Date(v.visitDate).toLocaleString()}
@@ -341,11 +341,11 @@ export default function PatientDetailPage() {
           )}
 
           {/* Treatment plans card */}
-          <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #DCECF0' }}>
+          <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #E9E9E9' }}>
             {/* Card header */}
             <div
               className="flex items-center justify-between px-6 py-4"
-              style={{ borderBottom: '1px solid #E8F4F8' }}
+              style={{ borderBottom: '1px solid #F0F0F0' }}
             >
               <div>
                 <h3 className="text-[13px] font-semibold text-text-primary tracking-tight">
@@ -405,7 +405,7 @@ export default function PatientDetailPage() {
                 <details className="mt-5">
                   <summary
                     className="text-[12px] text-text-hint cursor-pointer select-none"
-                    style={{ color: '#AAB4BC' }}
+                    style={{ color: '#9CA3AF' }}
                   >
                     {inactivePlans.length} inactive plan{inactivePlans.length !== 1 ? 's' : ''} — history
                   </summary>
@@ -603,19 +603,19 @@ function PlanBlock({
     <div
       className="rounded-xl mt-4 overflow-hidden"
       style={{
-        border: '1px solid #DCECF0',
-        background: plan.isActive ? '#fff' : '#EDF6F9',
+        border: '1px solid #E9E9E9',
+        background: plan.isActive ? '#fff' : '#FAFAFA',
       }}
     >
       {/* Plan header */}
       <div className="flex items-start justify-between gap-3 px-4 py-4"
-           style={{ borderBottom: '1px solid #E8F4F8' }}>
+           style={{ borderBottom: '1px solid #F0F0F0' }}>
         <div className="flex items-center gap-3">
           <div
             className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-            style={{ background: 'rgba(232,113,74,0.09)' }}
+            style={{ background: 'rgba(217,100,58,0.09)' }}
           >
-            <Pill size={15} style={{ color: '#E8714A' }} />
+            <Pill size={15} style={{ color: '#D9643A' }} />
           </div>
           <div>
             <p className="text-[14px] font-semibold text-text-primary leading-tight">
@@ -689,9 +689,9 @@ function PlanBlock({
           <button
             onClick={onAddSchedule}
             className="mt-3 flex items-center gap-1.5 text-[12px] font-semibold transition-colors"
-            style={{ color: '#E8714A' }}
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#C4552F'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#E8714A'; }}
+            style={{ color: '#D9643A' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#C9552F'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#D9643A'; }}
           >
             <Plus size={13} /> Add Dose Schedule
           </button>
@@ -715,12 +715,12 @@ function ScheduleRow({
   return (
     <div
       className="flex items-center gap-3 rounded-lg px-3 py-2.5"
-      style={{ background: '#EDF6F9', border: '1px solid #DCECF0' }}
+      style={{ background: '#FAFAFA', border: '1px solid #E9E9E9' }}
     >
-      <Clock size={12} className="shrink-0" style={{ color: schedule.isActive ? '#E8714A' : '#AAB4BC' }} />
+      <Clock size={12} className="shrink-0" style={{ color: schedule.isActive ? '#D9643A' : '#9CA3AF' }} />
       <p
         className="data-num text-[14px] font-semibold shrink-0"
-        style={{ color: schedule.isActive ? '#E8714A' : '#AAB4BC', minWidth: 40 }}
+        style={{ color: schedule.isActive ? '#D9643A' : '#9CA3AF', minWidth: 40 }}
       >
         {time}
       </p>
@@ -740,7 +740,7 @@ function ScheduleRow({
         style={
           schedule.isActive
             ? { background: '#F0FDF4', color: '#27AE60', border: '1px solid #BBF7D0' }
-            : { background: '#EDF6F9', color: '#AAB4BC', border: '1px solid #DCECF0' }
+            : { background: '#FAFAFA', color: '#9CA3AF', border: '1px solid #E9E9E9' }
         }
       >
         {schedule.notificationMethod}
@@ -751,7 +751,7 @@ function ScheduleRow({
           className="text-text-hint transition-colors shrink-0"
           title="Deactivate schedule"
           onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#C0392B'; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#AAB4BC'; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#9CA3AF'; }}
         >
           <X size={13} />
         </button>
@@ -812,7 +812,7 @@ function AddPlanForm({ patientId, onDone, onCancel }: {
     <form
       onSubmit={submit}
       className="rounded-xl p-4 mb-4 space-y-3"
-      style={{ background: '#EDF6F9', border: '1px solid #DCECF0' }}
+      style={{ background: '#FAFAFA', border: '1px solid #E9E9E9' }}
     >
       <p className="text-[12px] font-semibold uppercase tracking-widest text-text-hint">
         New Treatment Plan
@@ -908,7 +908,7 @@ function AddScheduleForm({ planId, onDone, onCancel }: {
     <form
       onSubmit={submit}
       className="rounded-xl p-4 space-y-3"
-      style={{ background: '#EDF6F9', border: '1px solid #DCECF0' }}
+      style={{ background: '#FAFAFA', border: '1px solid #E9E9E9' }}
     >
       <p className="text-[12px] font-semibold uppercase tracking-widest text-text-hint">
         Add Dose Schedule
@@ -970,9 +970,9 @@ function InfoRow({
   return (
     <div
       className="flex items-center gap-2.5 py-2.5"
-      style={{ borderBottom: '1px solid #E8F4F8' }}
+      style={{ borderBottom: '1px solid #F0F0F0' }}
     >
-      <span className="shrink-0" style={{ color: '#AAB4BC' }}>{icon}</span>
+      <span className="shrink-0" style={{ color: '#9CA3AF' }}>{icon}</span>
       <span className="text-[11px] text-text-hint w-16 shrink-0">{label}</span>
       <span
         className={`text-[13px] font-medium text-text-primary truncate ${mono ? 'data-num' : ''}`}

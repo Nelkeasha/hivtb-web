@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -21,7 +21,7 @@ export default function Pagination({ page, totalPages, totalItems, pageSize, onP
   return (
     <div
       className={cn('flex items-center justify-between px-6 py-3 flex-wrap gap-2', className)}
-      style={{ borderTop: '1px solid #E8F4F8' }}
+      style={{ borderTop: '1px solid #F0F0F0' }}
     >
       <p className="text-[12px] text-text-hint">
         Showing <span className="data-num font-semibold text-text-secondary">{start}–{end}</span> of{' '}

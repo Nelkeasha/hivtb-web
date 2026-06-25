@@ -2,42 +2,42 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* ── Brand ─────────────────────────────────────────────────── */
-  --color-primary:           #E8714A;
-  --color-primary-dark:      #C4552F;
-  --color-primary-light:     #F0967A;
-  --color-primary-container: #FDE8E0;
-  --color-accent:            #E29578;
-  --color-accent-light:      #FFD9D2;
+  /* ── Brand — DMC Deep Orange ──────────────────────────── */
+  --color-primary:           #D9643A;
+  --color-primary-dark:      #C9552F;
+  --color-primary-light:     #E9764C;
+  --color-primary-container: #FEF0EB;
+  --color-accent:            #E9764C;
+  --color-accent-light:      #FEE5D9;
 
-  /* ── Surfaces ───────────────────────────────────────────────── */
-  --color-background:       #EDF6F9;
+  /* ── Surfaces ─────────────────────────────────────────── */
+  --color-background:       #FAFAFA;
   --color-surface:          #FFFFFF;
-  --color-surface-variant:  #F5FAFB;
-  --color-divider:          #DCECF0;
+  --color-surface-variant:  #F9F9F9;
+  --color-divider:          #E9E9E9;
 
-  /* ── Text ───────────────────────────────────────────────────── */
-  --color-text-primary:     #1A1A2E;
-  --color-text-secondary:   #5A6474;
-  --color-text-hint:        #AAB4BC;
+  /* ── Text ─────────────────────────────────────────────── */
+  --color-text-primary:     #2C2C2C;
+  --color-text-secondary:   #6B7280;
+  --color-text-hint:        #9CA3AF;
 
-  /* ── Status ─────────────────────────────────────────────────── */
-  --color-success:          #27AE60;
-  --color-warning:          #F39C12;
-  --color-error:            #C0392B;
-  --color-info:             #2980B9;
+  /* ── Status ───────────────────────────────────────────── */
+  --color-success:          #2E7D32;
+  --color-warning:          #F59E0B;
+  --color-error:            #D32F2F;
+  --color-info:             #1565C0;
 
-  /* ── Risk ───────────────────────────────────────────────────── */
-  --color-risk-low:         #27AE60;
-  --color-risk-moderate:    #F39C12;
+  /* ── Risk ─────────────────────────────────────────────── */
+  --color-risk-low:         #2E7D32;
+  --color-risk-moderate:    #F59E0B;
   --color-risk-high:        #E67E22;
-  --color-risk-critical:    #C0392B;
+  --color-risk-critical:    #D32F2F;
 
   --font-sans: 'Poppins', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 }
 
-/* ── Base ────────────────────────────────────────────────────── */
+/* ── Base ──────────────────────────────────────────────── */
 html {
   -webkit-text-size-adjust: 100%;
   height: 100%;
@@ -45,8 +45,8 @@ html {
 
 body {
   font-family: 'Poppins', system-ui, sans-serif;
-  background-color: #EDF6F9;
-  color: #1A1A2E;
+  background-color: #FAFAFA;
+  color: #2C2C2C;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.5;
@@ -60,23 +60,23 @@ body {
   letter-spacing: -0.02em;
 }
 
-/* ── Scrollbar ───────────────────────────────────────────────── */
+/* ── Scrollbar ─────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #B8D8E0; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #F0967A; border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #E9764C; border-radius: 4px; }
 
-/* ── Focus ring ──────────────────────────────────────────────── */
+/* ── Focus ring ────────────────────────────────────────── */
 :focus-visible {
-  outline: 2px solid #E8714A;
+  outline: 2px solid #D9643A;
   outline-offset: 2px;
   border-radius: 4px;
 }
 
-/* ── Selection ───────────────────────────────────────────────── */
-::selection { background: #FDE8E0; color: #C4552F; }
+/* ── Selection ─────────────────────────────────────────── */
+::selection { background: #FEF0EB; color: #C9552F; }
 
-/* ── Animations ──────────────────────────────────────────────── */
+/* ── Animations ────────────────────────────────────────── */
 @keyframes live-pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.35; }
@@ -93,5 +93,13 @@ body {
   animation: ecg-draw 3s ease-out 0.5s forwards;
 }
 
-/* ── Table row hover ─────────────────────────────────────────── */
-.table-row-hover:hover { background-color: #F5FAFB; }
+/* ── Table row hover ───────────────────────────────────── */
+.table-row-hover:hover { background-color: #F9F9F9; }
+
+/* ── Card base ─────────────────────────────────────────── */
+.dmc-card {
+  background: #FFFFFF;
+  border: 1px solid #E9E9E9;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}

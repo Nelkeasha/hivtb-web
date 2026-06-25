@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import StatCard from '@/components/ui/StatCard';
@@ -51,13 +51,13 @@ interface AdminReport {
 
 const TOOLTIP_STYLE = {
   borderRadius: 8,
-  border: '1px solid #DCECF0',
+  border: '1px solid #E9E9E9',
   fontSize: 12,
   fontFamily: 'Poppins, system-ui, sans-serif',
   boxShadow: '0 4px 20px rgba(0,0,0,0.07)',
   background: '#fff',
 };
-const AXIS_TICK = { fontSize: 11, fill: '#AAB4BC', fontFamily: 'Poppins, system-ui' };
+const AXIS_TICK = { fontSize: 11, fill: '#9CA3AF', fontFamily: 'Poppins, system-ui' };
 
 export default function AdminDashboard() {
   const [report, setReport] = useState<AdminReport | null>(null);
@@ -94,7 +94,7 @@ export default function AdminDashboard() {
     (report?.totalSupervisors ?? 0) + (report?.totalPatients ?? 0);
 
   const staffBars = [
-    { label: 'Community Health Workers', value: report?.totalChw ?? 0,        color: '#E8714A' },
+    { label: 'Community Health Workers', value: report?.totalChw ?? 0,        color: '#D9643A' },
     { label: 'Facility Providers',       value: report?.totalProviders ?? 0,   color: '#00919E' },
     { label: 'Supervisors',              value: report?.totalSupervisors ?? 0, color: '#3DCAD4' },
     { label: 'Patient Accounts',         value: report?.totalPatients ?? 0,    color: '#C4E8EB' },
@@ -122,7 +122,7 @@ export default function AdminDashboard() {
               filenamePrefix="admin-report"
             />
             <div className="text-right">
-              <p className="data-num text-[30px] font-semibold leading-none" style={{ color: '#E8714A' }}>
+              <p className="data-num text-[30px] font-semibold leading-none" style={{ color: '#D9643A' }}>
                 {adherencePct}<span className="text-[18px]">%</span>
               </p>
               <p className="text-[11px] text-text-hint mt-1 uppercase tracking-wide">System adherence</p>
@@ -144,10 +144,10 @@ export default function AdminDashboard() {
           <Card title="Risk Distribution" subtitle="System-wide patient risk levels">
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={riskData} margin={{ top: 4, right: 4, left: -24, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="2 6" stroke="#DCECF0" vertical={false} />
+                <CartesianGrid strokeDasharray="2 6" stroke="#E9E9E9" vertical={false} />
                 <XAxis dataKey="name" tick={AXIS_TICK} axisLine={false} tickLine={false} />
                 <YAxis tick={{ ...AXIS_TICK, fontFamily: "'JetBrains Mono', monospace" }} axisLine={false} tickLine={false} />
-                <Tooltip contentStyle={TOOLTIP_STYLE} cursor={{ fill: '#EDF6F9' }} />
+                <Tooltip contentStyle={TOOLTIP_STYLE} cursor={{ fill: '#FAFAFA' }} />
                 <Bar dataKey="value" radius={[3, 3, 0, 0]}>
                   {riskData.map((d, i) => <Cell key={i} fill={d.color} />)}
                 </Bar>
@@ -165,7 +165,7 @@ export default function AdminDashboard() {
                       <span className="text-[12px] text-text-secondary">{item.label}</span>
                       <span className="data-num text-[12px] font-semibold text-text-primary">{item.value}</span>
                     </div>
-                    <div className="w-full h-[5px] rounded-full overflow-hidden" style={{ background: '#F5FAFB' }}>
+                    <div className="w-full h-[5px] rounded-full overflow-hidden" style={{ background: '#F9F9F9' }}>
                       <div
                         className="h-full rounded-full transition-all duration-500"
                         style={{ width: `${pct}%`, background: item.color }}
@@ -187,7 +187,7 @@ export default function AdminDashboard() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr style={{ borderBottom: '1px solid #DCECF0' }}>
+                  <tr style={{ borderBottom: '1px solid #E9E9E9' }}>
                     <SortableTh label="Facility" sortKey="facilityName" activeSortKey={facilityTable.sortKey} sortDir={facilityTable.sortDir} onSort={facilityTable.toggleSort} />
                     <SortableTh label="District" sortKey="district" activeSortKey={facilityTable.sortKey} sortDir={facilityTable.sortDir} onSort={facilityTable.toggleSort} />
                     <SortableTh label="Patients" sortKey="activePatients" activeSortKey={facilityTable.sortKey} sortDir={facilityTable.sortDir} onSort={facilityTable.toggleSort} />
@@ -199,10 +199,10 @@ export default function AdminDashboard() {
                 </thead>
                 <tbody>
                   {facilityTable.paged.map((f, i) => (
-                    <tr key={i} className="table-row-hover" style={{ borderBottom: '1px solid #E8F4F8' }}>
+                    <tr key={i} className="table-row-hover" style={{ borderBottom: '1px solid #F0F0F0' }}>
                       <td className="py-3 pr-6 text-[13px] font-semibold text-text-primary">{f.facilityName}</td>
                       <td className="py-3 pr-6 text-[13px] text-text-secondary">{f.district ?? '—'}</td>
-                      <td className="py-3 pr-6 data-num text-[13px] font-semibold" style={{ color: '#E8714A' }}>{f.activePatients}</td>
+                      <td className="py-3 pr-6 data-num text-[13px] font-semibold" style={{ color: '#D9643A' }}>{f.activePatients}</td>
                       <td className="py-3 pr-6 data-num text-[13px] text-text-secondary">{f.totalChws}</td>
                       <td className="py-3 pr-6">
                         {f.adherenceAvg != null ? (

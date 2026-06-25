@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import Sidebar from './Sidebar';
 import TopBar from './TopBar';
 
@@ -10,7 +10,7 @@ export default function DashboardLayout({
   title?: string;
 }) {
   return (
-    <div className="min-h-screen flex" style={{ background: '#EDF6F9' }}>
+    <div className="min-h-screen flex" style={{ background: '#FAFAFA' }}>
       <Sidebar />
       <div className="flex-1 flex flex-col min-w-0 pl-60">
         <TopBar title={title} />

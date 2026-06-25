@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Badge from '@/components/ui/Badge';
@@ -43,7 +43,7 @@ const STATUS_STYLE: Record<string, { accent: string; bg: string; border: string 
 };
 
 function caseStyle(status: string) {
-  return STATUS_STYLE[status] ?? { accent: '#E8714A', bg: 'rgba(232,113,74,0.02)', border: '#DCECF0' };
+  return STATUS_STYLE[status] ?? { accent: '#D9643A', bg: 'rgba(217,100,58,0.02)', border: '#E9E9E9' };
 }
 
 function statusBadge(s: string) {
@@ -118,7 +118,7 @@ export default function LtfuPage() {
         {/* ── Stats strip ──────────────────────────────────── */}
         <div className="grid grid-cols-4 gap-3">
           {[
-            { label: 'Total Cases',    value: tasks.length,          color: '#1A1A2E', icon: UserX         },
+            { label: 'Total Cases',    value: tasks.length,          color: '#2C2C2C', icon: UserX         },
             { label: 'Escalated',      value: counts.ESCALATED,      color: '#E67E22', icon: AlertTriangle },
             { label: 'Treatment Interrupted', value: counts.TREATMENT_INTERRUPTED, color: '#C0392B', icon: AlertTriangle },
             { label: 'In Tracing',     value: counts.IIT_ESCALATED,         color: '#F39C12', icon: TrendingDown  },
@@ -126,7 +126,7 @@ export default function LtfuPage() {
             <div
               key={s.label}
               className="bg-white rounded-xl p-4 text-center"
-              style={{ border: '1px solid #DCECF0' }}
+              style={{ border: '1px solid #E9E9E9' }}
             >
               <s.icon size={15} className="mx-auto mb-2" style={{ color: s.color }} />
               <p className="data-num text-[22px] font-semibold leading-none" style={{ color: s.color }}>
@@ -138,12 +138,12 @@ export default function LtfuPage() {
         </div>
 
         {/* ── Cases card ───────────────────────────────────── */}
-        <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #DCECF0' }}>
+        <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #E9E9E9' }}>
 
           {/* Header + tab filter */}
           <div
             className="flex items-center justify-between px-6 py-4 flex-wrap gap-3"
-            style={{ borderBottom: '1px solid #E8F4F8' }}
+            style={{ borderBottom: '1px solid #F0F0F0' }}
           >
             <div>
               <h3 className="text-[13px] font-semibold text-text-primary tracking-tight">
@@ -163,9 +163,9 @@ export default function LtfuPage() {
                       onClick={() => setTab(key)}
                       className="text-[11px] px-2.5 py-1 rounded font-semibold transition-colors"
                       style={{
-                        background: tab === key ? '#E8714A' : '#EDF6F9',
-                        color:      tab === key ? '#fff'    : '#5A6474',
-                        border:     `1px solid ${tab === key ? '#E8714A' : '#DCECF0'}`,
+                        background: tab === key ? '#D9643A' : '#FAFAFA',
+                        color:      tab === key ? '#fff'    : '#6B7280',
+                        border:     `1px solid ${tab === key ? '#D9643A' : '#E9E9E9'}`,
                       }}
                     >
                       {label}{count > 0 && ` (${count})`}
@@ -264,7 +264,7 @@ export default function LtfuPage() {
                         <div className="text-right shrink-0 space-y-1">
                           <div
                             className="flex items-center justify-end gap-1 data-num text-[11px]"
-                            style={{ color: '#AAB4BC' }}
+                            style={{ color: '#9CA3AF' }}
                           >
                             <Clock size={10} />
                             {timeAgo(task.createdAt)}
