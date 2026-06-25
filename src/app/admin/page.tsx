@@ -94,7 +94,7 @@ export default function AdminDashboard() {
     (report?.totalSupervisors ?? 0) + (report?.totalPatients ?? 0);
 
   const staffBars = [
-    { label: 'Community Health Workers', value: report?.totalChw ?? 0,        color: '#D12C1F' },
+    { label: 'Community Health Workers', value: report?.totalChw ?? 0,        color: '#E8714A' },
     { label: 'Facility Providers',       value: report?.totalProviders ?? 0,   color: '#00919E' },
     { label: 'Supervisors',              value: report?.totalSupervisors ?? 0, color: '#3DCAD4' },
     { label: 'Patient Accounts',         value: report?.totalPatients ?? 0,    color: '#C4E8EB' },
@@ -122,7 +122,7 @@ export default function AdminDashboard() {
               filenamePrefix="admin-report"
             />
             <div className="text-right">
-              <p className="data-num text-[30px] font-semibold leading-none" style={{ color: '#D12C1F' }}>
+              <p className="data-num text-[30px] font-semibold leading-none" style={{ color: '#E8714A' }}>
                 {adherencePct}<span className="text-[18px]">%</span>
               </p>
               <p className="text-[11px] text-text-hint mt-1 uppercase tracking-wide">System adherence</p>
@@ -202,7 +202,7 @@ export default function AdminDashboard() {
                     <tr key={i} className="table-row-hover" style={{ borderBottom: '1px solid #E8F4F8' }}>
                       <td className="py-3 pr-6 text-[13px] font-semibold text-text-primary">{f.facilityName}</td>
                       <td className="py-3 pr-6 text-[13px] text-text-secondary">{f.district ?? '—'}</td>
-                      <td className="py-3 pr-6 data-num text-[13px] font-semibold" style={{ color: '#D12C1F' }}>{f.activePatients}</td>
+                      <td className="py-3 pr-6 data-num text-[13px] font-semibold" style={{ color: '#E8714A' }}>{f.activePatients}</td>
                       <td className="py-3 pr-6 data-num text-[13px] text-text-secondary">{f.totalChws}</td>
                       <td className="py-3 pr-6">
                         {f.adherenceAvg != null ? (

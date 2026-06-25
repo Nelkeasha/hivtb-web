@@ -134,13 +134,13 @@ function LoginForm() {
   const ErrorIcon = errorType === 'network' ? Wifi : errorType === 'server' ? Clock : AlertCircle;
 
   return (
-    <div className="min-h-screen flex" style={{ background: '#8B1A11' }}>
+    <div className="min-h-screen flex" style={{ background: '#C4552F' }}>
 
       {/* ── Left panel ──────────────────────────────────────────────────── */}
       <div
         className="hidden lg:flex flex-col w-[480px] shrink-0 relative overflow-hidden"
         style={{
-          background: 'linear-gradient(175deg, #D12C1F 0%, #8B1A11 100%)',
+          background: 'linear-gradient(175deg, #E8714A 0%, #C4552F 100%)',
         }}
       >
         {/* Content — justify-between splits top block from bottom block */}
@@ -255,8 +255,8 @@ function LoginForm() {
       <div
         className="flex-1 flex items-center justify-center px-8 py-12 relative"
         style={{
-          background: '#8B1A11',
-          backgroundImage: 'radial-gradient(ellipse at 50% 44%, rgba(209,44,31,0.20) 0%, transparent 62%)',
+          background: '#C4552F',
+          backgroundImage: 'radial-gradient(ellipse at 50% 44%, rgba(232,113,74,0.20) 0%, transparent 62%)',
         }}
       >
         <div className="w-full max-w-[460px]">
@@ -287,7 +287,7 @@ function LoginForm() {
             }}
           >
             {/* Teal accent strip */}
-            <div style={{ height: 3, background: 'linear-gradient(90deg, #D12C1F, #F07068 60%, #FDDCDA)' }} />
+            <div style={{ height: 3, background: 'linear-gradient(90deg, #E8714A, #F0967A 60%, #FDE8E0)' }} />
 
             <div className="px-8 py-10">
               <div className="mb-8">
@@ -433,8 +433,8 @@ function InputField({
       className={`w-full py-2.5 text-[14px] rounded-lg disabled:opacity-50 text-text-primary placeholder:text-text-hint outline-none transition-all ${className}`}
       style={{
         background: focused ? '#fff' : '#FAFAF9',
-        border: focused ? '1px solid #D12C1F' : '1px solid #DCECF0',
-        boxShadow: focused ? '0 0 0 3px rgba(209,44,31,0.08)' : 'none',
+        border: focused ? '1px solid #E8714A' : '1px solid #DCECF0',
+        boxShadow: focused ? '0 0 0 3px rgba(232,113,74,0.08)' : 'none',
       }}
       onFocus={e => { setFocused(true);  props.onFocus?.(e); }}
       onBlur={e  => { setFocused(false); props.onBlur?.(e);  }}
@@ -451,8 +451,8 @@ function SubmitButton({ loading, locked }: { loading: boolean; locked: boolean }
       className="w-full py-2.5 text-white text-[13px] font-semibold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-1"
       style={{
         background: hovered && !loading && !locked
-          ? '#8B1A11'
-          : '#D12C1F',
+          ? '#C4552F'
+          : '#E8714A',
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}

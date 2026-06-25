@@ -64,7 +64,7 @@ export default function ReportsPage() {
   if (!report) return (
     <DashboardLayout title="Facility Report">
       <div className="text-center py-20">
-        <p className="text-[13px] font-semibold" style={{ color: '#D12C1F' }}>
+        <p className="text-[13px] font-semibold" style={{ color: '#E8714A' }}>
           {apiError || 'Could not load report data'}
         </p>
         <p className="text-[12px] text-text-hint mt-1">
@@ -77,7 +77,7 @@ export default function ReportsPage() {
   const adherencePct = Math.round(report.facilityAdherenceAvg);
 
   const diagnosisData = [
-    { name: 'HIV',    value: report.hivOnly,         fill: '#D12C1F' },
+    { name: 'HIV',    value: report.hivOnly,         fill: '#E8714A' },
     { name: 'TB',     value: report.tbOnly,           fill: '#00919E' },
     { name: 'HIV+TB', value: report.hivTbCoinfection, fill: '#3DCAD4' },
   ];
@@ -261,7 +261,7 @@ export default function ReportsPage() {
               >
                 <p
                   className="data-num text-[20px] font-semibold leading-none"
-                  style={{ color: item.warn ? '#C0392B' : '#D12C1F' }}
+                  style={{ color: item.warn ? '#C0392B' : '#E8714A' }}
                 >
                   {item.value}
                 </p>

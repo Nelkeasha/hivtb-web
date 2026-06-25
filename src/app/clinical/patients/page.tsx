@@ -122,9 +122,9 @@ export default function PatientsPage() {
                     onClick={() => setRiskFilter(r)}
                     className="text-[11px] px-2.5 py-1 rounded font-semibold transition-colors"
                     style={{
-                      background: riskFilter === r ? '#D12C1F' : '#EDF6F9',
+                      background: riskFilter === r ? '#E8714A' : '#EDF6F9',
                       color: riskFilter === r ? '#fff' : '#5A6474',
-                      border: `1px solid ${riskFilter === r ? '#D12C1F' : '#DCECF0'}`,
+                      border: `1px solid ${riskFilter === r ? '#E8714A' : '#DCECF0'}`,
                     }}
                   >
                     {r === 'ALL' ? 'All' : r.charAt(0) + r.slice(1).toLowerCase()}
@@ -140,7 +140,7 @@ export default function PatientsPage() {
                   placeholder="Search…"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  onFocus={e => { (e.currentTarget as HTMLInputElement).style.borderColor = '#D12C1F'; }}
+                  onFocus={e => { (e.currentTarget as HTMLInputElement).style.borderColor = '#E8714A'; }}
                   onBlur={e  => { (e.currentTarget as HTMLInputElement).style.borderColor = '#DCECF0'; }}
                 />
               </div>
@@ -248,7 +248,7 @@ export default function PatientsPage() {
                     placeholder="Search name or referral ID…"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    onFocus={e => { (e.currentTarget as HTMLInputElement).style.borderColor = '#D12C1F'; }}
+                    onFocus={e => { (e.currentTarget as HTMLInputElement).style.borderColor = '#E8714A'; }}
                     onBlur={e  => { (e.currentTarget as HTMLInputElement).style.borderColor = '#DCECF0'; }}
                   />
                 </div>

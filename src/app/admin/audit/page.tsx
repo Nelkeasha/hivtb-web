@@ -106,7 +106,7 @@ export default function AuditLogPage() {
           </div>
           {!loading && (
             <div className="text-right">
-              <p className="data-num text-[30px] font-semibold leading-none" style={{ color: '#D12C1F' }}>
+              <p className="data-num text-[30px] font-semibold leading-none" style={{ color: '#E8714A' }}>
                 {filtered.length}
               </p>
               <p className="text-[11px] text-text-hint mt-1 uppercase tracking-wide">
@@ -151,7 +151,7 @@ export default function AuditLogPage() {
               onClick={verifyChain}
               disabled={verifying}
               className="text-[11px] px-3 py-1.5 rounded-lg font-semibold transition-colors disabled:opacity-50"
-              style={{ background: '#D12C1F', color: '#fff' }}
+              style={{ background: '#E8714A', color: '#fff' }}
             >
               {verifying ? 'Verifying…' : 'Verify chain'}
             </button>
@@ -184,9 +184,9 @@ export default function AuditLogPage() {
                     onClick={() => setAction(a)}
                     className="text-[11px] px-2.5 py-1 rounded font-semibold transition-colors"
                     style={{
-                      background: action === a ? '#D12C1F' : '#EDF6F9',
+                      background: action === a ? '#E8714A' : '#EDF6F9',
                       color:      action === a ? '#fff'    : '#5A6474',
-                      border:     `1px solid ${action === a ? '#D12C1F' : '#DCECF0'}`,
+                      border:     `1px solid ${action === a ? '#E8714A' : '#DCECF0'}`,
                     }}
                   >
                     {ACTION_LABELS[a] ?? a}
@@ -206,7 +206,7 @@ export default function AuditLogPage() {
                   placeholder="Filter…"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  onFocus={e  => { (e.currentTarget as HTMLInputElement).style.borderColor = '#D12C1F'; }}
+                  onFocus={e  => { (e.currentTarget as HTMLInputElement).style.borderColor = '#E8714A'; }}
                   onBlur={e   => { (e.currentTarget as HTMLInputElement).style.borderColor = '#DCECF0'; }}
                 />
               </div>

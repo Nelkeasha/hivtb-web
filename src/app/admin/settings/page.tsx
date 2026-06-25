@@ -22,7 +22,7 @@ function Slider({ label, value, min, max, step = 1, onChange, unit = '', hint }:
     <div>
       <div className="flex items-baseline justify-between mb-2">
         <label className="text-[13px] text-text-secondary">{label}</label>
-        <span className="data-num text-[15px] font-semibold" style={{ color: '#D12C1F' }}>
+        <span className="data-num text-[15px] font-semibold" style={{ color: '#E8714A' }}>
           {value}{unit}
         </span>
       </div>
@@ -30,7 +30,7 @@ function Slider({ label, value, min, max, step = 1, onChange, unit = '', hint }:
         type="range" min={min} max={max} step={step} value={value}
         onChange={(e) => onChange(Number(e.target.value))}
         className="w-full appearance-none cursor-pointer"
-        style={{ height: 5, borderRadius: 9999, accentColor: '#D12C1F', background: '#F5FAFB' }}
+        style={{ height: 5, borderRadius: 9999, accentColor: '#E8714A', background: '#F5FAFB' }}
       />
       <div className="flex justify-between mt-1.5">
         <span className="data-num text-[10px] text-text-hint">{min}{unit}</span>
@@ -49,8 +49,8 @@ function FormInput({ placeholder }: { placeholder?: string }) {
       className="w-full px-3 py-2.5 text-[13px] rounded-lg bg-white outline-none placeholder:text-text-hint"
       placeholder={placeholder}
       style={{
-        border:     focused ? '1px solid #D12C1F' : '1px solid #DCECF0',
-        boxShadow:  focused ? '0 0 0 3px rgba(209,44,31,0.08)' : 'none',
+        border:     focused ? '1px solid #E8714A' : '1px solid #DCECF0',
+        boxShadow:  focused ? '0 0 0 3px rgba(232,113,74,0.08)' : 'none',
       }}
       onFocus={() => setFocused(true)}
       onBlur={()  => setFocused(false)}
@@ -197,7 +197,7 @@ export default function SettingsPage() {
             Sections
           </p>
           <div className="space-y-0.5">
-            <NavLink href="#alerts"   icon={Bell}     label="Alert Thresholds"  color="#D12C1F" />
+            <NavLink href="#alerts"   icon={Bell}     label="Alert Thresholds"  color="#E8714A" />
             <NavLink href="#risk"     icon={Activity} label="Risk Thresholds"   color="#E67E22" />
             <NavLink href="#fhir"     icon={Database} label="FHIR Integration"  color="#2980B9" />
             <NavLink href="#security" icon={Shield}   label="Security"          color="#2980B9" />
@@ -212,7 +212,7 @@ export default function SettingsPage() {
             id="alerts"
             title="Alert Thresholds"
             badge={
-              <div className="flex items-center gap-1.5" style={{ color: '#D12C1F' }}>
+              <div className="flex items-center gap-1.5" style={{ color: '#E8714A' }}>
                 <Bell size={13} />
                 <span className="text-[11px] font-semibold uppercase tracking-wide">Notification</span>
               </div>

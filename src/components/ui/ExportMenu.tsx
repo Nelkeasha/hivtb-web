@@ -74,8 +74,8 @@ export default function ExportMenu({ baseUrl, filenamePrefix, label = 'Export Re
         onClick={() => { setOpen((v) => !v); setExportError(''); }}
         className="inline-flex items-center gap-1.5 text-[12px] font-semibold px-3 py-1.5 rounded-lg border transition-colors"
         style={{
-          color: '#D12C1F',
-          borderColor: '#D12C1F',
+          color: '#E8714A',
+          borderColor: '#E8714A',
           background: open ? '#EDF6F9' : '#fff',
         }}
       >
@@ -91,13 +91,13 @@ export default function ExportMenu({ baseUrl, filenamePrefix, label = 'Export Re
       {exportError && !open && (
         <div
           className="absolute right-0 mt-1 w-72 rounded-lg shadow-lg z-50"
-          style={{ top: '100%', background: '#FFF1F0', border: '1px solid #FDDCDA' }}
+          style={{ top: '100%', background: '#FFF5F5', border: '1px solid #FDEDEB' }}
         >
           <div className="flex items-start gap-2 px-3 py-2.5">
-            <AlertCircle size={13} className="shrink-0 mt-0.5" style={{ color: '#D12C1F' }} />
-            <p className="flex-1 text-[12px] leading-relaxed" style={{ color: '#8B1A11' }}>{exportError}</p>
+            <AlertCircle size={13} className="shrink-0 mt-0.5" style={{ color: '#C0392B' }} />
+            <p className="flex-1 text-[12px] leading-relaxed" style={{ color: '#922B21' }}>{exportError}</p>
             <button onClick={() => setExportError('')} className="shrink-0" aria-label="Dismiss">
-              <X size={12} style={{ color: '#8B1A11' }} />
+              <X size={12} style={{ color: '#922B21' }} />
             </button>
           </div>
         </div>
@@ -121,13 +121,13 @@ export default function ExportMenu({ baseUrl, filenamePrefix, label = 'Export Re
                 onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#F5FAFB'; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = ''; }}
               >
-                <Icon size={16} style={{ color: '#D12C1F' }} className="mt-0.5 shrink-0" />
+                <Icon size={16} style={{ color: '#E8714A' }} className="mt-0.5 shrink-0" />
                 <span className="min-w-0">
                   <span className="block text-[12px] font-semibold text-text-primary">{fmt.label}</span>
                   <span className="block text-[11px] text-text-hint leading-snug">{fmt.desc}</span>
                 </span>
                 {downloading === fmt.value && (
-                  <span className="w-3 h-3 mt-1 border-2 border-current border-t-transparent rounded-full animate-spin shrink-0" style={{ color: '#D12C1F' }} />
+                  <span className="w-3 h-3 mt-1 border-2 border-current border-t-transparent rounded-full animate-spin shrink-0" style={{ color: '#E8714A' }} />
                 )}
               </button>
             );

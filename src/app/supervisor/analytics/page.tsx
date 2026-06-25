@@ -147,8 +147,8 @@ export default function AnalyticsPage() {
                 <Radar
                   name="Score"
                   dataKey="value"
-                  stroke="#D12C1F"
-                  fill="#D12C1F"
+                  stroke="#E8714A"
+                  fill="#E8714A"
                   fillOpacity={0.12}
                   strokeWidth={2}
                 />
@@ -184,7 +184,7 @@ export default function AnalyticsPage() {
                   cursor={{ fill: '#EDF6F9' }}
                 />
                 <Legend wrapperStyle={{ fontSize: 11, paddingTop: 10 }} />
-                <Bar dataKey="visits" name="Visits"       fill="#D12C1F" radius={[3, 3, 0, 0]} />
+                <Bar dataKey="visits" name="Visits"       fill="#E8714A" radius={[3, 3, 0, 0]} />
                 <Bar dataKey="missed" name="Missed Doses" fill="#E29578" radius={[3, 3, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -230,7 +230,7 @@ export default function AnalyticsPage() {
                     <td className="py-3 pr-6">
                       <span
                         className="data-num text-[13px] font-semibold"
-                        style={{ color: '#D12C1F' }}
+                        style={{ color: '#E8714A' }}
                       >
                         {c.homeVisits30d}
                       </span>

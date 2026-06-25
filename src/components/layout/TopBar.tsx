@@ -202,7 +202,7 @@ export default function TopBar({ title }: { title?: string }) {
                 <a
                   href="/clinical/alerts"
                   className="text-[11px] font-semibold transition-colors"
-                  style={{ color: '#D12C1F' }}
+                  style={{ color: '#E8714A' }}
                   onClick={() => setDropOpen(false)}
                 >
                   View all alerts →
@@ -216,7 +216,7 @@ export default function TopBar({ title }: { title?: string }) {
         <div className="flex items-center gap-2 ml-1">
           <div
             className="w-7 h-7 rounded-lg text-white text-[11px] font-bold flex items-center justify-center shrink-0"
-            style={{ background: '#D12C1F' }}
+            style={{ background: '#E8714A' }}
           >
             {initials}
           </div>

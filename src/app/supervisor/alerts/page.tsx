@@ -139,9 +139,9 @@ export default function SupervisorAlertsPage() {
                         onClick={() => setFilter(f)}
                         className="text-[11px] px-2.5 py-1 rounded font-semibold transition-colors"
                         style={{
-                          background: filter === f ? '#D12C1F' : '#EDF6F9',
+                          background: filter === f ? '#E8714A' : '#EDF6F9',
                           color: filter === f ? '#fff' : '#5A6474',
-                          border: `1px solid ${filter === f ? '#D12C1F' : '#DCECF0'}`,
+                          border: `1px solid ${filter === f ? '#E8714A' : '#DCECF0'}`,
                         }}
                       >
                         {f === 'ALL' ? 'All' : f.charAt(0) + f.slice(1).toLowerCase()} {count > 0 && `(${count})`}

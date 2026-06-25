@@ -90,7 +90,7 @@ export default function Sidebar() {
     <aside
       className="fixed inset-y-0 left-0 w-60 flex flex-col z-40"
       style={{
-        background: 'linear-gradient(175deg, #D12C1F 0%, #8B1A11 100%)',
+        background: 'linear-gradient(175deg, #E8714A 0%, #C4552F 100%)',
       }}
     >
       {/* ── Logo ─────────────────────────────────────────── */}

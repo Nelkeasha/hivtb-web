@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import DashboardLayout from '@/components/layout/DashboardLayout';
@@ -106,7 +106,7 @@ export default function PatientDetailPage() {
     return (
       <DashboardLayout title="Patient">
         <div className="text-center py-20">
-          <p className="text-[13px] font-semibold" style={{ color: '#D12C1F' }}>
+          <p className="text-[13px] font-semibold" style={{ color: '#E8714A' }}>
             {apiError || 'Patient not found.'}
           </p>
           {apiError && (
@@ -151,14 +151,14 @@ export default function PatientDetailPage() {
           <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #DCECF0' }}>
 
             {/* Teal header accent */}
-            <div style={{ height: 3, background: '#D12C1F' }} />
+            <div style={{ height: 3, background: '#E8714A' }} />
 
             <div className="p-5">
               {/* Avatar + name */}
               <div className="flex items-start gap-3 mb-5">
                 <div
                   className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 text-white font-bold text-[14px]"
-                  style={{ background: '#D12C1F' }}
+                  style={{ background: '#E8714A' }}
                 >
                   {initials}
                 </div>
@@ -280,7 +280,7 @@ export default function PatientDetailPage() {
           {(patient.recentHomeVisits?.length ?? 0) > 0 && (
             <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #DCECF0' }}>
               <div className="flex items-center gap-2 px-6 py-4" style={{ borderBottom: '1px solid #E8F4F8' }}>
-                <Home size={14} style={{ color: '#D12C1F' }} />
+                <Home size={14} style={{ color: '#E8714A' }} />
                 <h3 className="text-[13px] font-semibold text-text-primary tracking-tight">
                   Recent Home Visits
                 </h3>
@@ -613,9 +613,9 @@ function PlanBlock({
         <div className="flex items-center gap-3">
           <div
             className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-            style={{ background: 'rgba(209,44,31,0.09)' }}
+            style={{ background: 'rgba(232,113,74,0.09)' }}
           >
-            <Pill size={15} style={{ color: '#D12C1F' }} />
+            <Pill size={15} style={{ color: '#E8714A' }} />
           </div>
           <div>
             <p className="text-[14px] font-semibold text-text-primary leading-tight">
@@ -689,9 +689,9 @@ function PlanBlock({
           <button
             onClick={onAddSchedule}
             className="mt-3 flex items-center gap-1.5 text-[12px] font-semibold transition-colors"
-            style={{ color: '#D12C1F' }}
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#8B1A11'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#D12C1F'; }}
+            style={{ color: '#E8714A' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#C4552F'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#E8714A'; }}
           >
             <Plus size={13} /> Add Dose Schedule
           </button>
@@ -717,10 +717,10 @@ function ScheduleRow({
       className="flex items-center gap-3 rounded-lg px-3 py-2.5"
       style={{ background: '#EDF6F9', border: '1px solid #DCECF0' }}
     >
-      <Clock size={12} className="shrink-0" style={{ color: schedule.isActive ? '#D12C1F' : '#AAB4BC' }} />
+      <Clock size={12} className="shrink-0" style={{ color: schedule.isActive ? '#E8714A' : '#AAB4BC' }} />
       <p
         className="data-num text-[14px] font-semibold shrink-0"
-        style={{ color: schedule.isActive ? '#D12C1F' : '#AAB4BC', minWidth: 40 }}
+        style={{ color: schedule.isActive ? '#E8714A' : '#AAB4BC', minWidth: 40 }}
       >
         {time}
       </p>

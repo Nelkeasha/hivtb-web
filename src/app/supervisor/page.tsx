@@ -171,8 +171,8 @@ export default function SupervisorDashboard() {
                 <AreaChart data={visitData} margin={{ top: 4, right: 8, left: -26, bottom: 0 }}>
                   <defs>
                     <linearGradient id="gVisits" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%"  stopColor="#D12C1F" stopOpacity={0.14} />
-                      <stop offset="95%" stopColor="#D12C1F" stopOpacity={0} />
+                      <stop offset="5%"  stopColor="#E8714A" stopOpacity={0.14} />
+                      <stop offset="95%" stopColor="#E8714A" stopOpacity={0} />
                     </linearGradient>
                     <linearGradient id="gMissed" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%"  stopColor="#E29578" stopOpacity={0.12} />
@@ -192,7 +192,7 @@ export default function SupervisorDashboard() {
                   />
                   <Area
                     type="monotone" dataKey="visits"
-                    stroke="#D12C1F" strokeWidth={2}
+                    stroke="#E8714A" strokeWidth={2}
                     fill="url(#gVisits)" name="Visits"
                   />
                   <Area
@@ -213,7 +213,7 @@ export default function SupervisorDashboard() {
                 <a
                   href="/supervisor/chw"
                   className="text-[12px] font-semibold hover:underline"
-                  style={{ color: '#D12C1F' }}
+                  style={{ color: '#E8714A' }}
                 >
                   View all →
                 </a>
@@ -231,7 +231,7 @@ export default function SupervisorDashboard() {
                   >
                     <div
                       className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 text-[10px] font-bold text-white"
-                      style={{ background: c.isActive ? '#D12C1F' : '#AAB4BC' }}
+                      style={{ background: c.isActive ? '#E8714A' : '#AAB4BC' }}
                     >
                       {c.fullName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
                     </div>
@@ -268,7 +268,7 @@ export default function SupervisorDashboard() {
               <a
                 href="/supervisor/analytics"
                 className="text-[12px] font-semibold hover:underline"
-                style={{ color: '#D12C1F' }}
+                style={{ color: '#E8714A' }}
               >
                 Analytics →
               </a>

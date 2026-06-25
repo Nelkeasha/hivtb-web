@@ -52,7 +52,7 @@ export default function ChangePasswordPage() {
         <div className="flex items-center gap-3 mb-8">
           <div
             className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-            style={{ background: '#D12C1F' }}
+            style={{ background: '#E8714A' }}
           >
             <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden>
               <path d="M7.5 2v11M2 7.5h11" stroke="white" strokeWidth="2" strokeLinecap="round" />
@@ -66,7 +66,7 @@ export default function ChangePasswordPage() {
 
         {/* Card */}
         <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #DCECF0' }}>
-          <div style={{ height: 3, background: done ? '#27AE60' : '#D12C1F' }} />
+          <div style={{ height: 3, background: done ? '#27AE60' : '#E8714A' }} />
 
           <div className="px-8 py-8">
             {done ? (
@@ -198,13 +198,13 @@ function PasswordInput({
   const [focused, setFocused] = useState(false);
 
   const borderColor = focused
-    ? '#D12C1F'
+    ? '#E8714A'
     : mismatch
     ? '#C0392B'
     : '#DCECF0';
 
   const shadow = focused
-    ? '0 0 0 3px rgba(209,44,31,0.08)'
+    ? '0 0 0 3px rgba(232,113,74,0.08)'
     : mismatch
     ? '0 0 0 3px rgba(194,40,40,0.08)'
     : 'none';
@@ -252,7 +252,7 @@ function SubmitButton({ loading }: { loading: boolean }) {
       type="submit"
       disabled={loading}
       className="w-full py-2.5 text-white text-[13px] font-semibold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-1"
-      style={{ background: hovered && !loading ? '#8B1A11' : '#D12C1F' }}
+      style={{ background: hovered && !loading ? '#C4552F' : '#E8714A' }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >

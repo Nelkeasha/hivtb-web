@@ -104,7 +104,7 @@ export default function ChwPage() {
             </h1>
           </div>
           <div className="text-right">
-            <p className="data-num text-[30px] font-semibold leading-none" style={{ color: '#D12C1F' }}>
+            <p className="data-num text-[30px] font-semibold leading-none" style={{ color: '#E8714A' }}>
               {active.length}
               <span className="text-[18px] text-text-hint">/{chws.length}</span>
             </p>
@@ -115,7 +115,7 @@ export default function ChwPage() {
         {/* ── Summary strip ───────────────────────────────── */}
         <div className="grid grid-cols-3 gap-3">
           {[
-            { label: 'Total CHWs',     value: chws.length,   icon: Users,        color: '#D12C1F' },
+            { label: 'Total CHWs',     value: chws.length,   icon: Users,        color: '#E8714A' },
             { label: 'Total Patients', value: totalPatients, icon: Activity,     color: '#1A1A2E' },
             { label: 'Visits / 30d',   value: totalVisits,   icon: TrendingDown, color: '#27AE60' },
           ].map((s) => (
@@ -226,7 +226,7 @@ function ChwDetailPanel({ detail, loading, onClose }: {
 
             <div className="grid grid-cols-2 gap-3">
               <div className="rounded-lg p-3 text-center" style={{ background: '#EDF6F9', border: '1px solid #DCECF0' }}>
-                <p className="data-num text-[18px] font-semibold" style={{ color: '#D12C1F' }}>{detail.homeVisits30d}</p>
+                <p className="data-num text-[18px] font-semibold" style={{ color: '#E8714A' }}>{detail.homeVisits30d}</p>
                 <p className="text-[10px] text-text-hint uppercase tracking-wide mt-0.5">Visits / 30d</p>
               </div>
               <div className="rounded-lg p-3 text-center" style={{ background: '#EDF6F9', border: '1px solid #DCECF0' }}>
@@ -304,7 +304,7 @@ function ChwCard({ chw, onClick }: { chw: Chw; onClick: () => void }) {
       className="bg-white rounded-xl overflow-hidden transition-shadow hover:shadow-sm cursor-pointer"
       style={{
         border: '1px solid #DCECF0',
-        borderLeft: chw.isActive ? '3px solid #D12C1F' : '3px solid #DCECF0',
+        borderLeft: chw.isActive ? '3px solid #E8714A' : '3px solid #DCECF0',
         opacity: chw.isActive ? 1 : 0.55,
       }}
     >
@@ -314,7 +314,7 @@ function ChwCard({ chw, onClick }: { chw: Chw; onClick: () => void }) {
           <div className="flex items-center gap-2.5">
             <div
               className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 text-[11px] font-bold text-white"
-              style={{ background: chw.isActive ? '#D12C1F' : '#AAB4BC' }}
+              style={{ background: chw.isActive ? '#E8714A' : '#AAB4BC' }}
             >
               {chw.fullName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
             </div>
@@ -357,7 +357,7 @@ function ChwCard({ chw, onClick }: { chw: Chw; onClick: () => void }) {
               className="h-full rounded-full transition-all duration-500"
               style={{
                 width: `${patientPct}%`,
-                background: '#D12C1F',
+                background: '#E8714A',
               }}
             />
           </div>
@@ -368,7 +368,7 @@ function ChwCard({ chw, onClick }: { chw: Chw; onClick: () => void }) {
           <MetricTile
             label="Visits/30d"
             value={chw.homeVisits30d}
-            color="#D12C1F"
+            color="#E8714A"
           />
           <MetricTile
             label="Missed/7d"

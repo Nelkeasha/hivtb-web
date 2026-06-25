@@ -146,7 +146,7 @@ export default function CreateUserPage() {
                 >
                   <p
                     className="data-num text-[26px] font-semibold tracking-widest"
-                    style={{ color: '#D12C1F' }}
+                    style={{ color: '#E8714A' }}
                   >
                     {done.tempPass}
                   </p>
@@ -208,7 +208,7 @@ export default function CreateUserPage() {
                 Generates a system account with a temporary password
               </p>
             </div>
-            <div className="flex items-center gap-1.5" style={{ color: '#D12C1F' }}>
+            <div className="flex items-center gap-1.5" style={{ color: '#E8714A' }}>
               <UserPlus size={13} />
               <span className="text-[11px] font-semibold uppercase tracking-wide">Admin only</span>
             </div>
@@ -241,15 +241,15 @@ export default function CreateUserPage() {
                       onClick={() => setRole(r)}
                       className="p-3 rounded-lg text-left transition-all"
                       style={{
-                        border:     role === r ? '1px solid #D12C1F' : '1px solid #DCECF0',
-                        background: role === r ? 'rgba(209,44,31,0.06)' : '#EDF6F9',
-                        color:      role === r ? '#D12C1F' : '#5A6474',
+                        border:     role === r ? '1px solid #E8714A' : '1px solid #DCECF0',
+                        background: role === r ? 'rgba(232,113,74,0.06)' : '#EDF6F9',
+                        color:      role === r ? '#E8714A' : '#5A6474',
                       }}
                     >
                       {role === r && (
                         <div
                           className="w-1.5 h-1.5 rounded-full mb-2"
-                          style={{ background: '#D12C1F' }}
+                          style={{ background: '#E8714A' }}
                         />
                       )}
                       <p className="text-[12px] font-semibold leading-snug">

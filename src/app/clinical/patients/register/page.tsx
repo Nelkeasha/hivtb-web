@@ -20,7 +20,7 @@ interface Chw { id: string; fullName: string; employeeCode?: string; assignedVil
 type DiagnosisType = 'HIV' | 'TB' | 'HIV_TB_COINFECTION';
 
 function SectionCard({
-  title, icon: Icon, iconColor = '#D12C1F', children,
+  title, icon: Icon, iconColor = '#E8714A', children,
 }: {
   title: string; icon: React.ElementType; iconColor?: string; children: React.ReactNode;
 }) {
@@ -187,7 +187,7 @@ export default function RegisterPatientPage() {
                 <p className="text-[11px] font-semibold uppercase tracking-widest text-text-hint mb-1">
                   Patient Code
                 </p>
-                <p className="data-num text-[22px] font-semibold" style={{ color: '#D12C1F' }}>
+                <p className="data-num text-[22px] font-semibold" style={{ color: '#E8714A' }}>
                   {done.code}
                 </p>
               </div>
@@ -286,7 +286,7 @@ export default function RegisterPatientPage() {
                   checked={hasSmartphone}
                   onChange={e => setHasSmartphone(e.target.checked)}
                   className="w-4 h-4 rounded"
-                  style={{ accentColor: '#D12C1F' }}
+                  style={{ accentColor: '#E8714A' }}
                 />
                 <label htmlFor="smartphone" className="text-[13px] text-text-secondary cursor-pointer">
                   Has smartphone for app
@@ -370,7 +370,7 @@ export default function RegisterPatientPage() {
           </SectionCard>
 
           {/* ── CHW assignment ────────────────────────────── */}
-          <SectionCard title="CHW Assignment" icon={Phone} iconColor="#D12C1F">
+          <SectionCard title="CHW Assignment" icon={Phone} iconColor="#E8714A">
 
             {/* Mode toggle */}
             <div className="grid grid-cols-2 gap-3 mb-4">
@@ -420,12 +420,12 @@ export default function RegisterPatientPage() {
                   return (
                     <div
                       className="rounded-lg p-4"
-                      style={{ background: 'rgba(209,44,31,0.04)', border: '1px solid rgba(209,44,31,0.15)' }}
+                      style={{ background: 'rgba(232,113,74,0.04)', border: '1px solid rgba(232,113,74,0.15)' }}
                     >
                       <div className="flex items-center gap-3">
                         <div
                           className="w-9 h-9 rounded-lg flex items-center justify-center text-[11px] font-bold text-white shrink-0"
-                          style={{ background: '#D12C1F' }}
+                          style={{ background: '#E8714A' }}
                         >
                           {chw.fullName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
                         </div>
@@ -486,14 +486,14 @@ function AssignmentModeOption({
       onClick={onClick}
       className="text-left rounded-lg p-3.5 transition-colors"
       style={{
-        border:     active ? '1.5px solid #D12C1F' : '1px solid #DCECF0',
-        background: active ? 'rgba(209,44,31,0.04)' : '#FFFFFF',
+        border:     active ? '1.5px solid #E8714A' : '1px solid #DCECF0',
+        background: active ? 'rgba(232,113,74,0.04)' : '#FFFFFF',
       }}
     >
       <div className="flex items-center gap-2">
         <div
           className="w-3.5 h-3.5 rounded-full flex items-center justify-center shrink-0"
-          style={{ border: active ? '4px solid #D12C1F' : '1.5px solid #AAB4BC' }}
+          style={{ border: active ? '4px solid #E8714A' : '1.5px solid #AAB4BC' }}
         />
         <p className="text-[13px] font-semibold text-text-primary">{title}</p>
       </div>
@@ -513,8 +513,8 @@ function ChwSelect({ chws, value, onChange }: {
       onChange={e => onChange(e.target.value)}
       className="w-full px-3 py-2.5 text-[13px] rounded-lg bg-white outline-none"
       style={{
-        border:    focused ? '1px solid #D12C1F' : '1px solid #DCECF0',
-        boxShadow: focused ? '0 0 0 3px rgba(209,44,31,0.08)' : 'none',
+        border:    focused ? '1px solid #E8714A' : '1px solid #DCECF0',
+        boxShadow: focused ? '0 0 0 3px rgba(232,113,74,0.08)' : 'none',
       }}
       onFocus={() => setFocused(true)}
       onBlur={()  => setFocused(false)}
