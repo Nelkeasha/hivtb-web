@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -73,30 +73,35 @@ export default function Sidebar() {
 
   return (
     <aside
-      className="fixed inset-y-0 left-0 w-[220px] flex flex-col z-40"
-      style={{ background: 'linear-gradient(180deg, #E74A2E 0%, #853C30 100%)', boxShadow: '2px 0 12px rgba(0,0,0,0.10)' }}
+      className="fixed inset-y-0 left-0 w-[220px] flex flex-col z-40 bg-white"
+      style={{ borderRight: '1px solid #ECECEC', boxShadow: '1px 0 0 #ECECEC' }}
     >
-      {/* ── Brand header — DMC logo ───────────────────────── */}
-      <div className="px-4 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.97)' }}>
+      {/* ── Brand header ─────────────────────────────────── */}
+      <div
+        className="px-4 py-4 flex flex-col"
+        style={{ borderBottom: '1px solid #ECECEC' }}
+      >
         <Image
           src="/dmc-logo.png"
           alt="Dream Medical Center"
-          width={160}
-          height={66}
+          width={148}
+          height={61}
           priority
-          style={{ objectFit: 'contain', width: '160px', height: 'auto' }}
+          style={{ objectFit: 'contain', width: '148px', height: 'auto' }}
         />
-        <p className="text-[9.5px] font-semibold uppercase tracking-[0.10em] mt-2 px-0.5"
-          style={{ color: '#853C30' }}>
+        <p
+          className="text-[9px] font-semibold uppercase tracking-[0.14em] mt-2 px-0.5"
+          style={{ color: '#9C3219', fontFamily: "'IBM Plex Mono', monospace" }}
+        >
           HIV/TB Monitoring System
         </p>
       </div>
 
       {/* ── Navigation ───────────────────────────────────── */}
-      <nav className="flex-1 px-3 pt-5 pb-3 space-y-[1px] overflow-y-auto">
+      <nav className="flex-1 px-3 pt-5 pb-3 space-y-px overflow-y-auto">
         <p
-          className="text-[9px] font-bold uppercase tracking-[0.12em] px-3 mb-3"
-          style={{ color: 'rgba(255,255,255,0.50)' }}
+          className="text-[9px] font-bold uppercase tracking-[0.14em] px-3 mb-3"
+          style={{ color: '#9CA3AF', fontFamily: "'IBM Plex Mono', monospace" }}
         >
           {section}
         </p>
@@ -111,25 +116,38 @@ export default function Sidebar() {
             <Link
               key={href}
               href={href}
-              className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[12.5px] font-medium transition-all"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-medium transition-all relative"
               style={active
-                ? { background: 'rgba(255,255,255,0.20)', color: '#fff', fontWeight: 600 }
-                : { color: 'rgba(255,255,255,0.68)' }
+                ? {
+                    background: 'rgba(230,75,46,0.09)',
+                    color: '#C73E22',
+                    fontWeight: 600,
+                    borderLeft: '3px solid #E64B2E',
+                    paddingLeft: '9px',    /* compensate for 3px border */
+                  }
+                : {
+                    color: '#6B7280',
+                    borderLeft: '3px solid transparent',
+                    paddingLeft: '9px',
+                  }
               }
               onMouseEnter={e => {
                 if (!active) {
-                  (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(255,255,255,0.10)';
-                  (e.currentTarget as HTMLAnchorElement).style.color = '#fff';
+                  (e.currentTarget as HTMLAnchorElement).style.background = '#F9F9F9';
+                  (e.currentTarget as HTMLAnchorElement).style.color = '#2C2C2C';
                 }
               }}
               onMouseLeave={e => {
                 if (!active) {
                   (e.currentTarget as HTMLAnchorElement).style.background = '';
-                  (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(255,255,255,0.68)';
+                  (e.currentTarget as HTMLAnchorElement).style.color = '#6B7280';
                 }
               }}
             >
-              <Icon size={14} />
+              <Icon
+                size={15}
+                style={{ color: active ? '#E64B2E' : '#9CA3AF', flexShrink: 0 }}
+              />
               {label}
             </Link>
           );
@@ -137,19 +155,23 @@ export default function Sidebar() {
       </nav>
 
       {/* ── User footer ──────────────────────────────────── */}
-      <div className="px-3 py-4" style={{ borderTop: '1px solid rgba(255,255,255,0.12)' }}>
-        <div className="flex items-center gap-2.5 px-2.5 py-2 mb-2 rounded-lg"
-          style={{ background: 'rgba(255,255,255,0.10)' }}>
+      <div className="px-3 py-3" style={{ borderTop: '1px solid #ECECEC' }}>
+        <div
+          className="flex items-center gap-2.5 px-2.5 py-2 mb-1.5 rounded-lg"
+          style={{ background: '#F9F9F9' }}
+        >
           <div
             className="w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-bold shrink-0 text-white"
-            style={{ background: 'rgba(255,255,255,0.25)' }}
+            style={{ background: 'linear-gradient(135deg, #E64B2E, #9C3219)' }}
           >
             {initials}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-[12px] font-semibold truncate text-white">{name}</p>
-            <p className="text-[9px] uppercase tracking-wider truncate mt-[1px]"
-              style={{ color: 'rgba(255,255,255,0.55)' }}>
+            <p className="text-[12px] font-semibold truncate" style={{ color: '#2C2C2C' }}>{name}</p>
+            <p
+              className="text-[9px] uppercase tracking-wider truncate mt-px"
+              style={{ color: '#9CA3AF', fontFamily: "'IBM Plex Mono', monospace" }}
+            >
               {roleLabel}
             </p>
           </div>
@@ -157,15 +179,15 @@ export default function Sidebar() {
 
         <button
           onClick={logout}
-          className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-[12px] font-medium transition-all"
-          style={{ color: 'rgba(255,255,255,0.60)' }}
+          className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[12px] font-medium transition-all"
+          style={{ color: '#9CA3AF' }}
           onMouseEnter={e => {
-            (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.10)';
-            (e.currentTarget as HTMLButtonElement).style.color = '#fff';
+            (e.currentTarget as HTMLButtonElement).style.background = '#FEF2F2';
+            (e.currentTarget as HTMLButtonElement).style.color = '#C0392B';
           }}
           onMouseLeave={e => {
             (e.currentTarget as HTMLButtonElement).style.background = '';
-            (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.60)';
+            (e.currentTarget as HTMLButtonElement).style.color = '#9CA3AF';
           }}
         >
           <LogOut size={13} />

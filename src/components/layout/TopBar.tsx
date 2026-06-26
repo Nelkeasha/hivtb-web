@@ -21,8 +21,8 @@ function computeGreeting(h: number) {
 }
 
 const SEV_COLOR: Record<string, string> = {
-  CRITICAL: '#D32F2F',
-  WARNING:  '#F59E0B',
+  CRITICAL: '#C0392B',
+  WARNING:  '#B26A00',
   INFO:     '#1565C0',
 };
 
@@ -161,7 +161,7 @@ export default function TopBar({ title }: { title?: string }) {
               )}
               <div className="px-4 py-2.5 text-center" style={{ borderTop: '1px solid #F0F0F0' }}>
                 <a href="/clinical/alerts" className="text-[11px] font-semibold"
-                  style={{ color: '#E74A2E' }} onClick={() => setBellOpen(false)}>
+                  style={{ color: '#E64B2E' }} onClick={() => setBellOpen(false)}>
                   View all alerts →
                 </a>
               </div>
@@ -179,7 +179,7 @@ export default function TopBar({ title }: { title?: string }) {
           >
             <div
               className="w-7 h-7 rounded-lg text-white text-[11px] font-bold flex items-center justify-center shrink-0"
-              style={{ background: '#E74A2E' }}
+              style={{ background: '#E64B2E' }}
             >
               {initials}
             </div>
