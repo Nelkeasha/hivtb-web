@@ -63,7 +63,7 @@ const TOOLTIP_STYLE = {
   borderRadius: 8,
   border: '1px solid #E9E9E9',
   fontSize: 12,
-  fontFamily: 'Poppins, system-ui, sans-serif',
+  fontFamily: "'IBM Plex Sans', system-ui, sans-serif",
   boxShadow: '0 4px 20px rgba(0,0,0,0.07)',
   background: '#fff',
 };
@@ -188,8 +188,8 @@ export default function ClinicalDashboard() {
                   <CartesianGrid strokeDasharray="2 6" stroke="#E9E9E9" vertical={false} />
                   <XAxis dataKey="day" tick={AXIS_TICK} axisLine={false} tickLine={false} />
                   <YAxis
-                    tick={{ ...AXIS_TICK, fontFamily: "'JetBrains Mono', monospace" }}
-                    domain={[50, 100]}
+                    tick={{ ...AXIS_TICK, fontFamily: "'IBM Plex Mono', monospace" }}
+                    domain={[(dataMin: number) => Math.max(0, Math.floor(dataMin / 10) * 10 - 10), 100]}
                     axisLine={false}
                     tickLine={false}
                   />
@@ -200,7 +200,7 @@ export default function ClinicalDashboard() {
                   <Legend wrapperStyle={{ fontSize: 11, paddingTop: 10 }} />
                   <Line
                     type="monotone" dataKey="adherence"
-                    stroke="#E74A2E" strokeWidth={2}
+                    stroke="#E64B2E" strokeWidth={2}
                     dot={false} name="Adherence %"
                   />
                   <Line
@@ -242,7 +242,7 @@ export default function ClinicalDashboard() {
                       <p className="text-[12px] text-text-secondary truncate mt-0.5">{alert.title}</p>
                       <p
                         className="text-[11px] mt-1"
-                        style={{ color: '#9CA3AF', fontFamily: "'JetBrains Mono', monospace" }}
+                        style={{ color: '#9CA3AF', fontFamily: "'IBM Plex Mono', monospace" }}
                       >
                         {timeAgo(alert.createdAt)}
                       </p>
@@ -252,7 +252,7 @@ export default function ClinicalDashboard() {
                       title="Resolve"
                       className="opacity-0 group-hover:opacity-100 transition-opacity mt-0.5"
                       style={{ color: '#9CA3AF' }}
-                      onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#E74A2E'; }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#E64B2E'; }}
                       onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#9CA3AF'; }}
                     >
                       <CheckCircle2 size={13} />
@@ -271,7 +271,7 @@ export default function ClinicalDashboard() {
               <a
                 href="/clinical/patients"
                 className="text-[12px] font-semibold hover:underline"
-                style={{ color: '#E74A2E' }}
+                style={{ color: '#E64B2E' }}
               >
                 View all →
               </a>

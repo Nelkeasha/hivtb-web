@@ -11,14 +11,14 @@ interface Props {
 }
 
 const palette: Record<string, { accent: string; iconBg: string; iconColor: string }> = {
-  teal:   { accent: '#E74A2E', iconBg: 'rgba(231,74,46,0.10)',  iconColor: '#E74A2E' },
-  green:  { accent: '#27AE60', iconBg: 'rgba(39,174,96,0.10)',  iconColor: '#27AE60' },
+  teal:   { accent: '#E64B2E', iconBg: 'rgba(230,75,46,0.09)',  iconColor: '#E64B2E' },
+  green:  { accent: '#2E7D32', iconBg: 'rgba(46,125,50,0.10)',  iconColor: '#2E7D32' },
   red:    { accent: '#C0392B', iconBg: 'rgba(192,57,43,0.09)',  iconColor: '#C0392B' },
-  amber:  { accent: '#F39C12', iconBg: 'rgba(243,156,18,0.10)', iconColor: '#F39C12' },
-  coral:  { accent: '#E29578', iconBg: 'rgba(226,149,120,0.12)', iconColor: '#E29578' },
-  blue:   { accent: '#2980B9', iconBg: 'rgba(41,128,185,0.10)', iconColor: '#2980B9' },
-  orange: { accent: '#E67E22', iconBg: 'rgba(230,126,34,0.10)', iconColor: '#E67E22' },
-  purple: { accent: '#6B3FA0', iconBg: 'rgba(107,63,160,0.10)', iconColor: '#6B3FA0' },
+  amber:  { accent: '#B26A00', iconBg: 'rgba(178,106,0,0.09)',  iconColor: '#B26A00' },
+  coral:  { accent: '#E64B2E', iconBg: 'rgba(230,75,46,0.09)',  iconColor: '#E64B2E' },
+  blue:   { accent: '#1565C0', iconBg: 'rgba(21,101,192,0.09)', iconColor: '#1565C0' },
+  orange: { accent: '#E67E22', iconBg: 'rgba(230,126,34,0.09)', iconColor: '#E67E22' },
+  purple: { accent: '#6B3FA0', iconBg: 'rgba(107,63,160,0.09)', iconColor: '#6B3FA0' },
 };
 
 export default function StatCard({ title, value, icon: Icon, color = 'teal', subtitle, trend }: Props) {
