@@ -37,7 +37,7 @@ const STATUS_TABS: { key: Tab; label: string }[] = [
 const URGENCY_STYLE: Record<string, { accent: string; bg: string; border: string }> = {
   EMERGENCY: { accent: '#C0392B', bg: 'rgba(194,40,40,0.03)',  border: '#FECACA' },
   URGENT:    { accent: '#E67E22', bg: 'rgba(184,68,0,0.03)',   border: '#FED7AA' },
-  ROUTINE:   { accent: '#D9643A', bg: 'rgba(217,100,58,0.02)',   border: '#E9E9E9' },
+  ROUTINE:   { accent: '#E74A2E', bg: 'rgba(231,74,46,0.02)',   border: '#E9E9E9' },
 };
 
 function urgencyStyle(u: string) {
@@ -138,7 +138,7 @@ export default function ReferralsPage() {
           </div>
           {!loading && referrals.length > 0 && (
             <div className="text-right">
-              <p className="data-num text-[30px] font-semibold leading-none" style={{ color: '#D9643A' }}>
+              <p className="data-num text-[30px] font-semibold leading-none" style={{ color: '#E74A2E' }}>
                 {referrals.length}
               </p>
               <p className="text-[11px] text-text-hint mt-1 uppercase tracking-wide">Total referrals</p>
@@ -180,9 +180,9 @@ export default function ReferralsPage() {
                     onClick={() => setTab(key)}
                     className="text-[11px] px-2.5 py-1 rounded font-semibold transition-colors"
                     style={{
-                      background: tab === key ? '#D9643A' : '#FAFAFA',
+                      background: tab === key ? '#E74A2E' : '#FAFAFA',
                       color:      tab === key ? '#fff'    : '#6B7280',
-                      border:     `1px solid ${tab === key ? '#D9643A' : '#E9E9E9'}`,
+                      border:     `1px solid ${tab === key ? '#E74A2E' : '#E9E9E9'}`,
                     }}
                   >
                     {label}{count > 0 && key !== 'ALL' && ` (${count})`}

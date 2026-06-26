@@ -74,8 +74,8 @@ export default function ExportMenu({ baseUrl, filenamePrefix, label = 'Export Re
         onClick={() => { setOpen((v) => !v); setExportError(''); }}
         className="inline-flex items-center gap-1.5 text-[12px] font-semibold px-3 py-1.5 rounded-lg border transition-colors"
         style={{
-          color: '#D9643A',
-          borderColor: '#D9643A',
+          color: '#E74A2E',
+          borderColor: '#E74A2E',
           background: open ? '#FAFAFA' : '#fff',
         }}
       >
@@ -121,13 +121,13 @@ export default function ExportMenu({ baseUrl, filenamePrefix, label = 'Export Re
                 onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#F9F9F9'; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = ''; }}
               >
-                <Icon size={16} style={{ color: '#D9643A' }} className="mt-0.5 shrink-0" />
+                <Icon size={16} style={{ color: '#E74A2E' }} className="mt-0.5 shrink-0" />
                 <span className="min-w-0">
                   <span className="block text-[12px] font-semibold text-text-primary">{fmt.label}</span>
                   <span className="block text-[11px] text-text-hint leading-snug">{fmt.desc}</span>
                 </span>
                 {downloading === fmt.value && (
-                  <span className="w-3 h-3 mt-1 border-2 border-current border-t-transparent rounded-full animate-spin shrink-0" style={{ color: '#D9643A' }} />
+                  <span className="w-3 h-3 mt-1 border-2 border-current border-t-transparent rounded-full animate-spin shrink-0" style={{ color: '#E74A2E' }} />
                 )}
               </button>
             );

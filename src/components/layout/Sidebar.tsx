@@ -1,12 +1,12 @@
-'use client';
+﻿'use client';
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { logout, getUserName, getRole } from '@/lib/auth';
 import {
   LayoutDashboard, Users, AlertCircle, FileText, ArrowLeftRight,
   BarChart3, UserCheck, LogOut, History, Settings, PersonStanding,
-  Heart,
 } from 'lucide-react';
 
 interface NavItem { href: string; label: string; icon: React.ElementType; }
@@ -74,26 +74,22 @@ export default function Sidebar() {
   return (
     <aside
       className="fixed inset-y-0 left-0 w-[220px] flex flex-col z-40"
-      style={{ background: 'linear-gradient(180deg, #D9643A 0%, #B84E28 100%)', boxShadow: '2px 0 12px rgba(0,0,0,0.10)' }}
+      style={{ background: 'linear-gradient(180deg, #E74A2E 0%, #853C30 100%)', boxShadow: '2px 0 12px rgba(0,0,0,0.10)' }}
     >
-      {/* ── Brand header ─────────────────────────────────── */}
-      <div className="px-5 py-5" style={{ borderBottom: '1px solid rgba(255,255,255,0.12)' }}>
-        <div className="flex items-center gap-3">
-          <div
-            className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-            style={{ background: 'rgba(255,255,255,0.20)', border: '1.5px solid rgba(255,255,255,0.30)' }}
-          >
-            <Heart size={16} fill="white" stroke="white" />
-          </div>
-          <div>
-            <p className="font-bold text-[13px] leading-none text-white tracking-tight">
-              HIV·TB Monitor
-            </p>
-            <p className="text-[10px] mt-[5px] tracking-wide" style={{ color: 'rgba(255,255,255,0.60)' }}>
-              Dream Medical Center
-            </p>
-          </div>
-        </div>
+      {/* ── Brand header — DMC logo ───────────────────────── */}
+      <div className="px-4 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.97)' }}>
+        <Image
+          src="/dmc-logo.png"
+          alt="Dream Medical Center"
+          width={160}
+          height={66}
+          priority
+          style={{ objectFit: 'contain', width: '160px', height: 'auto' }}
+        />
+        <p className="text-[9.5px] font-semibold uppercase tracking-[0.10em] mt-2 px-0.5"
+          style={{ color: '#853C30' }}>
+          HIV/TB Monitoring System
+        </p>
       </div>
 
       {/* ── Navigation ───────────────────────────────────── */}

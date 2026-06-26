@@ -128,7 +128,7 @@ export default function UsersPage() {
                 className="rounded-lg p-4 text-center mb-3"
                 style={{ background: '#FAFAFA', border: '1px solid #E9E9E9' }}
               >
-                <p className="data-num text-[22px] font-semibold tracking-widest" style={{ color: '#D9643A' }}>
+                <p className="data-num text-[22px] font-semibold tracking-widest" style={{ color: '#E74A2E' }}>
                   {resetResult.pass}
                 </p>
               </div>
@@ -167,9 +167,9 @@ export default function UsersPage() {
                     onClick={() => setRoleFilter(r)}
                     className="text-[11px] px-2.5 py-1 rounded font-semibold transition-colors"
                     style={{
-                      background: roleFilter === r ? '#D9643A' : '#FAFAFA',
+                      background: roleFilter === r ? '#E74A2E' : '#FAFAFA',
                       color: roleFilter === r ? '#fff' : '#6B7280',
-                      border: `1px solid ${roleFilter === r ? '#D9643A' : '#E9E9E9'}`,
+                      border: `1px solid ${roleFilter === r ? '#E74A2E' : '#E9E9E9'}`,
                     }}
                   >
                     {r === 'ALL' ? 'All' : ROLE_LABELS[r] ?? r}
@@ -185,7 +185,7 @@ export default function UsersPage() {
                   placeholder="Search…"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  onFocus={e => { (e.currentTarget as HTMLInputElement).style.borderColor = '#D9643A'; }}
+                  onFocus={e => { (e.currentTarget as HTMLInputElement).style.borderColor = '#E74A2E'; }}
                   onBlur={e  => { (e.currentTarget as HTMLInputElement).style.borderColor = '#E9E9E9'; }}
                 />
               </div>
@@ -226,7 +226,7 @@ export default function UsersPage() {
                         <div className="flex items-center gap-2.5">
                           <div
                             className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 text-[10px] font-bold text-white"
-                            style={{ background: u.isActive ? '#D9643A' : '#9CA3AF' }}
+                            style={{ background: u.isActive ? '#E74A2E' : '#9CA3AF' }}
                           >
                             {u.fullName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
                           </div>
@@ -276,7 +276,7 @@ export default function UsersPage() {
                             disabled={acting === u.id}
                             title="Reset password"
                             className="p-1.5 rounded transition-colors text-text-hint"
-                            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#FAFAFA'; (e.currentTarget as HTMLButtonElement).style.color = '#D9643A'; }}
+                            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#FAFAFA'; (e.currentTarget as HTMLButtonElement).style.color = '#E74A2E'; }}
                             onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; (e.currentTarget as HTMLButtonElement).style.color = '#9CA3AF'; }}
                           >
                             <Key size={14} />

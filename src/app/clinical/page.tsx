@@ -200,7 +200,7 @@ export default function ClinicalDashboard() {
                   <Legend wrapperStyle={{ fontSize: 11, paddingTop: 10 }} />
                   <Line
                     type="monotone" dataKey="adherence"
-                    stroke="#D9643A" strokeWidth={2}
+                    stroke="#E74A2E" strokeWidth={2}
                     dot={false} name="Adherence %"
                   />
                   <Line
@@ -252,7 +252,7 @@ export default function ClinicalDashboard() {
                       title="Resolve"
                       className="opacity-0 group-hover:opacity-100 transition-opacity mt-0.5"
                       style={{ color: '#9CA3AF' }}
-                      onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#D9643A'; }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#E74A2E'; }}
                       onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#9CA3AF'; }}
                     >
                       <CheckCircle2 size={13} />
@@ -271,7 +271,7 @@ export default function ClinicalDashboard() {
               <a
                 href="/clinical/patients"
                 className="text-[12px] font-semibold hover:underline"
-                style={{ color: '#D9643A' }}
+                style={{ color: '#E74A2E' }}
               >
                 View all →
               </a>

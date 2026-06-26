@@ -194,9 +194,9 @@ export default function AlertsPage() {
                     onClick={() => setFilter(f)}
                     className="text-[11px] px-2.5 py-1 rounded font-semibold transition-colors"
                     style={{
-                      background: filter === f ? '#D9643A' : '#FAFAFA',
+                      background: filter === f ? '#E74A2E' : '#FAFAFA',
                       color:      filter === f ? '#fff'    : '#6B7280',
-                      border:     `1px solid ${filter === f ? '#D9643A' : '#E9E9E9'}`,
+                      border:     `1px solid ${filter === f ? '#E74A2E' : '#E9E9E9'}`,
                     }}
                   >
                     {f === 'ALL' ? 'All' : f.charAt(0) + f.slice(1).toLowerCase()}

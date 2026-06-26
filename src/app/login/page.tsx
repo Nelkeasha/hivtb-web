@@ -1,16 +1,8 @@
 ﻿'use client';
 import { useState, useEffect, Suspense } from 'react';
+import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Eye, EyeOff, Lock, Mail, AlertCircle, Wifi, Clock } from 'lucide-react';
-
-/* Exact replica of Flutter's Icons.medical_services_rounded */
-function MedicalServicesIcon({ size = 24 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="white" aria-hidden>
-      <path d="M20,6H16V4c0-1.1-0.9-2-2-2h-4C8.9,2,8,2.9,8,4v2H4C2.9,6,2,6.9,2,8v12c0,1.1,0.9,2,2,2h16c1.1,0,2-0.9,2-2V8C22,6.9,21.1,6,20,6z M14,4h-4v2h4V4z M13,17h-2v-2H9v-2h2v-2h2v2h2v2h-2V17z"/>
-    </svg>
-  );
-}
 import { login, roleHome, logout } from '@/lib/auth';
 
 const WEB_ROLES = new Set(['FACILITY_PROVIDER', 'CLINICAL_STAFF', 'SUPERVISOR', 'SYSTEM_ADMIN', 'ADMIN']);
@@ -134,47 +126,39 @@ function LoginForm() {
   const ErrorIcon = errorType === 'network' ? Wifi : errorType === 'server' ? Clock : AlertCircle;
 
   return (
-    <div className="min-h-screen flex" style={{ background: '#C9552F' }}>
+    <div className="min-h-screen flex" style={{ background: '#C93E25' }}>
 
       {/* ── Left panel ──────────────────────────────────────────────────── */}
       <div
         className="hidden lg:flex flex-col w-[480px] shrink-0 relative overflow-hidden"
         style={{
-          background: 'linear-gradient(175deg, #D9643A 0%, #C9552F 100%)',
+          background: 'linear-gradient(175deg, #E74A2E 0%, #C93E25 100%)',
         }}
       >
         {/* Content — justify-between splits top block from bottom block */}
         <div className="relative flex flex-col flex-1 px-10 pt-10 pb-10 justify-between">
 
-          {/* ── Top block: brand + headline + stats ─────────── */}
+          {/* ── Top block: logo + headline + stats ──────────── */}
           <div>
-            {/* Brand */}
-            <div className="flex items-center gap-3 mb-10">
-              <div
-                className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0"
-                style={{
-                  background: 'rgba(255,255,255,0.18)',
-                  border: '1.5px solid rgba(255,255,255,0.30)',
-                }}
-              >
-                <MedicalServicesIcon size={22} />
-              </div>
-              <div>
-                <p className="text-white font-bold text-[13px] leading-none tracking-tight">
-                  HIV/TB Monitor
-                </p>
-                <p className="text-[10px] mt-[5px] tracking-wide" style={{ color: 'rgba(255,255,255,0.28)' }}>
-                  Clinical Platform · Kigali
-                </p>
-              </div>
+            {/* DMC Logo on white pill */}
+            <div className="mb-8 inline-block rounded-2xl px-4 py-3"
+              style={{ background: 'rgba(255,255,255,0.95)' }}>
+              <Image
+                src="/dmc-logo.png"
+                alt="Dream Medical Center"
+                width={172}
+                height={71}
+                priority
+                style={{ objectFit: 'contain', display: 'block' }}
+              />
             </div>
 
             {/* Headline */}
             <p
               className="text-[10px] font-semibold uppercase tracking-widest mb-3"
-              style={{ color: 'rgba(255,255,255,0.60)' }}
+              style={{ color: 'rgba(255,255,255,0.70)' }}
             >
-              Dream Medical Center
+              HIV/TB Monitoring System
             </p>
             <h1
               className="text-white font-bold leading-[1.1] tracking-tight mb-4"
@@ -255,24 +239,16 @@ function LoginForm() {
       <div
         className="flex-1 flex items-center justify-center px-8 py-12 relative"
         style={{
-          background: '#C9552F',
-          backgroundImage: 'radial-gradient(ellipse at 50% 44%, rgba(217,100,58,0.20) 0%, transparent 62%)',
+          background: '#C93E25',
+          backgroundImage: 'radial-gradient(ellipse at 50% 44%, rgba(231,74,46,0.20) 0%, transparent 62%)',
         }}
       >
         <div className="w-full max-w-[460px]">
 
           {/* Mobile-only logo */}
-          <div className="lg:hidden flex items-center gap-2.5 mb-8">
-            <div
-              className="w-9 h-9 rounded-2xl flex items-center justify-center shrink-0"
-              style={{
-                background: 'rgba(255,255,255,0.18)',
-                border: '1.5px solid rgba(255,255,255,0.30)',
-              }}
-            >
-              <MedicalServicesIcon size={19} />
-            </div>
-            <span className="font-bold text-[14px] text-white">HIV/TB Monitor</span>
+          <div className="lg:hidden mb-6 inline-block rounded-xl px-3 py-2"
+            style={{ background: 'rgba(255,255,255,0.95)' }}>
+            <Image src="/dmc-logo.png" alt="Dream Medical Center" width={140} height={58} priority style={{ objectFit: 'contain', display: 'block' }} />
           </div>
 
           {/* ── Form card ─────────────────────────────────────────────── */}
@@ -287,7 +263,7 @@ function LoginForm() {
             }}
           >
             {/* Teal accent strip */}
-            <div style={{ height: 3, background: 'linear-gradient(90deg, #D9643A, #E9764C 60%, #FEF0EB)' }} />
+            <div style={{ height: 3, background: 'linear-gradient(90deg, #E74A2E, #EB6B55 60%, #FDE8E4)' }} />
 
             <div className="px-8 py-10">
               <div className="mb-8">
@@ -433,8 +409,8 @@ function InputField({
       className={`w-full py-2.5 text-[14px] rounded-lg disabled:opacity-50 text-text-primary placeholder:text-text-hint outline-none transition-all ${className}`}
       style={{
         background: focused ? '#fff' : '#FAFAF9',
-        border: focused ? '1px solid #D9643A' : '1px solid #E9E9E9',
-        boxShadow: focused ? '0 0 0 3px rgba(217,100,58,0.08)' : 'none',
+        border: focused ? '1px solid #E74A2E' : '1px solid #E9E9E9',
+        boxShadow: focused ? '0 0 0 3px rgba(231,74,46,0.08)' : 'none',
       }}
       onFocus={e => { setFocused(true);  props.onFocus?.(e); }}
       onBlur={e  => { setFocused(false); props.onBlur?.(e);  }}
@@ -451,8 +427,8 @@ function SubmitButton({ loading, locked }: { loading: boolean; locked: boolean }
       className="w-full py-2.5 text-white text-[13px] font-semibold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-1"
       style={{
         background: hovered && !loading && !locked
-          ? '#C9552F'
-          : '#D9643A',
+          ? '#C93E25'
+          : '#E74A2E',
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}

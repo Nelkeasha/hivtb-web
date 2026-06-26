@@ -43,7 +43,7 @@ const STATUS_STYLE: Record<string, { accent: string; bg: string; border: string 
 };
 
 function caseStyle(status: string) {
-  return STATUS_STYLE[status] ?? { accent: '#D9643A', bg: 'rgba(217,100,58,0.02)', border: '#E9E9E9' };
+  return STATUS_STYLE[status] ?? { accent: '#E74A2E', bg: 'rgba(231,74,46,0.02)', border: '#E9E9E9' };
 }
 
 function statusBadge(s: string) {
@@ -163,9 +163,9 @@ export default function LtfuPage() {
                       onClick={() => setTab(key)}
                       className="text-[11px] px-2.5 py-1 rounded font-semibold transition-colors"
                       style={{
-                        background: tab === key ? '#D9643A' : '#FAFAFA',
+                        background: tab === key ? '#E74A2E' : '#FAFAFA',
                         color:      tab === key ? '#fff'    : '#6B7280',
-                        border:     `1px solid ${tab === key ? '#D9643A' : '#E9E9E9'}`,
+                        border:     `1px solid ${tab === key ? '#E74A2E' : '#E9E9E9'}`,
                       }}
                     >
                       {label}{count > 0 && ` (${count})`}

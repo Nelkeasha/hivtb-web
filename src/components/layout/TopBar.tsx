@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useEffect, useRef, useState } from 'react';
 import { Bell, AlertTriangle, Info, ChevronDown, LogOut } from 'lucide-react';
 import { getUserName, getRole, logout } from '@/lib/auth';
@@ -161,7 +161,7 @@ export default function TopBar({ title }: { title?: string }) {
               )}
               <div className="px-4 py-2.5 text-center" style={{ borderTop: '1px solid #F0F0F0' }}>
                 <a href="/clinical/alerts" className="text-[11px] font-semibold"
-                  style={{ color: '#D9643A' }} onClick={() => setBellOpen(false)}>
+                  style={{ color: '#E74A2E' }} onClick={() => setBellOpen(false)}>
                   View all alerts →
                 </a>
               </div>
@@ -179,7 +179,7 @@ export default function TopBar({ title }: { title?: string }) {
           >
             <div
               className="w-7 h-7 rounded-lg text-white text-[11px] font-bold flex items-center justify-center shrink-0"
-              style={{ background: '#D9643A' }}
+              style={{ background: '#E74A2E' }}
             >
               {initials}
             </div>
