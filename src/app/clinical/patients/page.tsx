@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import DashboardLayout from '@/components/layout/DashboardLayout';
@@ -122,9 +122,9 @@ export default function PatientsPage() {
                     onClick={() => setRiskFilter(r)}
                     className="text-[11px] px-2.5 py-1 rounded font-semibold transition-colors"
                     style={{
-                      background: riskFilter === r ? '#E74A2E' : '#FAFAFA',
+                      background: riskFilter === r ? '#E64B2E' : '#FAFAFA',
                       color: riskFilter === r ? '#fff' : '#6B7280',
-                      border: `1px solid ${riskFilter === r ? '#E74A2E' : '#E9E9E9'}`,
+                      border: `1px solid ${riskFilter === r ? '#E64B2E' : '#E9E9E9'}`,
                     }}
                   >
                     {r === 'ALL' ? 'All' : r.charAt(0) + r.slice(1).toLowerCase()}
@@ -140,7 +140,7 @@ export default function PatientsPage() {
                   placeholder="Search…"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  onFocus={e => { (e.currentTarget as HTMLInputElement).style.borderColor = '#E74A2E'; }}
+                  onFocus={e => { (e.currentTarget as HTMLInputElement).style.borderColor = '#E64B2E'; }}
                   onBlur={e  => { (e.currentTarget as HTMLInputElement).style.borderColor = '#E9E9E9'; }}
                 />
               </div>
@@ -248,7 +248,7 @@ export default function PatientsPage() {
                     placeholder="Search name or referral ID…"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    onFocus={e => { (e.currentTarget as HTMLInputElement).style.borderColor = '#E74A2E'; }}
+                    onFocus={e => { (e.currentTarget as HTMLInputElement).style.borderColor = '#E64B2E'; }}
                     onBlur={e  => { (e.currentTarget as HTMLInputElement).style.borderColor = '#E9E9E9'; }}
                   />
                 </div>

@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import StatCard from '@/components/ui/StatCard';
@@ -147,8 +147,8 @@ export default function AnalyticsPage() {
                 <Radar
                   name="Score"
                   dataKey="value"
-                  stroke="#E74A2E"
-                  fill="#E74A2E"
+                  stroke="#E64B2E"
+                  fill="#E64B2E"
                   fillOpacity={0.12}
                   strokeWidth={2}
                 />
@@ -184,7 +184,7 @@ export default function AnalyticsPage() {
                   cursor={{ fill: '#FAFAFA' }}
                 />
                 <Legend wrapperStyle={{ fontSize: 11, paddingTop: 10 }} />
-                <Bar dataKey="visits" name="Visits"       fill="#E74A2E" radius={[3, 3, 0, 0]} />
+                <Bar dataKey="visits" name="Visits"       fill="#E64B2E" radius={[3, 3, 0, 0]} />
                 <Bar dataKey="missed" name="Missed Doses" fill="#E29578" radius={[3, 3, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -230,7 +230,7 @@ export default function AnalyticsPage() {
                     <td className="py-3 pr-6">
                       <span
                         className="data-num text-[13px] font-semibold"
-                        style={{ color: '#E74A2E' }}
+                        style={{ color: '#E64B2E' }}
                       >
                         {c.homeVisits30d}
                       </span>

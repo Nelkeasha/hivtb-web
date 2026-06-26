@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Badge from '@/components/ui/Badge';
@@ -43,7 +43,7 @@ const STATUS_STYLE: Record<string, { accent: string; bg: string; border: string 
 };
 
 function caseStyle(status: string) {
-  return STATUS_STYLE[status] ?? { accent: '#E74A2E', bg: 'rgba(231,74,46,0.02)', border: '#E9E9E9' };
+  return STATUS_STYLE[status] ?? { accent: '#E64B2E', bg: 'rgba(231,74,46,0.02)', border: '#E9E9E9' };
 }
 
 function statusBadge(s: string) {
@@ -163,9 +163,9 @@ export default function LtfuPage() {
                       onClick={() => setTab(key)}
                       className="text-[11px] px-2.5 py-1 rounded font-semibold transition-colors"
                       style={{
-                        background: tab === key ? '#E74A2E' : '#FAFAFA',
+                        background: tab === key ? '#E64B2E' : '#FAFAFA',
                         color:      tab === key ? '#fff'    : '#6B7280',
-                        border:     `1px solid ${tab === key ? '#E74A2E' : '#E9E9E9'}`,
+                        border:     `1px solid ${tab === key ? '#E64B2E' : '#E9E9E9'}`,
                       }}
                     >
                       {label}{count > 0 && ` (${count})`}

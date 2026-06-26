@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import StatCard from '@/components/ui/StatCard';
@@ -63,7 +63,7 @@ export default function SupervisorReportPage() {
   if (!report) return (
     <DashboardLayout title="Supervisor Report">
       <div className="text-center py-20">
-        <p className="text-[13px] font-semibold" style={{ color: '#E74A2E' }}>
+        <p className="text-[13px] font-semibold" style={{ color: '#E64B2E' }}>
           {apiError || 'Could not load report data'}
         </p>
         <p className="text-[12px] text-text-hint mt-1">
@@ -83,7 +83,7 @@ export default function SupervisorReportPage() {
   ];
 
   const diagData = [
-    { name: 'HIV',    value: report.hivOnly,          color: '#E74A2E' },
+    { name: 'HIV',    value: report.hivOnly,          color: '#E64B2E' },
     { name: 'TB',     value: report.tbOnly,            color: '#00919E' },
     { name: 'HIV+TB', value: report.hivTbCoinfection,  color: '#3DCAD4' },
   ];
@@ -218,7 +218,7 @@ export default function SupervisorReportPage() {
               >
                 <p
                   className="data-num text-[20px] font-semibold leading-none"
-                  style={{ color: item.warn ? '#C0392B' : '#E74A2E' }}
+                  style={{ color: item.warn ? '#C0392B' : '#E64B2E' }}
                 >
                   {item.value}
                 </p>

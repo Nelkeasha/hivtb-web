@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import DashboardLayout from '@/components/layout/DashboardLayout';
@@ -146,7 +146,7 @@ export default function CreateUserPage() {
                 >
                   <p
                     className="data-num text-[26px] font-semibold tracking-widest"
-                    style={{ color: '#E74A2E' }}
+                    style={{ color: '#E64B2E' }}
                   >
                     {done.tempPass}
                   </p>
@@ -208,7 +208,7 @@ export default function CreateUserPage() {
                 Generates a system account with a temporary password
               </p>
             </div>
-            <div className="flex items-center gap-1.5" style={{ color: '#E74A2E' }}>
+            <div className="flex items-center gap-1.5" style={{ color: '#E64B2E' }}>
               <UserPlus size={13} />
               <span className="text-[11px] font-semibold uppercase tracking-wide">Admin only</span>
             </div>
@@ -241,15 +241,15 @@ export default function CreateUserPage() {
                       onClick={() => setRole(r)}
                       className="p-3 rounded-lg text-left transition-all"
                       style={{
-                        border:     role === r ? '1px solid #E74A2E' : '1px solid #E9E9E9',
+                        border:     role === r ? '1px solid #E64B2E' : '1px solid #E9E9E9',
                         background: role === r ? 'rgba(231,74,46,0.06)' : '#FAFAFA',
-                        color:      role === r ? '#E74A2E' : '#6B7280',
+                        color:      role === r ? '#E64B2E' : '#6B7280',
                       }}
                     >
                       {role === r && (
                         <div
                           className="w-1.5 h-1.5 rounded-full mb-2"
-                          style={{ background: '#E74A2E' }}
+                          style={{ background: '#E64B2E' }}
                         />
                       )}
                       <p className="text-[12px] font-semibold leading-snug">

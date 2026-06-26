@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import DashboardLayout from '@/components/layout/DashboardLayout';
@@ -20,7 +20,7 @@ interface Chw { id: string; fullName: string; employeeCode?: string; assignedVil
 type DiagnosisType = 'HIV' | 'TB' | 'HIV_TB_COINFECTION';
 
 function SectionCard({
-  title, icon: Icon, iconColor = '#E74A2E', children,
+  title, icon: Icon, iconColor = '#E64B2E', children,
 }: {
   title: string; icon: React.ElementType; iconColor?: string; children: React.ReactNode;
 }) {
@@ -187,7 +187,7 @@ export default function RegisterPatientPage() {
                 <p className="text-[11px] font-semibold uppercase tracking-widest text-text-hint mb-1">
                   Patient Code
                 </p>
-                <p className="data-num text-[22px] font-semibold" style={{ color: '#E74A2E' }}>
+                <p className="data-num text-[22px] font-semibold" style={{ color: '#E64B2E' }}>
                   {done.code}
                 </p>
               </div>
@@ -286,7 +286,7 @@ export default function RegisterPatientPage() {
                   checked={hasSmartphone}
                   onChange={e => setHasSmartphone(e.target.checked)}
                   className="w-4 h-4 rounded"
-                  style={{ accentColor: '#E74A2E' }}
+                  style={{ accentColor: '#E64B2E' }}
                 />
                 <label htmlFor="smartphone" className="text-[13px] text-text-secondary cursor-pointer">
                   Has smartphone for app
@@ -370,7 +370,7 @@ export default function RegisterPatientPage() {
           </SectionCard>
 
           {/* ── CHW assignment ────────────────────────────── */}
-          <SectionCard title="CHW Assignment" icon={Phone} iconColor="#E74A2E">
+          <SectionCard title="CHW Assignment" icon={Phone} iconColor="#E64B2E">
 
             {/* Mode toggle */}
             <div className="grid grid-cols-2 gap-3 mb-4">
@@ -425,7 +425,7 @@ export default function RegisterPatientPage() {
                       <div className="flex items-center gap-3">
                         <div
                           className="w-9 h-9 rounded-lg flex items-center justify-center text-[11px] font-bold text-white shrink-0"
-                          style={{ background: '#E74A2E' }}
+                          style={{ background: '#E64B2E' }}
                         >
                           {chw.fullName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
                         </div>
@@ -486,14 +486,14 @@ function AssignmentModeOption({
       onClick={onClick}
       className="text-left rounded-lg p-3.5 transition-colors"
       style={{
-        border:     active ? '1.5px solid #E74A2E' : '1px solid #E9E9E9',
+        border:     active ? '1.5px solid #E64B2E' : '1px solid #E9E9E9',
         background: active ? 'rgba(231,74,46,0.04)' : '#FFFFFF',
       }}
     >
       <div className="flex items-center gap-2">
         <div
           className="w-3.5 h-3.5 rounded-full flex items-center justify-center shrink-0"
-          style={{ border: active ? '4px solid #E74A2E' : '1.5px solid #9CA3AF' }}
+          style={{ border: active ? '4px solid #E64B2E' : '1.5px solid #9CA3AF' }}
         />
         <p className="text-[13px] font-semibold text-text-primary">{title}</p>
       </div>
@@ -513,7 +513,7 @@ function ChwSelect({ chws, value, onChange }: {
       onChange={e => onChange(e.target.value)}
       className="w-full px-3 py-2.5 text-[13px] rounded-lg bg-white outline-none"
       style={{
-        border:    focused ? '1px solid #E74A2E' : '1px solid #E9E9E9',
+        border:    focused ? '1px solid #E64B2E' : '1px solid #E9E9E9',
         boxShadow: focused ? '0 0 0 3px rgba(231,74,46,0.08)' : 'none',
       }}
       onFocus={() => setFocused(true)}

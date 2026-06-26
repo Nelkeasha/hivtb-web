@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import DashboardLayout from '@/components/layout/DashboardLayout';
@@ -106,7 +106,7 @@ export default function PatientDetailPage() {
     return (
       <DashboardLayout title="Patient">
         <div className="text-center py-20">
-          <p className="text-[13px] font-semibold" style={{ color: '#E74A2E' }}>
+          <p className="text-[13px] font-semibold" style={{ color: '#E64B2E' }}>
             {apiError || 'Patient not found.'}
           </p>
           {apiError && (
@@ -151,14 +151,14 @@ export default function PatientDetailPage() {
           <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #E9E9E9' }}>
 
             {/* Teal header accent */}
-            <div style={{ height: 3, background: '#E74A2E' }} />
+            <div style={{ height: 3, background: '#E64B2E' }} />
 
             <div className="p-5">
               {/* Avatar + name */}
               <div className="flex items-start gap-3 mb-5">
                 <div
                   className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 text-white font-bold text-[14px]"
-                  style={{ background: '#E74A2E' }}
+                  style={{ background: '#E64B2E' }}
                 >
                   {initials}
                 </div>
@@ -280,7 +280,7 @@ export default function PatientDetailPage() {
           {(patient.recentHomeVisits?.length ?? 0) > 0 && (
             <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #E9E9E9' }}>
               <div className="flex items-center gap-2 px-6 py-4" style={{ borderBottom: '1px solid #F0F0F0' }}>
-                <Home size={14} style={{ color: '#E74A2E' }} />
+                <Home size={14} style={{ color: '#E64B2E' }} />
                 <h3 className="text-[13px] font-semibold text-text-primary tracking-tight">
                   Recent Home Visits
                 </h3>
@@ -615,7 +615,7 @@ function PlanBlock({
             className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
             style={{ background: 'rgba(231,74,46,0.09)' }}
           >
-            <Pill size={15} style={{ color: '#E74A2E' }} />
+            <Pill size={15} style={{ color: '#E64B2E' }} />
           </div>
           <div>
             <p className="text-[14px] font-semibold text-text-primary leading-tight">
@@ -689,9 +689,9 @@ function PlanBlock({
           <button
             onClick={onAddSchedule}
             className="mt-3 flex items-center gap-1.5 text-[12px] font-semibold transition-colors"
-            style={{ color: '#E74A2E' }}
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#C93E25'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#E74A2E'; }}
+            style={{ color: '#E64B2E' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#C73E22'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#E64B2E'; }}
           >
             <Plus size={13} /> Add Dose Schedule
           </button>
@@ -717,10 +717,10 @@ function ScheduleRow({
       className="flex items-center gap-3 rounded-lg px-3 py-2.5"
       style={{ background: '#FAFAFA', border: '1px solid #E9E9E9' }}
     >
-      <Clock size={12} className="shrink-0" style={{ color: schedule.isActive ? '#E74A2E' : '#9CA3AF' }} />
+      <Clock size={12} className="shrink-0" style={{ color: schedule.isActive ? '#E64B2E' : '#9CA3AF' }} />
       <p
         className="data-num text-[14px] font-semibold shrink-0"
-        style={{ color: schedule.isActive ? '#E74A2E' : '#9CA3AF', minWidth: 40 }}
+        style={{ color: schedule.isActive ? '#E64B2E' : '#9CA3AF', minWidth: 40 }}
       >
         {time}
       </p>

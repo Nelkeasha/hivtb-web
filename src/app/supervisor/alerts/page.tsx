@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Badge from '@/components/ui/Badge';
@@ -139,9 +139,9 @@ export default function SupervisorAlertsPage() {
                         onClick={() => setFilter(f)}
                         className="text-[11px] px-2.5 py-1 rounded font-semibold transition-colors"
                         style={{
-                          background: filter === f ? '#E74A2E' : '#FAFAFA',
+                          background: filter === f ? '#E64B2E' : '#FAFAFA',
                           color: filter === f ? '#fff' : '#6B7280',
-                          border: `1px solid ${filter === f ? '#E74A2E' : '#E9E9E9'}`,
+                          border: `1px solid ${filter === f ? '#E64B2E' : '#E9E9E9'}`,
                         }}
                       >
                         {f === 'ALL' ? 'All' : f.charAt(0) + f.slice(1).toLowerCase()} {count > 0 && `(${count})`}

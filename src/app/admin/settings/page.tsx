@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Button from '@/components/ui/Button';
@@ -22,7 +22,7 @@ function Slider({ label, value, min, max, step = 1, onChange, unit = '', hint }:
     <div>
       <div className="flex items-baseline justify-between mb-2">
         <label className="text-[13px] text-text-secondary">{label}</label>
-        <span className="data-num text-[15px] font-semibold" style={{ color: '#E74A2E' }}>
+        <span className="data-num text-[15px] font-semibold" style={{ color: '#E64B2E' }}>
           {value}{unit}
         </span>
       </div>
@@ -30,7 +30,7 @@ function Slider({ label, value, min, max, step = 1, onChange, unit = '', hint }:
         type="range" min={min} max={max} step={step} value={value}
         onChange={(e) => onChange(Number(e.target.value))}
         className="w-full appearance-none cursor-pointer"
-        style={{ height: 5, borderRadius: 9999, accentColor: '#E74A2E', background: '#F9F9F9' }}
+        style={{ height: 5, borderRadius: 9999, accentColor: '#E64B2E', background: '#F9F9F9' }}
       />
       <div className="flex justify-between mt-1.5">
         <span className="data-num text-[10px] text-text-hint">{min}{unit}</span>
@@ -49,7 +49,7 @@ function FormInput({ placeholder }: { placeholder?: string }) {
       className="w-full px-3 py-2.5 text-[13px] rounded-lg bg-white outline-none placeholder:text-text-hint"
       placeholder={placeholder}
       style={{
-        border:     focused ? '1px solid #E74A2E' : '1px solid #E9E9E9',
+        border:     focused ? '1px solid #E64B2E' : '1px solid #E9E9E9',
         boxShadow:  focused ? '0 0 0 3px rgba(231,74,46,0.08)' : 'none',
       }}
       onFocus={() => setFocused(true)}
@@ -197,7 +197,7 @@ export default function SettingsPage() {
             Sections
           </p>
           <div className="space-y-0.5">
-            <NavLink href="#alerts"   icon={Bell}     label="Alert Thresholds"  color="#E74A2E" />
+            <NavLink href="#alerts"   icon={Bell}     label="Alert Thresholds"  color="#E64B2E" />
             <NavLink href="#risk"     icon={Activity} label="Risk Thresholds"   color="#E67E22" />
             <NavLink href="#fhir"     icon={Database} label="FHIR Integration"  color="#2980B9" />
             <NavLink href="#security" icon={Shield}   label="Security"          color="#2980B9" />
@@ -212,7 +212,7 @@ export default function SettingsPage() {
             id="alerts"
             title="Alert Thresholds"
             badge={
-              <div className="flex items-center gap-1.5" style={{ color: '#E74A2E' }}>
+              <div className="flex items-center gap-1.5" style={{ color: '#E64B2E' }}>
                 <Bell size={13} />
                 <span className="text-[11px] font-semibold uppercase tracking-wide">Notification</span>
               </div>

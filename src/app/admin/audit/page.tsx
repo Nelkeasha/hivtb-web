@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Badge from '@/components/ui/Badge';
@@ -106,7 +106,7 @@ export default function AuditLogPage() {
           </div>
           {!loading && (
             <div className="text-right">
-              <p className="data-num text-[30px] font-semibold leading-none" style={{ color: '#E74A2E' }}>
+              <p className="data-num text-[30px] font-semibold leading-none" style={{ color: '#E64B2E' }}>
                 {filtered.length}
               </p>
               <p className="text-[11px] text-text-hint mt-1 uppercase tracking-wide">
@@ -151,7 +151,7 @@ export default function AuditLogPage() {
               onClick={verifyChain}
               disabled={verifying}
               className="text-[11px] px-3 py-1.5 rounded-lg font-semibold transition-colors disabled:opacity-50"
-              style={{ background: '#E74A2E', color: '#fff' }}
+              style={{ background: '#E64B2E', color: '#fff' }}
             >
               {verifying ? 'Verifying…' : 'Verify chain'}
             </button>
@@ -184,9 +184,9 @@ export default function AuditLogPage() {
                     onClick={() => setAction(a)}
                     className="text-[11px] px-2.5 py-1 rounded font-semibold transition-colors"
                     style={{
-                      background: action === a ? '#E74A2E' : '#FAFAFA',
+                      background: action === a ? '#E64B2E' : '#FAFAFA',
                       color:      action === a ? '#fff'    : '#6B7280',
-                      border:     `1px solid ${action === a ? '#E74A2E' : '#E9E9E9'}`,
+                      border:     `1px solid ${action === a ? '#E64B2E' : '#E9E9E9'}`,
                     }}
                   >
                     {ACTION_LABELS[a] ?? a}
@@ -206,7 +206,7 @@ export default function AuditLogPage() {
                   placeholder="Filter…"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  onFocus={e  => { (e.currentTarget as HTMLInputElement).style.borderColor = '#E74A2E'; }}
+                  onFocus={e  => { (e.currentTarget as HTMLInputElement).style.borderColor = '#E64B2E'; }}
                   onBlur={e   => { (e.currentTarget as HTMLInputElement).style.borderColor = '#E9E9E9'; }}
                 />
               </div>

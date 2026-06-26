@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Lock, Eye, EyeOff, CheckCircle2, AlertCircle } from 'lucide-react';
@@ -52,7 +52,7 @@ export default function ChangePasswordPage() {
         <div className="flex items-center gap-3 mb-8">
           <div
             className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-            style={{ background: '#E74A2E' }}
+            style={{ background: '#E64B2E' }}
           >
             <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden>
               <path d="M7.5 2v11M2 7.5h11" stroke="white" strokeWidth="2" strokeLinecap="round" />
@@ -66,7 +66,7 @@ export default function ChangePasswordPage() {
 
         {/* Card */}
         <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #E9E9E9' }}>
-          <div style={{ height: 3, background: done ? '#27AE60' : '#E74A2E' }} />
+          <div style={{ height: 3, background: done ? '#27AE60' : '#E64B2E' }} />
 
           <div className="px-8 py-8">
             {done ? (
@@ -198,7 +198,7 @@ function PasswordInput({
   const [focused, setFocused] = useState(false);
 
   const borderColor = focused
-    ? '#E74A2E'
+    ? '#E64B2E'
     : mismatch
     ? '#C0392B'
     : '#E9E9E9';
@@ -252,7 +252,7 @@ function SubmitButton({ loading }: { loading: boolean }) {
       type="submit"
       disabled={loading}
       className="w-full py-2.5 text-white text-[13px] font-semibold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-1"
-      style={{ background: hovered && !loading ? '#C93E25' : '#E74A2E' }}
+      style={{ background: hovered && !loading ? '#C73E22' : '#E64B2E' }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >

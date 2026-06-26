@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import { useEffect, useRef, useState } from 'react';
 import { Bell, AlertTriangle, Info, ChevronDown, LogOut } from 'lucide-react';
 import { getUserName, getRole, logout } from '@/lib/auth';

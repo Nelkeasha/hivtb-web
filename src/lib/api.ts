@@ -1,5 +1,8 @@
-import axios from 'axios';
+import axios, { type InternalAxiosRequestConfig } from 'axios';
 import Cookies from 'js-cookie';
+
+const COOKIE_OPTS = { expires: 7, sameSite: 'lax' as const };
+const AUTH_COOKIE_KEYS = ['access_token', 'refresh_token', 'user_role', 'user_name', 'user_id'];
 
 /**
  * All requests use a relative base URL so they are sent to the same origin as
@@ -19,27 +22,57 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// 401 on auth endpoints = wrong credentials — let the login form's catch block handle it.
-// 401 on other endpoints = session expired — redirect with an explanation.
-// 403 = authenticated but not permitted — never redirect; the caller shows the error.
+// One pending refresh at a time — concurrent 401s share the same promise.
+let _refreshPromise: Promise<string> | null = null;
+
+async function _doRefresh(): Promise<string> {
+  const refreshToken = Cookies.get('refresh_token');
+  if (!refreshToken) throw new Error('no-refresh-token');
+  // Use a plain axios call (not `api`) so the refresh request never re-enters
+  // this interceptor and can't trigger an infinite loop.
+  const { data } = await axios.post('/api/auth/refresh-token', { refreshToken });
+  Cookies.set('access_token', data.accessToken, COOKIE_OPTS);
+  Cookies.set('refresh_token', data.refreshToken, COOKIE_OPTS);
+  return data.accessToken as string;
+}
+
+function _refreshOnce(): Promise<string> {
+  if (!_refreshPromise) {
+    _refreshPromise = _doRefresh().finally(() => { _refreshPromise = null; });
+  }
+  return _refreshPromise;
+}
+
+function _clearSession() {
+  AUTH_COOKIE_KEYS.forEach((k) => Cookies.remove(k));
+  window.location.href = '/login?reason=session_expired';
+}
+
+// 401 on auth/login = wrong credentials → let the form's catch block handle it.
+// 401 elsewhere     = expired token → silently refresh then retry once.
+// 403               = insufficient role → never redirect; caller shows the error.
 api.interceptors.response.use(
   (res) => res,
-  (err) => {
+  async (err) => {
     if (!err.response) {
       console.error('API network error — code:', err.code, 'message:', err.message);
       return Promise.reject(err);
     }
 
-    const status = err.response?.status;
-    const isAuthCall = (err.config?.url ?? '').includes('/api/auth/login');
+    const status  = err.response?.status;
+    const config  = err.config as InternalAxiosRequestConfig & { _retried?: boolean };
+    const isLogin = (config?.url ?? '').includes('/api/auth/login');
+    const isRefresh = (config?.url ?? '').includes('/api/auth/refresh-token');
 
-    if (status === 401 && !isAuthCall && typeof window !== 'undefined') {
-      Cookies.remove('access_token');
-      Cookies.remove('refresh_token');
-      Cookies.remove('user_role');
-      Cookies.remove('user_name');
-      Cookies.remove('user_id');
-      window.location.href = '/login?reason=session_expired';
+    if (status === 401 && !isLogin && !isRefresh && !config._retried && typeof window !== 'undefined') {
+      config._retried = true;
+      try {
+        const newToken = await _refreshOnce();
+        config.headers.Authorization = `Bearer ${newToken}`;
+        return api(config);
+      } catch {
+        _clearSession();
+      }
     }
 
     return Promise.reject(err);

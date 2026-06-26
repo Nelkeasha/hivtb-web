@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import StatCard from '@/components/ui/StatCard';
@@ -171,8 +171,8 @@ export default function SupervisorDashboard() {
                 <AreaChart data={visitData} margin={{ top: 4, right: 8, left: -26, bottom: 0 }}>
                   <defs>
                     <linearGradient id="gVisits" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%"  stopColor="#E74A2E" stopOpacity={0.14} />
-                      <stop offset="95%" stopColor="#E74A2E" stopOpacity={0} />
+                      <stop offset="5%"  stopColor="#E64B2E" stopOpacity={0.14} />
+                      <stop offset="95%" stopColor="#E64B2E" stopOpacity={0} />
                     </linearGradient>
                     <linearGradient id="gMissed" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%"  stopColor="#E29578" stopOpacity={0.12} />
@@ -192,7 +192,7 @@ export default function SupervisorDashboard() {
                   />
                   <Area
                     type="monotone" dataKey="visits"
-                    stroke="#E74A2E" strokeWidth={2}
+                    stroke="#E64B2E" strokeWidth={2}
                     fill="url(#gVisits)" name="Visits"
                   />
                   <Area
@@ -213,7 +213,7 @@ export default function SupervisorDashboard() {
                 <a
                   href="/supervisor/chw"
                   className="text-[12px] font-semibold hover:underline"
-                  style={{ color: '#E74A2E' }}
+                  style={{ color: '#E64B2E' }}
                 >
                   View all →
                 </a>
@@ -231,7 +231,7 @@ export default function SupervisorDashboard() {
                   >
                     <div
                       className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 text-[10px] font-bold text-white"
-                      style={{ background: c.isActive ? '#E74A2E' : '#9CA3AF' }}
+                      style={{ background: c.isActive ? '#E64B2E' : '#9CA3AF' }}
                     >
                       {c.fullName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
                     </div>
@@ -268,7 +268,7 @@ export default function SupervisorDashboard() {
               <a
                 href="/supervisor/analytics"
                 className="text-[12px] font-semibold hover:underline"
-                style={{ color: '#E74A2E' }}
+                style={{ color: '#E64B2E' }}
               >
                 Analytics →
               </a>
