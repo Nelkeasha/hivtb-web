@@ -4,15 +4,13 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { isAuthenticated, getRole, roleHome } from '@/lib/auth';
 
-// ── DMC slider images (from dreammedicalcenter.rw).
-// For offline/production deploy: download these to /public/slides/ and swap paths.
 const SLIDES = [
   {
-    url: 'https://dreammedicalcenter.rw/storage/sliders/rzOdoQltE4zqj4lnvhivZ3eYWy28YTRWpku9dDju.jpg',
+    url: '/slides/dmc-hospital.jpg',
     caption: 'Your Health, Our Mission.',
   },
   {
-    url: 'https://dreammedicalcenter.rw/storage/sliders/HeIp3xsCMH9CPQwSk2qmduhzSMLIncsLnALCDycG.jpg',
+    url: '/slides/dmc-hospital.jpg',
     caption: 'Because Every Life Matters.',
   },
 ];

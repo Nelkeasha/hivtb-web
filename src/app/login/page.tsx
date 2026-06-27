@@ -16,7 +16,6 @@ function errorFromException(err: unknown): { message: string; type: 'creds' | 'r
   if (status === 400) return { message: 'Invalid request. Check your credentials.', type: 'server' };
   if (status && status >= 500) return { message: 'Server error. Please try again.', type: 'server' };
 
-  // Timeout — server too slow to respond
   if (code === 'ECONNABORTED' || code === 'ERR_CANCELED') {
     return {
       message: 'Request timed out. The server may be waking up — wait 30 seconds and try again.',
@@ -24,7 +23,6 @@ function errorFromException(err: unknown): { message: string; type: 'creds' | 'r
     };
   }
 
-  // Connection refused — nothing is listening at the configured URL
   if (code === 'ERR_NETWORK' || code === 'ERR_CONNECTION_REFUSED') {
     const isLocal = typeof window !== 'undefined' && window.location.hostname === 'localhost';
     return {
@@ -35,7 +33,6 @@ function errorFromException(err: unknown): { message: string; type: 'creds' | 'r
     };
   }
 
-  // Fallback (CORS block, DNS failure, etc.)
   return {
     message: 'Cannot reach the server. If this is the first request today, the server may be starting — wait 30 seconds and retry.',
     type: 'network',
@@ -57,17 +54,14 @@ function EcgLine() {
         d="M-20,36 L80,36 C88,36 90,28 94,28 C98,28 100,36 104,36 L112,36 L116,42 L120,5 L124,67 L128,36 L148,36 C154,36 158,20 163,20 C168,20 172,36 178,36 L260,36
            L360,36 C368,36 370,28 374,28 C378,28 380,36 384,36 L392,36 L396,42 L400,5 L404,67 L408,36 L428,36 C434,36 438,20 443,20 C448,20 452,36 458,36 L540,36
            L640,36 C648,36 650,28 654,28 C658,28 660,36 664,36 L672,36 L676,42 L680,5 L684,67 L688,36 L708,36 C714,36 718,20 723,20 C728,20 732,36 738,36 L820,36"
-        stroke="rgba(255,255,255,0.65)"
+        stroke="rgba(230,75,46,0.30)"
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
-        opacity="0.50"
       />
     </svg>
   );
 }
-
-
 
 /* ── Page ───────────────────────────────────────────────────────────────────── */
 function LoginForm() {
@@ -126,23 +120,32 @@ function LoginForm() {
   const ErrorIcon = errorType === 'network' ? Wifi : errorType === 'server' ? Clock : AlertCircle;
 
   return (
-    <div className="min-h-screen flex" style={{ background: '#C73E22' }}>
+    <div className="min-h-screen flex" style={{ background: '#FAFAFA' }}>
 
-      {/* ── Left panel ──────────────────────────────────────────────────── */}
+      {/* ── Left panel — white, brand as accent ─────────────────────────── */}
       <div
         className="hidden lg:flex flex-col w-[480px] shrink-0 relative overflow-hidden"
         style={{
-          background: 'linear-gradient(175deg, #E64B2E 0%, #C73E22 100%)',
+          background: '#FFFFFF',
+          borderRight: '1px solid #ECECEC',
         }}
       >
-        {/* Content — justify-between splits top block from bottom block */}
         <div className="relative flex flex-col flex-1 px-10 pt-10 pb-10 justify-between">
 
-          {/* ── Top block: logo + headline + stats ──────────── */}
+          {/* ── Top block ──────────────────────────────────────── */}
           <div>
-            {/* DMC Logo on white pill */}
-            <div className="mb-8 inline-block rounded-2xl px-4 py-3"
-              style={{ background: 'rgba(255,255,255,0.95)' }}>
+            {/* Brand accent pill */}
+            <div
+              className="mb-8"
+              style={{
+                width: 36, height: 4,
+                background: '#E64B2E',
+                borderRadius: 2,
+              }}
+            />
+
+            {/* DMC Logo */}
+            <div className="mb-8">
               <Image
                 src="/dmc-logo.png"
                 alt="Dream Medical Center"
@@ -156,21 +159,21 @@ function LoginForm() {
             {/* Headline */}
             <p
               className="text-[10px] font-semibold uppercase tracking-widest mb-3"
-              style={{ color: 'rgba(255,255,255,0.70)' }}
+              style={{ color: '#E64B2E' }}
             >
               HIV/TB Monitoring System
             </p>
             <h1
-              className="text-white font-bold leading-[1.1] tracking-tight mb-4"
-              style={{ fontSize: 34 }}
+              className="font-bold leading-[1.1] tracking-tight mb-4"
+              style={{ fontSize: 34, color: '#2C2C2C' }}
             >
               Patient<br />Adherence<br />Monitoring
             </h1>
-            <p className="text-[14px] leading-relaxed mb-5" style={{ color: 'rgba(255,255,255,0.45)' }}>
+            <p className="text-[14px] leading-relaxed mb-5" style={{ color: '#6B7280' }}>
               Real-time HIV &amp; TB treatment oversight
               across community health networks in Rwanda.
             </p>
-            <p className="text-[12px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.28)' }}>
+            <p className="text-[12px] leading-relaxed" style={{ color: '#9CA3AF' }}>
               For clinical staff, supervisors, and system administrators.
               Patients and CHWs access care through the mobile app.
             </p>
@@ -183,15 +186,15 @@ function LoginForm() {
               <p
                 className="mb-1.5 text-[9px] uppercase tracking-widest"
                 style={{
-                  color: 'rgba(255,255,255,0.45)',
-                  fontFamily: "'JetBrains Mono', monospace",
+                  color: '#9CA3AF',
+                  fontFamily: "'IBM Plex Mono', monospace",
                 }}
               >
                 Vital Monitor · ECG
               </p>
               <div style={{
-                borderTop: '1px solid rgba(255,255,255,0.08)',
-                borderBottom: '1px solid rgba(255,255,255,0.08)',
+                borderTop: '1px solid #ECECEC',
+                borderBottom: '1px solid #ECECEC',
               }}>
                 <EcgLine />
               </div>
@@ -209,11 +212,11 @@ function LoginForm() {
                 <li
                   key={f}
                   className="flex items-center gap-2.5 text-[12px]"
-                  style={{ color: 'rgba(255,255,255,0.45)' }}
+                  style={{ color: '#6B7280' }}
                 >
                   <span
                     className="w-1 h-1 rounded-full shrink-0"
-                    style={{ background: 'rgba(255,255,255,0.45)' }}
+                    style={{ background: '#E64B2E' }}
                   />
                   {f}
                 </li>
@@ -221,7 +224,7 @@ function LoginForm() {
             </ul>
 
             {/* Copyright */}
-            <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.20)' }}>
+            <p className="text-[10px]" style={{ color: '#9CA3AF' }}>
               © 2026 Dream Medical Center · Rwanda
             </p>
           </div>
@@ -229,25 +232,15 @@ function LoginForm() {
         </div>
       </div>
 
-      {/* ── Vertical divider ────────────────────────────────────────────── */}
-      <div
-        className="hidden lg:block w-px shrink-0"
-        style={{ background: 'rgba(255,255,255,0.05)' }}
-      />
-
-      {/* ── Right panel ─────────────────────────────────────────────────── */}
+      {/* ── Right panel — neutral background ────────────────────────────── */}
       <div
         className="flex-1 flex items-center justify-center px-8 py-12 relative"
-        style={{
-          background: '#C73E22',
-          backgroundImage: 'radial-gradient(ellipse at 50% 44%, rgba(231,74,46,0.20) 0%, transparent 62%)',
-        }}
+        style={{ background: '#FAFAFA' }}
       >
         <div className="w-full max-w-[460px]">
 
           {/* Mobile-only logo */}
-          <div className="lg:hidden mb-6 inline-block rounded-xl px-3 py-2"
-            style={{ background: 'rgba(255,255,255,0.95)' }}>
+          <div className="lg:hidden mb-6">
             <Image src="/dmc-logo.png" alt="Dream Medical Center" width={140} height={58} priority style={{ objectFit: 'contain', display: 'block' }} />
           </div>
 
@@ -255,15 +248,12 @@ function LoginForm() {
           <div
             className="bg-white rounded-xl overflow-hidden"
             style={{
-              boxShadow: [
-                '0 0 0 1px rgba(255,255,255,0.06)',
-                '0 8px 24px rgba(0,0,0,0.32)',
-                '0 32px 80px rgba(0,0,0,0.44)',
-              ].join(', '),
+              border: '1px solid #ECECEC',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06)',
             }}
           >
-            {/* Teal accent strip */}
-            <div style={{ height: 3, background: 'linear-gradient(90deg, #E64B2E, #EB6B55 60%, #FDE8E4)' }} />
+            {/* Brand accent strip */}
+            <div style={{ height: 3, background: 'linear-gradient(90deg, #E64B2E, #C73E22 60%, rgba(230,75,46,0.08))' }} />
 
             <div className="px-8 py-10">
               <div className="mb-8">
@@ -361,7 +351,7 @@ function LoginForm() {
                 {fails > 0 && !locked && (
                   <p
                     className="text-[11px]"
-                    style={{ color: '#AE7200', fontFamily: "'JetBrains Mono', monospace" }}
+                    style={{ color: '#AE7200', fontFamily: "'IBM Plex Mono', monospace" }}
                   >
                     {3 - fails} attempt{3 - fails !== 1 ? 's' : ''} remaining
                   </p>
@@ -378,7 +368,7 @@ function LoginForm() {
               className="w-1.5 h-1.5 rounded-full live-pulse shrink-0"
               style={{ background: '#0C7A4B' }}
             />
-            <p className="text-[11px]" style={{ color: 'rgba(255,255,255,0.28)' }}>
+            <p className="text-[11px]" style={{ color: '#9CA3AF' }}>
               Dream Medical Center · Kigali · All systems operational
             </p>
           </div>
@@ -410,7 +400,7 @@ function InputField({
       style={{
         background: focused ? '#fff' : '#FAFAF9',
         border: focused ? '1px solid #E64B2E' : '1px solid #E9E9E9',
-        boxShadow: focused ? '0 0 0 3px rgba(231,74,46,0.08)' : 'none',
+        boxShadow: focused ? '0 0 0 3px rgba(230,75,46,0.08)' : 'none',
       }}
       onFocus={e => { setFocused(true);  props.onFocus?.(e); }}
       onBlur={e  => { setFocused(false); props.onBlur?.(e);  }}
@@ -426,9 +416,7 @@ function SubmitButton({ loading, locked }: { loading: boolean; locked: boolean }
       disabled={loading || locked}
       className="w-full py-2.5 text-white text-[13px] font-semibold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-1"
       style={{
-        background: hovered && !loading && !locked
-          ? '#C73E22'
-          : '#E64B2E',
+        background: hovered && !loading && !locked ? '#C73E22' : '#E64B2E',
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}

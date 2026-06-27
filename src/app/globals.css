@@ -5,10 +5,10 @@
   /* ── DMC Brand palette ──────────────────────────────────── */
   --color-primary:           #E64B2E;   /* brand: coral-orange */
   --color-primary-dark:      #C73E22;   /* brand-deep: hover / emphasis */
-  --color-primary-light:     #F07256;   /* brand-light: softer accent */
+  --color-primary-light:     #C73E22;   /* brand-deep: hover shade */
   --color-primary-container: rgba(230,75,46,0.09);  /* brand-tint */
   --color-brand-brown:       #9C3219;   /* deep brown: gravitas / logo area */
-  --color-accent:            #F07256;
+  --color-accent:            #E64B2E;   /* = primary — one brand orange */
   --color-accent-light:      rgba(230,75,46,0.09);
 
   /* ── Surfaces ─────────────────────────────────────────── */
