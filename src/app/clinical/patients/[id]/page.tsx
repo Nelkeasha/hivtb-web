@@ -30,6 +30,13 @@ interface Patient {
   riskLevel?: string; riskScore?: number;
   registrationStatus?: string; referralId?: string;
   suspectedCondition?: string; screeningNotes?: string;
+  // Structured RBC TB symptom screen
+  tbSymptomCough?: boolean; tbSymptomFever?: boolean; tbSymptomNightSweats?: boolean;
+  tbSymptomWeightLoss?: boolean; tbSymptomChestPain?: boolean; presumptiveTb?: boolean;
+  // Community HIV testing-risk screen (null for supervisors/admins)
+  hivRiskNeverTested?: boolean; hivRiskPartnerPositive?: boolean; hivRiskUnprotectedSex?: boolean;
+  hivRiskStiTreatment?: boolean; hivRiskRecurrentIllness?: boolean;
+  hivTestingReferral?: boolean; manualReferralReason?: string;
   unresolvedAlerts?: AlertItem[];
   recentHomeVisits?: HomeVisitItem[];
 }
@@ -434,6 +441,67 @@ export default function PatientDetailPage() {
   );
 }
 
+// ── Screening Results (structured TB & HIV screens) ───────────────────────────
+
+function ScreeningResults({ patient }: { patient: Patient }) {
+  const tb: [string, boolean | undefined][] = [
+    ['Current cough', patient.tbSymptomCough],
+    ['Fever (afternoon)', patient.tbSymptomFever],
+    ['Night sweats', patient.tbSymptomNightSweats],
+    ['Weight loss', patient.tbSymptomWeightLoss],
+    ['Chest pain breathing', patient.tbSymptomChestPain],
+  ];
+  // HIV risk answers are redacted (undefined) for supervisors/admins.
+  const hivVisible = patient.hivRiskNeverTested !== undefined;
+  const hiv: [string, boolean | undefined][] = [
+    ['Never tested for HIV', patient.hivRiskNeverTested],
+    ['Partner HIV-positive', patient.hivRiskPartnerPositive],
+    ['Unprotected sex, unknown status', patient.hivRiskUnprotectedSex],
+    ['Recent STI treatment', patient.hivRiskStiTreatment],
+    ['Recurrent illness', patient.hivRiskRecurrentIllness],
+  ];
+
+  const Answer = ({ label, yes }: { label: string; yes: boolean | undefined }) => (
+    <div className="flex items-center justify-between text-[11.5px] py-0.5">
+      <span style={{ color: '#78350F' }}>{label}</span>
+      <span className="font-semibold" style={{ color: yes ? '#C0392B' : '#92400E' }}>
+        {yes ? 'Yes' : 'No'}
+      </span>
+    </div>
+  );
+
+  const Badge = ({ text, bg, fg }: { text: string; bg: string; fg: string }) => (
+    <span className="inline-block text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded"
+      style={{ background: bg, color: fg }}>{text}</span>
+  );
+
+  return (
+    <div className="mb-4 rounded-lg p-3" style={{ background: '#FEF3C7', border: '1px solid #FDE68A' }}>
+      <div className="flex flex-wrap gap-2 mb-2">
+        {patient.presumptiveTb && <Badge text="Presumptive TB" bg="#FDE2E0" fg="#C0392B" />}
+        {patient.hivTestingReferral && <Badge text="HIV Testing Referral" bg="#DBEAFE" fg="#1D4ED8" />}
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-wide mb-1" style={{ color: '#92400E' }}>TB symptom screen</p>
+          {tb.map(([label, yes]) => <Answer key={label} label={label} yes={yes} />)}
+        </div>
+        {hivVisible && (
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-wide mb-1 mt-2 sm:mt-0" style={{ color: '#92400E' }}>HIV testing-risk screen</p>
+            {hiv.map(([label, yes]) => <Answer key={label} label={label} yes={yes} />)}
+            {patient.manualReferralReason && (
+              <p className="text-[11px] mt-1 italic" style={{ color: '#92400E' }}>
+                Manual referral: {patient.manualReferralReason}
+              </p>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ── Confirm Provisional ───────────────────────────────────────────────────────
 
 function ConfirmProvisionalCard({ patient, onConfirmed }: {
@@ -514,6 +582,8 @@ function ConfirmProvisionalCard({ patient, onConfirmed }: {
             )}
           </div>
         </div>
+
+        <ScreeningResults patient={patient} />
 
         {done ? (
           <div className="flex items-center gap-2 text-[13px] font-semibold" style={{ color: '#27AE60' }}>
