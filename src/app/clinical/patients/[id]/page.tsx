@@ -52,6 +52,23 @@ interface HomeVisitItem {
   pillCountRecorded?: number; pillCountExpected?: number;
   pillCountDiscrepancy?: boolean; symptomsReported?: string;
   sideEffectsReported?: string; psychosocialNotes?: string; nextVisitDate?: string;
+  // Differentiated DOT model (V33)
+  dotObserved?: boolean;
+  tbSideEffects?: Record<string, boolean>;
+  artSideEffects?: Record<string, boolean>;
+  homeVentilationOk?: boolean;
+  coughHygieneOk?: boolean;
+  nextDotDate?: string;
+  homeVisitTrigger?: string;
+}
+
+const _SE_LABELS: Record<string, string> = {
+  jaundice: 'Jaundice', neuropathy: 'Neuropathy', vomiting: 'Vomiting',
+  rash: 'Rash', jointPain: 'Joint pain', visionChanges: 'Vision changes',
+};
+function trueKeys(m?: Record<string, boolean>): string {
+  if (!m) return '';
+  return Object.entries(m).filter(([, v]) => v).map(([k]) => _SE_LABELS[k] ?? k).join(', ');
 }
 
 interface Schedule {
@@ -318,7 +335,13 @@ export default function PatientDetailPage() {
                     {v.chwName && (
                       <p className="text-[11px] text-text-hint mb-1">CHW: {v.chwName}</p>
                     )}
-                    {(v.pillCountRecorded != null || v.pillCountExpected != null) && (
+                    {v.homeVisitTrigger && (
+                      <p className="text-[11px] mb-1 font-semibold" style={{ color: '#B45309' }}>
+                        Triggered by: {v.homeVisitTrigger.replace(/_/g, ' ').toLowerCase()}
+                      </p>
+                    )}
+                    {/* Card A — ART monitoring (HIV / co-infection) */}
+                    {patient.diagnosisType?.includes('HIV') && (v.pillCountRecorded != null || v.pillCountExpected != null) && (
                       <p className="text-[12px] text-text-secondary">
                         Pill count: <span className="data-num">{v.pillCountRecorded ?? '—'}</span> recorded
                         {' / '}<span className="data-num">{v.pillCountExpected ?? '—'}</span> expected
@@ -326,6 +349,35 @@ export default function PatientDetailPage() {
                           <span className="ml-1.5 font-semibold" style={{ color: '#C0392B' }}>(discrepancy)</span>
                         )}
                       </p>
+                    )}
+                    {patient.diagnosisType?.includes('HIV') && trueKeys(v.artSideEffects) && (
+                      <p className="text-[12px] mt-1" style={{ color: '#B45309' }}>
+                        ART side effects: {trueKeys(v.artSideEffects)}
+                      </p>
+                    )}
+                    {/* Card B — Directly Observed Therapy (TB / co-infection) */}
+                    {patient.diagnosisType?.includes('TB') && (
+                      <div className="mt-1.5 rounded-md p-2" style={{ background: '#FEF2F2', border: '1px solid #FECACA' }}>
+                        <p className="text-[10px] font-bold uppercase tracking-wide mb-1" style={{ color: '#991B1B' }}>DOT record</p>
+                        {v.dotObserved != null && (
+                          <p className="text-[12px]" style={{ color: '#7F1D1D' }}>
+                            Observed swallow: <span className="font-semibold">{v.dotObserved ? 'Yes' : 'No'}</span>
+                          </p>
+                        )}
+                        {trueKeys(v.tbSideEffects) && (
+                          <p className="text-[12px]" style={{ color: '#7F1D1D' }}>TB side effects: {trueKeys(v.tbSideEffects)}</p>
+                        )}
+                        {(v.homeVentilationOk != null || v.coughHygieneOk != null) && (
+                          <p className="text-[12px]" style={{ color: '#7F1D1D' }}>
+                            Infection control: ventilation {v.homeVentilationOk ? 'OK' : 'not adequate'}, cough hygiene {v.coughHygieneOk ? 'OK' : 'not practiced'}
+                          </p>
+                        )}
+                        {v.nextDotDate && (
+                          <p className="data-num text-[11px] mt-0.5" style={{ color: '#991B1B' }}>
+                            Next DOT: {new Date(v.nextDotDate).toLocaleDateString()}
+                          </p>
+                        )}
+                      </div>
                     )}
                     {v.symptomsReported && (
                       <p className="text-[12px] text-text-secondary mt-1">Symptoms: {v.symptomsReported}</p>
@@ -451,8 +503,12 @@ function ScreeningResults({ patient }: { patient: Patient }) {
     ['Weight loss', patient.tbSymptomWeightLoss],
     ['Chest pain breathing', patient.tbSymptomChestPain],
   ];
+  // Show only the block(s) actually completed for this patient's condition.
+  const dt = patient.diagnosisType ?? patient.suspectedCondition ?? '';
+  const showTb = dt === 'TB' || dt === 'HIV_TB_COINFECTION';
   // HIV risk answers are redacted (undefined) for supervisors/admins.
   const hivVisible = patient.hivRiskNeverTested !== undefined;
+  const showHiv = (dt === 'HIV' || dt === 'HIV_TB_COINFECTION') && hivVisible;
   const hiv: [string, boolean | undefined][] = [
     ['Never tested for HIV', patient.hivRiskNeverTested],
     ['Partner HIV-positive', patient.hivRiskPartnerPositive],
@@ -475,26 +531,30 @@ function ScreeningResults({ patient }: { patient: Patient }) {
       style={{ background: bg, color: fg }}>{text}</span>
   );
 
+  if (!showTb && !showHiv) return null;
+
   return (
     <div className="mb-4 rounded-lg p-3" style={{ background: '#FEF3C7', border: '1px solid #FDE68A' }}>
       <div className="flex flex-wrap gap-2 mb-2">
-        {patient.presumptiveTb && <Badge text="Presumptive TB" bg="#FDE2E0" fg="#C0392B" />}
-        {patient.hivTestingReferral && <Badge text="HIV Testing Referral" bg="#DBEAFE" fg="#1D4ED8" />}
+        {showTb && patient.presumptiveTb && <Badge text="Presumptive TB" bg="#FDE2E0" fg="#C0392B" />}
+        {showHiv && patient.hivTestingReferral && <Badge text="HIV Testing Referral" bg="#DBEAFE" fg="#1D4ED8" />}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-wide mb-1" style={{ color: '#92400E' }}>TB symptom screen</p>
-          {tb.map(([label, yes]) => <Answer key={label} label={label} yes={yes} />)}
-        </div>
-        {hivVisible && (
+        {showHiv && (
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-wide mb-1 mt-2 sm:mt-0" style={{ color: '#92400E' }}>HIV testing-risk screen</p>
+            <p className="text-[10px] font-bold uppercase tracking-wide mb-1" style={{ color: '#92400E' }}>HIV testing-risk screen</p>
             {hiv.map(([label, yes]) => <Answer key={label} label={label} yes={yes} />)}
             {patient.manualReferralReason && (
               <p className="text-[11px] mt-1 italic" style={{ color: '#92400E' }}>
                 Manual referral: {patient.manualReferralReason}
               </p>
             )}
+          </div>
+        )}
+        {showTb && (
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-wide mb-1 mt-2 sm:mt-0" style={{ color: '#92400E' }}>TB symptom screen</p>
+            {tb.map(([label, yes]) => <Answer key={label} label={label} yes={yes} />)}
           </div>
         )}
       </div>
