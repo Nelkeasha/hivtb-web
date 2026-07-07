@@ -272,6 +272,12 @@ export default function PatientDetailPage() {
             />
           )}
 
+          {/* Screening results stay visible after confirmation (the provisional
+              card renders its own copy, so only show here once confirmed). */}
+          {patient.registrationStatus !== 'PROVISIONAL' && (
+            <ScreeningResults patient={patient} />
+          )}
+
           {/* Active alerts */}
           {(patient.unresolvedAlerts?.length ?? 0) > 0 && (
             <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #E9E9E9' }}>
@@ -355,8 +361,12 @@ export default function PatientDetailPage() {
                         ART side effects: {trueKeys(v.artSideEffects)}
                       </p>
                     )}
-                    {/* Card B — Directly Observed Therapy (TB / co-infection) */}
-                    {patient.diagnosisType?.includes('TB') && (
+                    {/* Card B — Directly Observed Therapy (TB / co-infection).
+                        Only render fields the CHW actually assessed — an untouched
+                        toggle arrives as null and must not read as a definitive "No". */}
+                    {patient.diagnosisType?.includes('TB') &&
+                      (v.dotObserved != null || trueKeys(v.tbSideEffects) ||
+                        v.homeVentilationOk != null || v.coughHygieneOk != null || v.nextDotDate) && (
                       <div className="mt-1.5 rounded-md p-2" style={{ background: '#FEF2F2', border: '1px solid #FECACA' }}>
                         <p className="text-[10px] font-bold uppercase tracking-wide mb-1" style={{ color: '#991B1B' }}>DOT record</p>
                         {v.dotObserved != null && (
@@ -367,9 +377,14 @@ export default function PatientDetailPage() {
                         {trueKeys(v.tbSideEffects) && (
                           <p className="text-[12px]" style={{ color: '#7F1D1D' }}>TB side effects: {trueKeys(v.tbSideEffects)}</p>
                         )}
-                        {(v.homeVentilationOk != null || v.coughHygieneOk != null) && (
+                        {v.homeVentilationOk != null && (
                           <p className="text-[12px]" style={{ color: '#7F1D1D' }}>
-                            Infection control: ventilation {v.homeVentilationOk ? 'OK' : 'not adequate'}, cough hygiene {v.coughHygieneOk ? 'OK' : 'not practiced'}
+                            Home ventilation: <span className="font-semibold">{v.homeVentilationOk ? 'OK' : 'not adequate'}</span>
+                          </p>
+                        )}
+                        {v.coughHygieneOk != null && (
+                          <p className="text-[12px]" style={{ color: '#7F1D1D' }}>
+                            Cough hygiene: <span className="font-semibold">{v.coughHygieneOk ? 'OK' : 'not practiced'}</span>
                           </p>
                         )}
                         {v.nextDotDate && (

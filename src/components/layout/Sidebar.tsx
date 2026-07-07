@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { logout, getUserName, getRole } from '@/lib/auth';
 import {
   LayoutDashboard, Users, AlertCircle, FileText, ArrowLeftRight,
-  BarChart3, UserCheck, LogOut, History, Settings, PersonStanding, Home,
+  BarChart3, UserCheck, LogOut, History, Settings, PersonStanding,
 } from 'lucide-react';
 
 interface NavItem { href: string; label: string; icon: React.ElementType; }
@@ -16,7 +16,6 @@ const clinicalNav: NavItem[] = [
   { href: '/clinical/patients',  label: 'Patients',  icon: Users           },
   { href: '/clinical/alerts',    label: 'Alerts',    icon: AlertCircle     },
   { href: '/clinical/referrals', label: 'Referrals', icon: ArrowLeftRight  },
-  { href: '/clinical/home-visits', label: 'Home Visits', icon: Home        },
   { href: '/clinical/reports',   label: 'Reports',   icon: FileText        },
 ];
 

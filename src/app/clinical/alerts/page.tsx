@@ -22,10 +22,12 @@ interface Alert {
   createdAt: string;
   isResolved: boolean;
   resolvedByName?: string;
+  resolvedAt?: string;
   escalatedAt?: string;
 }
 
 type Filter = 'ALL' | 'CRITICAL' | 'WARNING' | 'INFO';
+type View = 'ACTIVE' | 'RESOLVED';
 
 const SEV_STYLE: Record<string, { accent: string; bg: string; border: string; iconColor: string }> = {
   CRITICAL: { accent: '#C0392B', bg: 'rgba(194,40,40,0.03)',  border: '#FECACA', iconColor: '#C0392B' },
@@ -71,19 +73,23 @@ const SUMMARY_CHIPS = [
 export default function AlertsPage() {
   const [alerts, setAlerts]   = useState<Alert[]>([]);
   const [filter, setFilter]   = useState<Filter>('ALL');
+  const [view, setView]       = useState<View>('ACTIVE');
   const [loading, setLoading] = useState(true);
   const [resolving, setResolving] = useState<string | null>(null);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    api.get('/api/alerts/clinical')
+    setLoading(true);
+    const url = view === 'ACTIVE' ? '/api/alerts/clinical' : '/api/alerts/clinical/resolved';
+    api.get(url)
       .then((r) => setAlerts(r.data))
       .catch(e => setError(extractErrorMessage(e, 'Failed to load alerts. Try refreshing.')))
       .finally(() => setLoading(false));
-  }, []);
+  }, [view]);
 
-  const active   = alerts.filter((a) => !a.isResolved);
-  const filtered = active.filter((a) => filter === 'ALL' || a.severity === filter);
+  const resolvedView = view === 'RESOLVED';
+  const rows     = resolvedView ? alerts : alerts.filter((a) => !a.isResolved);
+  const filtered = rows.filter((a) => filter === 'ALL' || a.severity === filter);
   const table = useTableControls(filtered, {
     pageSize: 8,
     getSortValue: (a, key) => (key === 'severity' ? SEVERITY_RANK[a.severity] ?? -1 : (a as unknown as Record<string, string>)[key]),
@@ -123,17 +129,21 @@ export default function AlertsPage() {
               Clinical Alerts
             </h1>
           </div>
-          {!loading && active.length > 0 && (
+          {!loading && rows.length > 0 && (
             <div className="text-right">
               <p
                 className="data-num text-[30px] font-semibold leading-none"
                 style={{
-                  color: active.some((a) => a.severity === 'CRITICAL') ? '#C0392B' : '#F39C12',
+                  color: resolvedView
+                    ? '#27AE60'
+                    : rows.some((a) => a.severity === 'CRITICAL') ? '#C0392B' : '#F39C12',
                 }}
               >
-                {active.length}
+                {rows.length}
               </p>
-              <p className="text-[11px] text-text-hint mt-1 uppercase tracking-wide">Unresolved</p>
+              <p className="text-[11px] text-text-hint mt-1 uppercase tracking-wide">
+                {resolvedView ? 'Resolved' : 'Unresolved'}
+              </p>
             </div>
           )}
         </div>
@@ -147,11 +157,29 @@ export default function AlertsPage() {
           </div>
         )}
 
+        {/* ── Active / Resolved view toggle ────────────────── */}
+        <div className="flex gap-1">
+          {(['ACTIVE', 'RESOLVED'] as View[]).map((v) => (
+            <button
+              key={v}
+              onClick={() => { setView(v); setFilter('ALL'); }}
+              className="text-[12px] px-3.5 py-1.5 rounded-lg font-semibold transition-colors"
+              style={{
+                background: view === v ? '#E64B2E' : '#FAFAFA',
+                color:      view === v ? '#fff'    : '#6B7280',
+                border:     `1px solid ${view === v ? '#E64B2E' : '#E9E9E9'}`,
+              }}
+            >
+              {v === 'ACTIVE' ? 'Active' : 'Resolved'}
+            </button>
+          ))}
+        </div>
+
         {/* ── Summary chips ────────────────────────────────── */}
         {!loading && (
           <div className="flex gap-2 flex-wrap">
             {SUMMARY_CHIPS.map(({ key, label, color, bg, border }) => {
-              const count = active.filter((a) => a.severity === key).length;
+              const count = rows.filter((a) => a.severity === key).length;
               return (
                 <div
                   key={key}
@@ -180,7 +208,7 @@ export default function AlertsPage() {
           >
             <div>
               <h3 className="text-[13px] font-semibold text-text-primary tracking-tight">
-                Active Alerts
+                {resolvedView ? 'Resolved Alerts' : 'Active Alerts'}
               </h3>
               <p className="text-[11px] text-text-hint mt-0.5">
                 {filtered.length} shown
@@ -225,8 +253,12 @@ export default function AlertsPage() {
             ) : filtered.length === 0 ? (
               <div className="flex flex-col items-center py-16 text-text-hint">
                 <CheckCircle2 size={36} className="mb-3" />
-                <p className="text-[14px] font-semibold text-text-secondary">All clear</p>
-                <p className="text-[12px] mt-1">No active alerts in this category</p>
+                <p className="text-[14px] font-semibold text-text-secondary">
+                  {resolvedView ? 'Nothing here yet' : 'All clear'}
+                </p>
+                <p className="text-[12px] mt-1">
+                  {resolvedView ? 'No resolved alerts in this category' : 'No active alerts in this category'}
+                </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
@@ -277,17 +309,35 @@ export default function AlertsPage() {
                         </div>
                       </div>
 
-                      {/* Resolve */}
-                      <div className="shrink-0">
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          loading={resolving === alert.id}
-                          onClick={() => resolve(alert.id)}
-                          icon={CheckCircle2}
-                        >
-                          Resolve
-                        </Button>
+                      {/* Resolve action (active) or resolution details (resolved) */}
+                      <div className="shrink-0 text-right">
+                        {resolvedView ? (
+                          <div className="flex flex-col items-end gap-0.5">
+                            <span className="flex items-center gap-1 text-[11px] font-semibold" style={{ color: '#27AE60' }}>
+                              <CheckCircle2 size={13} /> Resolved
+                            </span>
+                            {alert.resolvedByName && (
+                              <span className="text-[10px]" style={{ color: '#9CA3AF' }}>
+                                by {alert.resolvedByName}
+                              </span>
+                            )}
+                            {alert.resolvedAt && (
+                              <span className="data-num text-[10px]" style={{ color: '#9CA3AF' }}>
+                                {timeAgo(alert.resolvedAt)}
+                              </span>
+                            )}
+                          </div>
+                        ) : (
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            loading={resolving === alert.id}
+                            onClick={() => resolve(alert.id)}
+                            icon={CheckCircle2}
+                          >
+                            Resolve
+                          </Button>
+                        )}
                       </div>
                     </div>
                   );
