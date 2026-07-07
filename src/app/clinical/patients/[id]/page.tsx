@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Button from '@/components/ui/Button';
@@ -98,6 +99,7 @@ export default function PatientDetailPage() {
   const [apiError, setApiError] = useState('');
   const [showAddPlan, setShowAddPlan]           = useState(false);
   const [addingScheduleTo, setAddingScheduleTo] = useState<string | null>(null);
+  const [showAllVisits, setShowAllVisits]       = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -278,17 +280,25 @@ export default function PatientDetailPage() {
             <ScreeningResults patient={patient} />
           )}
 
-          {/* Active alerts */}
+          {/* Active alerts — summary only; full management lives on /clinical/alerts */}
           {(patient.unresolvedAlerts?.length ?? 0) > 0 && (
             <div className="bg-white rounded-xl overflow-hidden" style={{ border: '1px solid #E9E9E9' }}>
-              <div className="flex items-center gap-2 px-6 py-4" style={{ borderBottom: '1px solid #F0F0F0' }}>
-                <Bell size={14} style={{ color: '#C0392B' }} />
-                <h3 className="text-[13px] font-semibold text-text-primary tracking-tight">
-                  Active Alerts
-                </h3>
+              <div className="flex items-center justify-between gap-2 px-6 py-4" style={{ borderBottom: '1px solid #F0F0F0' }}>
+                <div className="flex items-center gap-2">
+                  <Bell size={14} style={{ color: '#C0392B' }} />
+                  <h3 className="text-[13px] font-semibold text-text-primary tracking-tight">
+                    Active Alerts
+                  </h3>
+                </div>
+                <span
+                  className="data-num text-[11px] font-bold px-2 py-0.5 rounded-full"
+                  style={{ background: '#FEF2F2', color: '#C0392B', border: '1px solid #FECACA' }}
+                >
+                  {patient.unresolvedAlerts!.length}
+                </span>
               </div>
               <div className="px-6 py-4 space-y-3">
-                {patient.unresolvedAlerts!.map((a) => (
+                {patient.unresolvedAlerts!.slice(0, 2).map((a) => (
                   <div key={a.id} className="rounded-lg p-3" style={{ background: '#FEF2F2', border: '1px solid #FECACA' }}>
                     <div className="flex items-center justify-between gap-2 mb-1">
                       <p className="text-[13px] font-semibold text-text-primary">{a.title}</p>
@@ -296,13 +306,22 @@ export default function PatientDetailPage() {
                         {a.severity}
                       </Badge>
                     </div>
-                    <p className="text-[12px] text-text-secondary">{a.message}</p>
+                    <p className="text-[12px] text-text-secondary line-clamp-2">{a.message}</p>
                     <p className="data-num text-[11px] text-text-hint mt-1.5">
                       {new Date(a.createdAt).toLocaleString()}
                     </p>
                   </div>
                 ))}
               </div>
+              <Link
+                href="/clinical/alerts"
+                className="block px-6 py-3 text-[12px] font-semibold text-center"
+                style={{ borderTop: '1px solid #F0F0F0', color: '#E64B2E' }}
+              >
+                {patient.unresolvedAlerts!.length > 2
+                  ? `View all ${patient.unresolvedAlerts!.length} in Alerts →`
+                  : 'Manage in Alerts →'}
+              </Link>
             </div>
           )}
 
@@ -316,7 +335,7 @@ export default function PatientDetailPage() {
                 </h3>
               </div>
               <div className="px-6 py-4 space-y-3">
-                {patient.recentHomeVisits!.map((v) => (
+                {(showAllVisits ? patient.recentHomeVisits! : patient.recentHomeVisits!.slice(0, 2)).map((v) => (
                   <div key={v.id} className="rounded-lg p-3" style={{ background: '#FAFAFA', border: '1px solid #E9E9E9' }}>
                     <div className="flex items-center justify-between gap-2 mb-1.5">
                       <p className="data-num text-[12px] font-semibold text-text-primary">
@@ -411,6 +430,17 @@ export default function PatientDetailPage() {
                   </div>
                 ))}
               </div>
+              {patient.recentHomeVisits!.length > 2 && (
+                <button
+                  onClick={() => setShowAllVisits((s) => !s)}
+                  className="block w-full px-6 py-3 text-[12px] font-semibold text-center"
+                  style={{ borderTop: '1px solid #F0F0F0', color: '#E64B2E' }}
+                >
+                  {showAllVisits
+                    ? 'Show less'
+                    : `Show all ${patient.recentHomeVisits!.length} visits →`}
+                </button>
+              )}
             </div>
           )}
 
@@ -594,6 +624,31 @@ function ConfirmProvisionalCard({ patient, onConfirmed }: {
     labResultNotes: '',
   });
 
+  // Negative-result resolution (RBC 2022 registry block + prevention redirect)
+  const [showNeg, setShowNeg] = useState(false);
+  const [negLoading, setNegLoading] = useState(false);
+  const [negDone, setNegDone] = useState(false);
+  const [neg, setNeg] = useState({ labReference: '', notes: '' });
+
+  async function resolveNegative() {
+    if (!window.confirm(
+      'Record this screening as NEGATIVE?\n\nThe voucher is dropped from the queue and blocked from ' +
+      'the active patient tables. A prevention follow-up (TB differential / HIV PrEP) is sent to the CHW. ' +
+      'This cannot be undone from here.'
+    )) return;
+    setNegLoading(true); setError('');
+    try {
+      await api.put(`/api/v1/patients/${patient.id}/resolve-negative`, {
+        labReference: neg.labReference || undefined,
+        notes: neg.notes || undefined,
+      });
+      setNegDone(true);
+      setTimeout(onConfirmed, 1800);
+    } catch (err: unknown) {
+      setError(extractErrorMessage(err, 'Could not resolve as negative.'));
+    } finally { setNegLoading(false); }
+  }
+
   function validate(): Record<string, string> {
     const errors: Record<string, string> = {};
     const diagnosisError = validateRequired(f.diagnosisType, 'Confirmed diagnosis');
@@ -660,7 +715,16 @@ function ConfirmProvisionalCard({ patient, onConfirmed }: {
 
         <ScreeningResults patient={patient} />
 
-        {done ? (
+        {negDone ? (
+          <div className="text-[13px] font-semibold" style={{ color: '#B45309' }}>
+            <div className="flex items-center gap-2">
+              <CheckCircle size={16} /> Screen resolved NEGATIVE — voucher dropped from the queue.
+            </div>
+            <p className="text-[12px] font-normal mt-1" style={{ color: '#92400E' }}>
+              Blocked from active patient tables. Prevention follow-up sent to the CHW.
+            </p>
+          </div>
+        ) : done ? (
           <div className="flex items-center gap-2 text-[13px] font-semibold" style={{ color: '#27AE60' }}>
             <CheckCircle size={16} /> Patient confirmed and activated. Notifying CHW…
           </div>
@@ -722,6 +786,59 @@ function ConfirmProvisionalCard({ patient, onConfirmed }: {
               className="bg-amber-600 hover:bg-amber-700 text-white">
               Confirm &amp; Activate Patient
             </Button>
+
+            {/* Negative-result path — RBC 2022 registry block + prevention redirect */}
+            <div className="pt-3 mt-1" style={{ borderTop: '1px solid #FDE68A' }}>
+              {!showNeg ? (
+                <button
+                  type="button"
+                  onClick={() => setShowNeg(true)}
+                  className="text-[12px] font-semibold"
+                  style={{ color: '#B91C1C' }}
+                >
+                  Lab result came back negative? Record negative &amp; drop from queue →
+                </button>
+              ) : (
+                <div className="space-y-2">
+                  <p className="text-[12px]" style={{ color: '#78350F' }}>
+                    Record a <strong>NEGATIVE</strong> lab result{patient.referralId ? ` for voucher ${patient.referralId}` : ''}.
+                    The screening is dropped from the queue, blocked from active patient tables, and
+                    redirected to prevention (TB differential / HIV PrEP) for the CHW.
+                  </p>
+                  <FormField
+                    label="Lab reference (optional)"
+                    value={neg.labReference}
+                    onChange={(v) => setNeg({ ...neg, labReference: v })}
+                    placeholder="GeneXpert: MTB not detected / HIV rapid test: non-reactive"
+                    required={false}
+                  />
+                  <FormField
+                    label="Notes (optional)"
+                    value={neg.notes}
+                    onChange={(v) => setNeg({ ...neg, notes: v })}
+                    required={false}
+                  />
+                  <div className="flex items-center gap-3">
+                    <Button
+                      type="button"
+                      onClick={resolveNegative}
+                      loading={negLoading}
+                      className="bg-red-700 hover:bg-red-800 text-white"
+                    >
+                      Confirm Negative &amp; Drop from Queue
+                    </Button>
+                    <button
+                      type="button"
+                      onClick={() => setShowNeg(false)}
+                      className="text-[12px]"
+                      style={{ color: '#92400E' }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </form>
         )}
       </div>
