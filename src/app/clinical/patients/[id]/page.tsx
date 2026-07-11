@@ -624,6 +624,18 @@ function ConfirmProvisionalCard({ patient, onConfirmed }: {
     labResultNotes: '',
   });
 
+  // Village-scoped CHW assignment (Change 1) — '' = keep the screening CHW.
+  const [candMode, setCandMode] = useState<'SINGLE' | 'MULTIPLE' | 'NONE' | null>(null);
+  const [candidates, setCandidates] = useState<{ id: string; fullName: string; assignedVillage?: string }[]>([]);
+  const [assignedChwId, setAssignedChwId] = useState('');
+
+  useEffect(() => {
+    if (!patient.village) return;
+    api.get('/api/clinical/dashboard/chw-candidates', { params: { village: patient.village } })
+      .then(r => { setCandMode(r.data.mode); setCandidates(r.data.candidates ?? []); })
+      .catch(() => { /* assignment widget stays hidden; screening CHW keeps the patient */ });
+  }, [patient.village]);
+
   // Negative-result resolution (RBC 2022 registry block + prevention redirect)
   const [showNeg, setShowNeg] = useState(false);
   const [negLoading, setNegLoading] = useState(false);
@@ -678,6 +690,8 @@ function ConfirmProvisionalCard({ patient, onConfirmed }: {
         artStartDate: f.artStartDate || undefined,
         tbTreatmentStartDate: f.tbTreatmentStartDate || undefined,
         labResultNotes: f.labResultNotes || undefined,
+        // '' = keep the screening CHW; otherwise a village-validated reassignment
+        assignedChwId: assignedChwId || undefined,
       });
       setDone(true);
       setTimeout(onConfirmed, 1500);
@@ -782,6 +796,36 @@ function ConfirmProvisionalCard({ patient, onConfirmed }: {
               placeholder="GeneXpert: Mycobacterium tuberculosis detected. Rifampicin resistance not detected."
               required={false}
             />
+
+            {/* Village-scoped CHW assignment — defaults to the screening CHW */}
+            {candMode && (
+              <div className="pt-1">
+                {candMode === 'NONE' && (
+                  <p className="text-[12px] mb-1.5 font-medium" style={{ color: '#B45309' }}>
+                    No CHW covers “{patient.village}” — the screening CHW keeps this patient
+                    unless you pick a facility CHW below.
+                  </p>
+                )}
+                <FormSelect
+                  label={`Assign to CHW${patient.chwName ? ` (current: ${patient.chwName})` : ''}`}
+                  value={assignedChwId}
+                  onChange={setAssignedChwId}
+                  required={false}
+                  hint={candMode === 'MULTIPLE'
+                    ? `${candidates.length} CHWs cover ${patient.village ?? 'this village'} — reassign or keep the screening CHW.`
+                    : candMode === 'SINGLE'
+                      ? `${candidates[0]?.fullName ?? 'One CHW'} covers ${patient.village ?? 'this village'}.`
+                      : 'Facility-wide list (no village CHW).'}
+                >
+                  <option value="">Keep current CHW{patient.chwName ? ` — ${patient.chwName}` : ''}</option>
+                  {candidates.map(c => (
+                    <option key={c.id} value={c.id}>
+                      {c.fullName}{c.assignedVillage ? ` (${c.assignedVillage})` : ''}
+                    </option>
+                  ))}
+                </FormSelect>
+              </div>
+            )}
             <Button type="submit" icon={CheckCircle} loading={loading}
               className="bg-amber-600 hover:bg-amber-700 text-white">
               Confirm &amp; Activate Patient

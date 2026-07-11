@@ -15,9 +15,11 @@ import {
   User, MapPin, Stethoscope, Phone,
 } from 'lucide-react';
 
-interface Chw { id: string; fullName: string; employeeCode?: string; assignedVillage?: string; }
+interface Chw { id: string; fullName: string; employeeCode?: string; assignedVillage?: string; activePatients?: number; }
 
 type DiagnosisType = 'HIV' | 'TB' | 'HIV_TB_COINFECTION';
+/** SINGLE = one village CHW (auto, read-only) · MULTIPLE = pick among village CHWs · NONE = warning + facility-wide fallback */
+type CandidateMode = 'SINGLE' | 'MULTIPLE' | 'NONE';
 
 function SectionCard({
   title, icon: Icon, iconColor = '#E64B2E', children,
@@ -69,18 +71,34 @@ export default function RegisterPatientPage() {
   const [artStart, setArtStart]   = useState('');
   const [tbStart, setTbStart]     = useState('');
 
-  // CHW assignment — manual pick, or auto-match by village/sector
-  const [assignmentMode, setAssignmentMode] = useState<'MANUAL' | 'AUTO'>('MANUAL');
+  // Consent (Rwanda Law No. 058/2021 — required before the record can be created)
+  const [consentGiven, setConsentGiven] = useState(false);
+
+  // CHW assignment — village-scoped candidates fetched as the village is typed.
+  // SINGLE auto-assigns (read-only confirmation); MULTIPLE requires a pick among
+  // the village CHWs; NONE warns and falls back to the facility's CHW list.
+  const [candMode, setCandMode] = useState<CandidateMode | null>(null);
+  const [candLoading, setCandLoading] = useState(false);
   const [assignedChwId, setAssignedChwId] = useState('');
 
   useEffect(() => {
-    api.get('/api/clinical/dashboard/chws')
-      .then(r => {
-        setChws(r.data);
-        if (r.data[0]) setAssignedChwId(r.data[0].id);
-      })
-      .catch(() => { /* CHW list unavailable — dropdown will be empty */ });
-  }, []);
+    const v = village.trim();
+    setAssignedChwId('');
+    if (!v) { setCandMode(null); setChws([]); return; }
+    const t = setTimeout(() => {
+      setCandLoading(true);
+      api.get('/api/clinical/dashboard/chw-candidates', { params: { village: v } })
+        .then(r => {
+          setCandMode(r.data.mode);
+          const list: Chw[] = r.data.candidates ?? [];
+          setChws(list);
+          if (r.data.mode === 'SINGLE' && list[0]) setAssignedChwId(list[0].id);
+        })
+        .catch(() => { setCandMode(null); setChws([]); })
+        .finally(() => setCandLoading(false));
+    }, 400);
+    return () => clearTimeout(t);
+  }, [village]);
 
   const needsArt = diagnosis === 'HIV' || diagnosis === 'HIV_TB_COINFECTION';
   const needsTb  = diagnosis === 'TB'  || diagnosis === 'HIV_TB_COINFECTION';
@@ -100,11 +118,17 @@ export default function RegisterPatientPage() {
     if (phoneError) errors.phoneNumber = phoneError;
     const diagnosisError = validateRequired(diagnosis, 'Diagnosis type');
     if (diagnosisError) errors.diagnosisType = diagnosisError;
-    if (assignmentMode === 'MANUAL' && !assignedChwId) {
-      errors.assignedChwId = 'Please select a CHW';
+    if (!consentGiven) {
+      errors.consentGiven = 'Patient consent must be recorded before registration.';
     }
-    if (assignmentMode === 'AUTO' && !village.trim() && !sector.trim()) {
-      errors.village = "Auto-assign needs at least a Village or Sector to match against a CHW's coverage area.";
+    if (!village.trim()) {
+      errors.village = 'Village is required — it drives the CHW assignment.';
+    } else if (!assignedChwId) {
+      errors.assignedChwId = candMode === 'MULTIPLE'
+        ? 'Several CHWs cover this village — please select one.'
+        : candMode === 'NONE'
+          ? "No CHW covers this village — select one of the facility's CHWs."
+          : 'Please select a CHW.';
     }
     return errors;
   }
@@ -135,10 +159,11 @@ export default function RegisterPatientPage() {
         diagnosisType: diagnosis,
         artStartDate:  needsArt && artStart ? artStart : undefined,
         tbTreatmentStartDate: needsTb && tbStart ? tbStart : undefined,
-        // Omitted entirely in AUTO mode — backend matches a CHW by village/sector
-        // (PatientService#matchChwByLocation) and the assignment starts PENDING
-        // until that CHW accepts it.
-        assignedChwId: assignmentMode === 'MANUAL' ? assignedChwId : undefined,
+        // Always explicit — the backend re-validates that the CHW covers the
+        // patient's village (or is a facility fallback when no CHW covers it).
+        assignedChwId,
+        consentGiven,
+        consentVersion: 'v1.0',
       };
       const r = await api.post('/api/v1/patients/register', body);
       setDone({ name: fullName, code: r.data.patientCode ?? r.data.id });
@@ -155,7 +180,8 @@ export default function RegisterPatientPage() {
     setFullName(''); setDob(''); setSex(''); setNationalId(''); setPhone('');
     setHasSmartphone(false); setProvince(''); setDistrict(''); setSector('');
     setCell(''); setVillage(''); setHouseholdLocation('');
-    setDiagnosis(''); setArtStart(''); setTbStart(''); setAssignmentMode('MANUAL');
+    setDiagnosis(''); setArtStart(''); setTbStart(''); setConsentGiven(false);
+    setCandMode(null); setAssignedChwId('');
     setFieldErrors({}); setError('');
   }
 
@@ -194,11 +220,10 @@ export default function RegisterPatientPage() {
               <p className="text-[11px] text-text-hint mt-3">
                 A treatment plan and dose schedule can now be assigned.
               </p>
-              {assignmentMode === 'AUTO' && (
-                <p className="text-[12px] mt-2 font-medium" style={{ color: '#E67E22' }}>
-                  CHW matched by location — awaiting their acceptance before the full record is visible to them.
-                </p>
-              )}
+              <p className="text-[12px] mt-2 font-medium" style={{ color: '#E67E22' }}>
+                The assigned CHW has been notified — they accept the assignment before the
+                full record becomes visible to them.
+              </p>
               <div className="flex gap-3 mt-7 justify-center">
                 <Button onClick={resetForm} icon={UserPlus}>Register Another</Button>
                 <Button variant="secondary" onClick={() => router.push('/clinical/patients')}>
@@ -302,7 +327,11 @@ export default function RegisterPatientPage() {
               <FormField label="District" value={district} onChange={setDistrict} required={false} placeholder="Gasabo" />
               <FormField label="Sector"   value={sector}   onChange={setSector}   required={false} placeholder="Kimironko" />
               <FormField label="Cell"     value={cell}     onChange={setCell}     required={false} placeholder="Kibagabaga" />
-              <FormField label="Village"  value={village}  onChange={setVillage}  required={false} placeholder="Kagugu" error={fieldErrors.village} />
+              <FormField
+                label="Village" value={village} onChange={setVillage}
+                placeholder="Kagugu" error={fieldErrors.village}
+                hint="Drives the CHW assignment below."
+              />
               <FormField
                 label="Household Location / Landmark"
                 value={householdLocation} onChange={setHouseholdLocation}
@@ -369,93 +398,118 @@ export default function RegisterPatientPage() {
             )}
           </SectionCard>
 
-          {/* ── CHW assignment ────────────────────────────── */}
+          {/* ── CHW assignment — village-driven ───────────── */}
           <SectionCard title="CHW Assignment" icon={Phone} iconColor="#E64B2E">
 
-            {/* Mode toggle */}
-            <div className="grid grid-cols-2 gap-3 mb-4">
-              <AssignmentModeOption
-                active={assignmentMode === 'MANUAL'}
-                onClick={() => setAssignmentMode('MANUAL')}
-                title="Select CHW manually"
-                description="Pick a specific CHW from the list."
-              />
-              <AssignmentModeOption
-                active={assignmentMode === 'AUTO'}
-                onClick={() => setAssignmentMode('AUTO')}
-                title="Auto-assign by location"
-                description="Match a CHW whose coverage area includes this patient's village/sector."
-              />
-            </div>
-
-            {assignmentMode === 'MANUAL' ? (
-              <div className="grid grid-cols-2 xl:grid-cols-3 gap-4">
-                <div className="col-span-2 xl:col-span-1">
-                  <label className="block text-[11px] font-semibold uppercase tracking-widest text-text-hint mb-1.5">
-                    Assigned CHW <span style={{ color: '#C0392B' }}>*</span>
-                  </label>
-                  {chws.length === 0 ? (
-                    <div
-                      className="px-3 py-2.5 text-[13px] rounded-lg"
-                      style={{ border: '1px solid #E9E9E9', color: '#9CA3AF' }}
-                    >
-                      Loading CHWs…
-                    </div>
-                  ) : (
-                    <ChwSelect
-                      chws={chws}
-                      value={assignedChwId}
-                      onChange={setAssignedChwId}
-                    />
-                  )}
-                  {fieldErrors.assignedChwId
-                    ? <p className="text-[11px] font-medium mt-1.5" style={{ color: '#C0392B' }}>{fieldErrors.assignedChwId}</p>
-                    : <p className="text-[11px] text-text-hint mt-1.5">This CHW will conduct home visits and confirm daily doses.</p>}
-                </div>
-
-                {/* Selected CHW card */}
-                {assignedChwId && chws.length > 0 && (() => {
-                  const chw = chws.find(c => c.id === assignedChwId);
-                  if (!chw) return null;
-                  return (
-                    <div
-                      className="rounded-lg p-4"
-                      style={{ background: 'rgba(231,74,46,0.04)', border: '1px solid rgba(231,74,46,0.15)' }}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div
-                          className="w-9 h-9 rounded-lg flex items-center justify-center text-[11px] font-bold text-white shrink-0"
-                          style={{ background: '#E64B2E' }}
-                        >
-                          {chw.fullName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
-                        </div>
-                        <div>
-                          <p className="text-[13px] font-semibold text-text-primary">{chw.fullName}</p>
-                          <p className="data-num text-[11px] text-text-hint mt-0.5">
-                            {chw.employeeCode ?? '—'}
-                            {chw.assignedVillage ? ` · ${chw.assignedVillage}` : ''}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })()}
-              </div>
-            ) : (
+            {!village.trim() ? (
               <div
                 className="rounded-lg px-4 py-3 flex items-start gap-2.5"
-                style={{ background: 'rgba(230,126,34,0.06)', border: '1px solid rgba(230,126,34,0.25)' }}
+                style={{ background: '#FAFAFA', border: '1px solid #E9E9E9' }}
               >
-                <MapPin size={13} className="shrink-0 mt-0.5" style={{ color: '#E67E22' }} />
+                <MapPin size={13} className="shrink-0 mt-0.5 text-text-hint" />
                 <p className="text-[12px] text-text-secondary">
-                  The system will match a CHW whose coverage area includes the{' '}
-                  <strong>Village</strong> (falling back to <strong>Sector</strong>) entered above.
-                  The CHW will see a masked notification — name and diagnosis stay hidden until they
-                  accept the assignment. If no CHW covers this location, registration will fail and
-                  you&apos;ll need to switch to manual selection.
+                  Enter the patient&apos;s <strong>Village</strong> above — the CHW who covers
+                  that village will be assigned automatically. If several CHWs share the
+                  village you&apos;ll pick one; if none covers it you&apos;ll pick from the
+                  facility&apos;s CHWs.
                 </p>
               </div>
+            ) : candLoading ? (
+              <div
+                className="px-3 py-2.5 text-[13px] rounded-lg"
+                style={{ border: '1px solid #E9E9E9', color: '#9CA3AF' }}
+              >
+                Checking CHW coverage for “{village.trim()}”…
+              </div>
+            ) : (
+              <>
+                {/* NONE — warning + facility fallback */}
+                {candMode === 'NONE' && (
+                  <div
+                    className="rounded-lg px-4 py-3 flex items-start gap-2.5 mb-4"
+                    style={{ background: 'rgba(230,126,34,0.06)', border: '1px solid rgba(230,126,34,0.25)' }}
+                  >
+                    <AlertCircle size={13} className="shrink-0 mt-0.5" style={{ color: '#E67E22' }} />
+                    <p className="text-[12px] text-text-secondary">
+                      <strong>No CHW covers “{village.trim()}”.</strong> Select one of the
+                      facility&apos;s CHWs below so the patient is not left unassigned.
+                    </p>
+                  </div>
+                )}
+
+                {/* MULTIPLE — required dropdown of village CHWs */}
+                {(candMode === 'MULTIPLE' || candMode === 'NONE') && (
+                  <div className="grid grid-cols-2 xl:grid-cols-3 gap-4">
+                    <div className="col-span-2 xl:col-span-1">
+                      <label className="block text-[11px] font-semibold uppercase tracking-widest text-text-hint mb-1.5">
+                        Assign to CHW <span style={{ color: '#C0392B' }}>*</span>
+                      </label>
+                      <ChwSelect chws={chws} value={assignedChwId} onChange={setAssignedChwId} />
+                      {fieldErrors.assignedChwId
+                        ? <p className="text-[11px] font-medium mt-1.5" style={{ color: '#C0392B' }}>{fieldErrors.assignedChwId}</p>
+                        : <p className="text-[11px] text-text-hint mt-1.5">
+                            {candMode === 'MULTIPLE'
+                              ? `${chws.length} CHWs cover this village — choose who takes this patient.`
+                              : 'Facility-wide list (village fallback).'}
+                          </p>}
+                    </div>
+                  </div>
+                )}
+
+                {/* SINGLE — auto-assigned, read-only confirmation */}
+                {candMode === 'SINGLE' && chws[0] && (
+                  <div
+                    className="rounded-lg p-4 max-w-md"
+                    style={{ background: 'rgba(39,174,96,0.05)', border: '1px solid rgba(39,174,96,0.25)' }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="w-9 h-9 rounded-lg flex items-center justify-center text-[11px] font-bold text-white shrink-0"
+                        style={{ background: '#27AE60' }}
+                      >
+                        {chws[0].fullName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
+                      </div>
+                      <div>
+                        <p className="text-[13px] font-semibold text-text-primary">{chws[0].fullName}</p>
+                        <p className="text-[11px] text-text-hint mt-0.5">
+                          Covers {chws[0].assignedVillage ?? village.trim()} — assigned automatically.
+                        </p>
+                      </div>
+                      <CheckCircle2 size={16} className="ml-auto shrink-0" style={{ color: '#27AE60' }} />
+                    </div>
+                  </div>
+                )}
+              </>
             )}
+          </SectionCard>
+
+          {/* ── Consent (Law No. 058/2021) ─────────────────── */}
+          <SectionCard title="Patient Consent" icon={CheckCircle2} iconColor="#27AE60">
+            <div className="flex items-start gap-3">
+              <input
+                id="consent"
+                type="checkbox"
+                checked={consentGiven}
+                onChange={e => setConsentGiven(e.target.checked)}
+                className="w-4 h-4 rounded mt-0.5"
+                style={{ accentColor: '#27AE60' }}
+              />
+              <div>
+                <label htmlFor="consent" className="text-[13px] text-text-primary font-medium cursor-pointer">
+                  The patient (or guardian) has given documented consent to the collection and
+                  processing of their health data.
+                </label>
+                <p className="text-[11px] text-text-hint mt-1">
+                  Required under Rwanda Law No. 058/2021 — HIV/TB status is special-category
+                  sensitive data. Consent version v1.0 is recorded with a timestamp.
+                </p>
+                {fieldErrors.consentGiven && (
+                  <p className="text-[11px] font-medium mt-1.5" style={{ color: '#C0392B' }}>
+                    {fieldErrors.consentGiven}
+                  </p>
+                )}
+              </div>
+            </div>
           </SectionCard>
 
           {/* ── Submit ────────────────────────────────────── */}
@@ -471,34 +525,6 @@ export default function RegisterPatientPage() {
         </form>
       </div>
     </DashboardLayout>
-  );
-}
-
-// ── CHW assignment mode toggle ────────────────────────────────────────────────
-function AssignmentModeOption({
-  active, onClick, title, description,
-}: {
-  active: boolean; onClick: () => void; title: string; description: string;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="text-left rounded-lg p-3.5 transition-colors"
-      style={{
-        border:     active ? '1.5px solid #E64B2E' : '1px solid #E9E9E9',
-        background: active ? 'rgba(231,74,46,0.04)' : '#FFFFFF',
-      }}
-    >
-      <div className="flex items-center gap-2">
-        <div
-          className="w-3.5 h-3.5 rounded-full flex items-center justify-center shrink-0"
-          style={{ border: active ? '4px solid #E64B2E' : '1.5px solid #9CA3AF' }}
-        />
-        <p className="text-[13px] font-semibold text-text-primary">{title}</p>
-      </div>
-      <p className="text-[11px] text-text-hint mt-1 ml-[22px]">{description}</p>
-    </button>
   );
 }
 
