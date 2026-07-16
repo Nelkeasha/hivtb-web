@@ -79,14 +79,17 @@ export default function RegisterPatientPage() {
   // the village CHWs; NONE warns and falls back to the facility's CHW list.
   const [candMode, setCandMode] = useState<CandidateMode | null>(null);
   const [candLoading, setCandLoading] = useState(false);
+  const [candError, setCandError] = useState(false);
+  const [candRetry, setCandRetry] = useState(0);
   const [assignedChwId, setAssignedChwId] = useState('');
 
   useEffect(() => {
     const v = village.trim();
     setAssignedChwId('');
-    if (!v) { setCandMode(null); setChws([]); return; }
+    setCandError(false);
+    if (!v) { setCandMode(null); setChws([]); setCandLoading(false); return; }
+    setCandLoading(true);
     const t = setTimeout(() => {
-      setCandLoading(true);
       api.get('/api/clinical/dashboard/chw-candidates', { params: { village: v } })
         .then(r => {
           setCandMode(r.data.mode);
@@ -94,11 +97,11 @@ export default function RegisterPatientPage() {
           setChws(list);
           if (r.data.mode === 'SINGLE' && list[0]) setAssignedChwId(list[0].id);
         })
-        .catch(() => { setCandMode(null); setChws([]); })
+        .catch(() => { setCandMode(null); setChws([]); setCandError(true); })
         .finally(() => setCandLoading(false));
     }, 400);
     return () => clearTimeout(t);
-  }, [village]);
+  }, [village, candRetry]);
 
   const needsArt = diagnosis === 'HIV' || diagnosis === 'HIV_TB_COINFECTION';
   const needsTb  = diagnosis === 'TB'  || diagnosis === 'HIV_TB_COINFECTION';
@@ -128,7 +131,7 @@ export default function RegisterPatientPage() {
         ? 'Several CHWs cover this village — please select one.'
         : candMode === 'NONE'
           ? "No CHW covers this village — select one of the facility's CHWs."
-          : 'Please select a CHW.';
+          : 'The CHW coverage lookup has not completed — retry it in the CHW Assignment section.';
     }
     return errors;
   }
@@ -420,6 +423,28 @@ export default function RegisterPatientPage() {
                 style={{ border: '1px solid #E9E9E9', color: '#9CA3AF' }}
               >
                 Checking CHW coverage for “{village.trim()}”…
+              </div>
+            ) : candError ? (
+              <div
+                className="rounded-lg px-4 py-3 flex items-start gap-2.5"
+                style={{ background: 'rgba(192,57,43,0.05)', border: '1px solid rgba(192,57,43,0.25)' }}
+              >
+                <AlertCircle size={13} className="shrink-0 mt-0.5" style={{ color: '#C0392B' }} />
+                <div>
+                  <p className="text-[12px] text-text-secondary">
+                    <strong>Couldn&apos;t check CHW coverage for “{village.trim()}”.</strong>{' '}
+                    The server may still be waking up — registration needs this lookup
+                    to assign a CHW.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setCandRetry(k => k + 1)}
+                    className="text-[12px] font-semibold mt-1.5 underline underline-offset-2"
+                    style={{ color: '#C0392B' }}
+                  >
+                    Retry lookup
+                  </button>
+                </div>
               </div>
             ) : (
               <>
