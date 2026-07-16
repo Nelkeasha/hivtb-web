@@ -97,7 +97,16 @@ export default function RegisterPatientPage() {
           setChws(list);
           if (r.data.mode === 'SINGLE' && list[0]) setAssignedChwId(list[0].id);
         })
-        .catch(() => { setCandMode(null); setChws([]); setCandError(true); })
+        .catch(() =>
+          // Coverage lookup failed — fall back to the facility-wide CHW list so
+          // the form is never a dead end; if that fails too, only Retry remains.
+          api.get('/api/clinical/dashboard/chws')
+            .then(r => {
+              const list: Chw[] = (r.data ?? []).filter((c: Chw & { isActive?: boolean }) => c.isActive !== false);
+              setChws(list);
+            })
+            .catch(() => setChws([]))
+            .finally(() => { setCandMode(null); setCandError(true); }))
         .finally(() => setCandLoading(false));
     }, 400);
     return () => clearTimeout(t);
@@ -425,27 +434,43 @@ export default function RegisterPatientPage() {
                 Checking CHW coverage for “{village.trim()}”…
               </div>
             ) : candError ? (
-              <div
-                className="rounded-lg px-4 py-3 flex items-start gap-2.5"
-                style={{ background: 'rgba(192,57,43,0.05)', border: '1px solid rgba(192,57,43,0.25)' }}
-              >
-                <AlertCircle size={13} className="shrink-0 mt-0.5" style={{ color: '#C0392B' }} />
-                <div>
-                  <p className="text-[12px] text-text-secondary">
-                    <strong>Couldn&apos;t check CHW coverage for “{village.trim()}”.</strong>{' '}
-                    The server may still be waking up — registration needs this lookup
-                    to assign a CHW.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => setCandRetry(k => k + 1)}
-                    className="text-[12px] font-semibold mt-1.5 underline underline-offset-2"
-                    style={{ color: '#C0392B' }}
-                  >
-                    Retry lookup
-                  </button>
+              <>
+                <div
+                  className="rounded-lg px-4 py-3 flex items-start gap-2.5 mb-4"
+                  style={{ background: 'rgba(230,126,34,0.06)', border: '1px solid rgba(230,126,34,0.25)' }}
+                >
+                  <AlertCircle size={13} className="shrink-0 mt-0.5" style={{ color: '#E67E22' }} />
+                  <div>
+                    <p className="text-[12px] text-text-secondary">
+                      <strong>Couldn&apos;t check CHW coverage for “{village.trim()}”.</strong>{' '}
+                      {chws.length > 0
+                        ? "Select one of the facility's CHWs below instead."
+                        : 'The server may still be waking up, or your role may not allow this lookup.'}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setCandRetry(k => k + 1)}
+                      className="text-[12px] font-semibold mt-1.5 underline underline-offset-2"
+                      style={{ color: '#E67E22' }}
+                    >
+                      Retry lookup
+                    </button>
+                  </div>
                 </div>
-              </div>
+                {chws.length > 0 && (
+                  <div className="grid grid-cols-2 xl:grid-cols-3 gap-4">
+                    <div className="col-span-2 xl:col-span-1">
+                      <label className="block text-[11px] font-semibold uppercase tracking-widest text-text-hint mb-1.5">
+                        Assign to CHW <span style={{ color: '#C0392B' }}>*</span>
+                      </label>
+                      <ChwSelect chws={chws} value={assignedChwId} onChange={setAssignedChwId} />
+                      {fieldErrors.assignedChwId
+                        ? <p className="text-[11px] font-medium mt-1.5" style={{ color: '#C0392B' }}>{fieldErrors.assignedChwId}</p>
+                        : <p className="text-[11px] text-text-hint mt-1.5">Facility-wide list (coverage lookup unavailable).</p>}
+                    </div>
+                  </div>
+                )}
+              </>
             ) : (
               <>
                 {/* NONE — warning + facility fallback */}
@@ -570,9 +595,11 @@ function ChwSelect({ chws, value, onChange }: {
       onFocus={() => setFocused(true)}
       onBlur={()  => setFocused(false)}
     >
+      <option value="" disabled>Select a CHW…</option>
       {chws.map(c => (
         <option key={c.id} value={c.id}>
           {c.fullName}{c.employeeCode ? ` (${c.employeeCode})` : ''}
+          {c.assignedVillage ? ` — ${c.assignedVillage}` : ''}
         </option>
       ))}
     </select>
