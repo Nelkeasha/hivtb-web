@@ -130,6 +130,10 @@ export default function RegisterPatientPage() {
     if (phoneError) errors.phoneNumber = phoneError;
     const diagnosisError = validateRequired(diagnosis, 'Diagnosis type');
     if (diagnosisError) errors.diagnosisType = diagnosisError;
+    const artError = validateDateNotFuture(artStart, 'ART start date');
+    if (artError) errors.artStartDate = artError;
+    const tbError = validateDateNotFuture(tbStart, 'TB treatment start date');
+    if (tbError) errors.tbTreatmentStartDate = tbError;
     if (!consentGiven) {
       errors.consentGiven = 'Patient consent must be recorded before registration.';
     }
@@ -380,6 +384,7 @@ export default function RegisterPatientPage() {
                   value={artStart} onChange={setArtStart}
                   type="date" required={false} max={today}
                   hint="Date antiretroviral therapy was initiated."
+                  error={fieldErrors.artStartDate}
                 />
               )}
 
@@ -390,6 +395,7 @@ export default function RegisterPatientPage() {
                   value={tbStart} onChange={setTbStart}
                   type="date" required={false} max={today}
                   hint="Date TB treatment regimen was initiated."
+                  error={fieldErrors.tbTreatmentStartDate}
                 />
               )}
             </div>

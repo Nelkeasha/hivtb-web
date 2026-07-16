@@ -10,7 +10,8 @@ import FormSelect from '@/components/ui/FormSelect';
 import { api, extractErrorMessage, extractFieldErrors } from '@/lib/api';
 import {
   required as validateRequired, nationalId as validateNationalId,
-  dateNotFuture as validateDateNotFuture, maxLength as validateMaxLength,
+  dateNotFuture as validateDateNotFuture, dateNotPast as validateDateNotPast,
+  maxLength as validateMaxLength,
 } from '@/lib/validation/rules';
 import {
   ArrowLeft, Plus, X, CheckCircle, Clock,
@@ -777,6 +778,7 @@ function ConfirmProvisionalCard({ patient, onConfirmed }: {
                   onChange={(v) => setF({ ...f, artStartDate: v })}
                   type="date"
                   required={false}
+                  max={new Date().toISOString().split('T')[0]}
                   error={fieldErrors.artStartDate}
                 />
               )}
@@ -787,6 +789,7 @@ function ConfirmProvisionalCard({ patient, onConfirmed }: {
                   onChange={(v) => setF({ ...f, tbTreatmentStartDate: v })}
                   type="date"
                   required={false}
+                  max={new Date().toISOString().split('T')[0]}
                   error={fieldErrors.tbTreatmentStartDate}
                 />
               )}
@@ -1093,7 +1096,8 @@ function AddPlanForm({ patientId, onDone, onCancel }: {
     if (nameError) errors.medicationId = nameError;
     const dosageError = validateRequired(f.dosage, 'Dosage') ?? validateMaxLength(f.dosage, 50, 'Dosage');
     if (dosageError) errors.dosage = dosageError;
-    const startDateError = validateRequired(f.startDate, 'Start date');
+    const startDateError = validateRequired(f.startDate, 'Start date')
+      ?? validateDateNotPast(f.startDate, 'Start date');
     if (startDateError) errors.startDate = startDateError;
     return errors;
   }
@@ -1156,6 +1160,7 @@ function AddPlanForm({ patientId, onDone, onCancel }: {
         </FormSelect>
         <FormField label="Start Date" value={f.startDate}
           onChange={(v) => setF({ ...f, startDate: v })} type="date"
+          min={new Date().toISOString().split('T')[0]}
           error={fieldErrors.startDate} />
       </div>
       <div className="flex gap-2 pt-1">

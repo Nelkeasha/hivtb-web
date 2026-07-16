@@ -70,6 +70,17 @@ export function dateNotFuture(value: string | null | undefined, label: string, o
   return null;
 }
 
+export function dateNotPast(value: string | null | undefined, label: string, opts: { required?: boolean } = {}): string | null {
+  const v = (value ?? '').trim();
+  if (!v) return opts.required ? `${label} is required` : null;
+  const date = new Date(v);
+  if (Number.isNaN(date.getTime())) return `${label} is not a valid date`;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  if (date.getTime() < today.getTime()) return `${label} cannot be in the past`;
+  return null;
+}
+
 export function dateRangeOrder(start: string | null | undefined, end: string | null | undefined, label = 'End date'): string | null {
   if (!start || !end) return null;
   if (new Date(end).getTime() < new Date(start).getTime()) return `${label} cannot be before the start date`;
