@@ -11,7 +11,6 @@ import { api, extractErrorMessage, extractFieldErrors } from '@/lib/api';
 import {
   required as validateRequired, nationalId as validateNationalId,
   dateNotFuture as validateDateNotFuture, maxLength as validateMaxLength,
-  numberRange as validateNumberRange,
 } from '@/lib/validation/rules';
 import {
   ArrowLeft, Plus, X, CheckCircle, Clock,
@@ -1172,7 +1171,7 @@ function AddScheduleForm({ planId, onDone, onCancel }: {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [f, setF] = useState({
     doseTime: '08:00:00', doseLabel: '', notificationMethod: 'APP',
-    windowDurationMinutes: 45, prescriptionSource: '',
+    prescriptionSource: '',
   });
 
   function validate(): Record<string, string> {
@@ -1181,8 +1180,6 @@ function AddScheduleForm({ planId, onDone, onCancel }: {
     if (doseTimeError) errors.doseTime = doseTimeError;
     const labelError = validateMaxLength(f.doseLabel, 50, 'Dose label');
     if (labelError) errors.doseLabel = labelError;
-    const windowError = validateNumberRange(f.windowDurationMinutes, 1, 1440, 'Window duration');
-    if (windowError) errors.windowDurationMinutes = windowError;
     const sourceError = validateMaxLength(f.prescriptionSource, 100, 'Prescription note');
     if (sourceError) errors.prescriptionSource = sourceError;
     return errors;
@@ -1239,17 +1236,10 @@ function AddScheduleForm({ planId, onDone, onCancel }: {
           <option value="APP">App</option>
           <option value="SMS">SMS</option>
         </FormSelect>
-        <FormField
-          label="Window (minutes)"
-          type="number"
-          min="1" max="1440"
-          value={String(f.windowDurationMinutes)}
-          onChange={(v) => setF({ ...f, windowDurationMinutes: parseInt(v) || 45 })}
-          required={false}
-          hint="1–1440 minutes after the scheduled dose time"
-          error={fieldErrors.windowDurationMinutes}
-        />
       </div>
+      <p className="text-[12px] text-text-hint">
+        Patients get a 45-minute confirmation window after each scheduled dose time.
+      </p>
       <FormField
         label="Prescription note (clinic card reference)"
         value={f.prescriptionSource}
