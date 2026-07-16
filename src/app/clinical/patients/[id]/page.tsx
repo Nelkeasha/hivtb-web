@@ -28,7 +28,7 @@ interface Patient {
   chwName?: string; facilityName?: string;
   artStartDate?: string; tbTreatmentStartDate?: string;
   riskLevel?: string; riskScore?: number;
-  registrationStatus?: string; referralId?: string;
+  registrationStatus?: string; registrationRoute?: string; referralId?: string;
   suspectedCondition?: string; screeningNotes?: string;
   // Structured RBC TB symptom screen
   tbSymptomCough?: boolean; tbSymptomFever?: boolean; tbSymptomNightSweats?: boolean;
@@ -547,12 +547,15 @@ function ScreeningResults({ patient }: { patient: Patient }) {
     ['Weight loss', patient.tbSymptomWeightLoss],
     ['Chest pain breathing', patient.tbSymptomChestPain],
   ];
+  // Screening answers only exist for patients who came through CHW screening —
+  // facility-registered patients were never screened, so show nothing for them.
+  const screened = patient.registrationRoute === 'CHW_SCREENING';
   // Show only the block(s) actually completed for this patient's condition.
   const dt = patient.diagnosisType ?? patient.suspectedCondition ?? '';
-  const showTb = dt === 'TB' || dt === 'HIV_TB_COINFECTION';
+  const showTb = screened && (dt === 'TB' || dt === 'HIV_TB_COINFECTION');
   // HIV risk answers are redacted (undefined) for supervisors/admins.
-  const hivVisible = patient.hivRiskNeverTested !== undefined;
-  const showHiv = (dt === 'HIV' || dt === 'HIV_TB_COINFECTION') && hivVisible;
+  const hivVisible = patient.hivRiskNeverTested !== undefined && patient.hivRiskNeverTested !== null;
+  const showHiv = screened && (dt === 'HIV' || dt === 'HIV_TB_COINFECTION') && hivVisible;
   const hiv: [string, boolean | undefined][] = [
     ['Never tested for HIV', patient.hivRiskNeverTested],
     ['Partner HIV-positive', patient.hivRiskPartnerPositive],
